@@ -1,0 +1,23 @@
+#loader {
+  background-color: rgba(0, 0, 0, 0.33);
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 10000;
+
+  div {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    div {
+      margin: 0 auto;
+      text-align: center;
+    }
+  }
+}
