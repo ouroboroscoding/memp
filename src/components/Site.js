@@ -31,6 +31,7 @@ import NoUser from './dialogs/NoUser';
 
 // Page component modules
 import Appointments from './pages/Appointments';
+import ED from './pages/ED';
 import Queue from './pages/Queue';
 import VersionHistory from './pages/VersionHistory';
 
@@ -113,6 +114,9 @@ export default function Site(props) {
 						{/*<Route exact path="/templates">
 							<Templates user={user} />
 						</Route>*/}
+						<Route exact path="/">
+							<VersionHistory />
+						</Route>
 						<Route exact path="/appointments">
 							<Appointments user={user} />
 						</Route>
@@ -130,22 +134,13 @@ export default function Site(props) {
 								user={user}
 							/>
 						</Route>
-						{/*<Route
-							path="/customer/:phoneNumber/:customerId"
-							component={({match: {params:{phoneNumber, customerId}}}) => (
-								<Customer
-									key={phoneNumber}
-									customerId={parseInt(customerId)}
-									mobile={mobile}
-									phoneNumber={phoneNumber}
-									readOnly={false}
-									user={user}
-								/>
-							)}
-						/>*/}
-						<Route path="/">
-							<VersionHistory />
-						</Route>
+						<Route
+							exact
+							path="/ed/:customerId/:orderId"
+							children={
+								<ED user={user} />
+							}
+						/>
 					</Switch>
 				</div>
 			</div>

@@ -18,26 +18,21 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
+// Generic modules
+import { clone } from '../../generic/tools';
+
 // Site modules
 import Utils from '../../utils';
 
-// Encounter types
-const _encounter = {
-	A: 'Audio',
-	AS: 'Asynchronous',
-	NA: 'Not Available',
-	V: 'Video'
-}
+// Data
+import Encounters from '../../data/encounters';
 
 // CustomerSummary component
 export default function CustomerSummary(props) {
 
 	function claim() {
-		props.onClaim(props);
+		props.onClaim(clone(props));
 	}
-
-	// If we're the one who claimed it
-	let sClaimedBy = (props.userId === props.user.id) ? 'You' : props.claimedBy;
 
 	// Order label
 	let lLabel = props.orderLabel.split(' - ');
@@ -49,18 +44,14 @@ export default function CustomerSummary(props) {
 		<Paper className="summary">
 			<Grid container spacing={3}>
 				<Grid item xs={12} sm={2}>
-					{props.claimedAt ?
-						<p>Claimed by {sClaimedBy}</p>
-					:
-						<p><Button variant="contained" color="primary" size="large" onClick={claim}>Claim</Button></p>
-					}
+					<p><Button variant="contained" color="primary" size="large" onClick={claim}>Claim</Button></p>
 				</Grid>
 				<Grid item xs={12} sm={5}>
 					<Typography variant="h6">Customer</Typography>
 					<p><strong>ID:</strong> {props.customerId}</p>
 					<p><strong>Name:</strong> {props.customerName}</p>
 					<p><strong>Location:</strong> {props.shipCity + ', ' + props.shipState}</p>
-					<p><strong>Encounter:</strong> {props.type !== '' && _encounter[props.type]}</p>
+					<p><strong>Encounter:</strong> {props.encounter !== '' && Encounters[props.encounter]}</p>
 				</Grid>
 				<Grid item xs={12} sm={5} className="messages">
 					<Typography variant="h6">Order</Typography>
@@ -75,7 +66,16 @@ export default function CustomerSummary(props) {
 
 // Force props
 CustomerSummary.propTypes = {
-	"onClaim": PropTypes.func.isRequired
+	attentionRole: PropTypes.string.isRequired,
+	customerId: PropTypes.number.isRequired,
+	customerName: PropTypes.string.isRequired,
+	dateCreated: PropTypes.string.isRequired,
+	encounter: PropTypes.string.isRequired,
+	onClaim: PropTypes.func.isRequired,
+	orderId: PropTypes.string.isRequired,
+	orderLabel: PropTypes.string.isRequired,
+	shipCity: PropTypes.string.isRequired,
+	shipState: PropTypes.string.isRequired
 }
 
 // Default props

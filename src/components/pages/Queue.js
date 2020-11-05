@@ -10,7 +10,7 @@
 
 // NPM modules
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Material UI
 import Box from '@material-ui/core/Box';
@@ -30,48 +30,31 @@ import Rest from '../../generic/rest';
 import Utils from '../../utils';
 
 // Queue component
-export default class Queue extends React.Component {
+export default function Queue(props) {
 
-	constructor(props) {
+	// State
+	let [records, recordsSet] = useState([]);
 
-		// Call the parent constructor
-		super(props);
-
-		// Initial state
-		this.state = {
-			records: [],
-			user: props.user
-		}
-
-		// Bind methods
-		this.claim = this.claim.bind(this);
-		this.fetch = this.fetch.bind(this);
-		this.signedIn = this.signedIn.bind(this);
-		this.signedOut = this.signedOut.bind(this);
-	}
-
-	componentDidMount() {
-
-		// Track any signedIn/signedOut events
-		Events.add('signedIn', this.signedIn);
-		Events.add('signedOut', this.signedOut);
-		Events.add('Queue_' + this.props.type, this.fetch);
+	// User effect
+	useEffect(() => {
 
 		// If we have a user
-		if(this.state.user) {
-			this.fetch();
+		if(props.user) {
+			fetch();
+		} else {
+			recordsSet([]);
 		}
-	}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [props.user]); // React to user changes
 
-	componentWillUnmount() {
+	// Mount effect
+	useEffect(() => {
+		Events.add('Queue_' + props.type, fetch);
+		return () => Events.remove('Queue_' + props.type, fetch)
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-		// Stop tracking any signedIn/signedOut events
-		Events.remove('signedIn', this.signedIn);
-		Events.remove('signedOut', this.signedOut);
-		Events.remove('Queue_' + this.props.type, this.fetch);
-	}
-
-	claim(order) {
+	function claim(order) {
 
 		// Get the claimed add promise
 		claimed.add(order.customerId, order.orderId).then(res => {
@@ -87,10 +70,10 @@ export default class Queue extends React.Component {
 		});
 	}
 
-	fetch() {
+	function fetch() {
 
 		// Fetch the queue
-		Rest.read('monolith', 'orders/pending/provider/' + this.props.type, {}).done(res => {
+		Rest.read('monolith', 'orders/pending/provider/' + props.type, {}).done(res => {
 
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {
@@ -100,54 +83,34 @@ export default class Queue extends React.Component {
 				Events.trigger('warning', JSON.stringify(res.warning));
 			}
 
-			// If there's data
+			// If there's data, set it
 			if(res.data) {
-
-				// Set the state
-				this.setState({
-					records: res.data
-				});
+				recordsSet(res.data);
 			}
 		});
 	}
 
-	render() {
-		return (
-			<Box id="queue" className="page">
-				<Box className="header">
-					<Typography variant="h4">{this.state.records.length ? this.state.records.length + ' Pending' : 'No Pending'}</Typography>
-				</Box>
-				<Box className="summaries">
-					{this.state.records.map((o,i) =>
-						<CustomerSummary
-							onClaim={this.claim}
-							key={o.customerId}
-							user={this.state.user}
-							{...o}
-						/>
-					)}
-				</Box>
+	return (
+		<Box id="queue" className="page">
+			<Box className="header">
+				<Typography variant="h4">{records.length ? records.length + ' Pending' : 'No Pending'}</Typography>
 			</Box>
-		)
-	}
-
-	signedIn(user) {
-		this.setState({
-			user: user
-		}, () => {
-			this.fetch();
-		})
-	}
-
-	signedOut() {
-		this.setState({
-			records: [],
-			user: false
-		});
-	}
+			<Box className="summaries">
+				{records.map((o,i) =>
+					<CustomerSummary
+						onClaim={claim}
+						key={o.customerId}
+						user={props.user}
+						type={props.type}
+						{...o}
+					/>
+				)}
+			</Box>
+		</Box>
+	);
 }
 
 // Valid props
 Queue.propTypes = {
-	"type": PropTypes.oneOf(['ed', 'hrt']).isRequired
+	type: PropTypes.oneOf(['ed', 'hrt']).isRequired
 }

@@ -27,6 +27,12 @@ const oRights = {
  */
 export default {
 
+	age: function(dob) {
+		let ageDifMs = Date.now() - dob.getTime();
+		let ageDate = new Date(ageDifMs); // miliseconds from epoch
+		return Math.abs(ageDate.getUTCFullYear() - 1970);
+	},
+
 	date: function(ts, separator='/') {
 		if(typeof ts === 'number') {
 			ts = new Date(ts*1000);
@@ -141,7 +147,7 @@ export default {
 	},
 
 	orderPath(order) {
-		return '/order/' + order.customerId + '/' + order.orderId;
+		return '/' + order.type + '/' + order.customerId + '/' + order.orderId;
 	},
 
 	parsePath(path) {
@@ -188,6 +194,15 @@ export default {
 
 				// But allow the child to deal with the messages themselves
 				return false;
+
+			// Invalid ID
+			case 1104:
+
+				// Notify the user
+				Events.trigger('error', 'The page or item you requested does not exist' + (err.msg ? ' (' + err.msg + ')' : ''));
+
+				// Nothing else to do
+				return true;
 
 			// no default
 		}
