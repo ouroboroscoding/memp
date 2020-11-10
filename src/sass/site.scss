@@ -12,6 +12,8 @@ $menu-width: 250px;
 
 /* composites */
 @import 'composites/customer_summary';
+@import 'composites/notes';
+@import 'composites/previous_meds';
 
 /* pages */
 @import 'pages/appointments';
@@ -101,6 +103,19 @@ td {
 	flex-direction: column;
 }
 
+.section {
+	border: 2px solid black;
+	background-color: #e2e2e2;
+	margin: 10px 0;
+	padding: 10px;
+
+	.title {
+		font-size: 1.25rem;
+		font-weight: bold;
+		margin-bottom: 5px;
+	}
+}
+
 .MuiPaper-root.padded {
 	margin-bottom: 20px;
 	padding: 10px;
@@ -109,6 +124,14 @@ td {
 .MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3,
 .MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
 	margin-bottom: 5px !important;
+}
+
+.MuiBox-root.actions {
+	text-align: right;
+
+	button {
+		margin-left: 10px;
+	}
 }
 
 .pageHeader {

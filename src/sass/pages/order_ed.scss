@@ -1,6 +1,13 @@
 #orderEd {
 
+	header {
+		flex-basis: 0;
+		flex-shrink: 0;
+		flex-grow: 0;
+	}
+
 	.details {
+		border-bottom: 1px solid #3f51b5;
 		flex-basis: 0;
 		flex-shrink: 0;
 		flex-grow: 0;
@@ -33,24 +40,27 @@
 		}
 	}
 
-	.mipCurrent {
+	.tabSection {
 		flex-basis: 0;
 		flex-shrink: 1;
 		flex-grow: 1;
 		overflow: auto;
+	}
+
+	.mipCurrent {
 		padding: 0 20px;
 
-		.section {
-			border: 2px solid black;
-			background-color: #e2e2e2;
-			margin: 10px 0;
-			padding: 10px;
-
-			.title {
-				font-size: 1.25rem;
-				font-weight: bold;
-				margin-bottom: 5px;
+		#soap {
+			select, .select {
+				width: 100%;
 			}
+
+			textarea {
+				width: 98%;
+			}
+		}
+
+		.section {
 
 			.no {
 				color: red;

@@ -10,13 +10,19 @@
 
 // NPM modules
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Material UI
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
+
+// Composite components
+import PreviousMeds from '../../composites/PreviousMeds';
+
+// Sibling components
+import SOAP from './SOAP';
 
 // Generic modules
 import Events from '../../../generic/events';
@@ -59,15 +65,20 @@ export default function MIP(props) {
 
 	// State
 	let [mip, mipSet] = useState(null);
+	let [patient, patientSet] = useState(0);
+
+	// Refs
+	let refSOAP = useRef();
 
 	// Effects
 	useEffect(() => {
-		fetch();
+		fetchMIP();
+		fetchPatientId();
 		// eslint-disable-next-line
 	}, [props.customerId]);
 
 	// Fetch the mip
-	function fetch() {
+	function fetchMIP() {
 
 		// Request the order info from the server
 		Rest.read('monolith', 'customer/mip', {
@@ -103,6 +114,29 @@ export default function MIP(props) {
 		});
 	}
 
+	// Fetch the customer's DoseSpot patient ID
+	function fetchPatientId() {
+
+		// Request the order info from the server
+		Rest.read('monolith', 'customer/dsid', {
+			customerId: props.customerId
+		}).done(res => {
+
+			// If there's an error or warning
+			if(res.error && !Utils.restError(res.error)) {
+				Events.trigger('error', JSON.stringify(res.error));
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If we got data
+			if(res.data) {
+				patientSet(res.data);
+			}
+		});
+	}
+
 	// If we don't have the MIP yet
 	if(mip === null) {
 		return <p>Loading...</p>
@@ -116,11 +150,20 @@ export default function MIP(props) {
 	// Shorten
 	let q = mip.questions;
 
+	// Check for oxytocin
+	let bOxytocin = false;
+	for(let o of props.order.items) {
+		if(o.description.toLowerCase().search('oxytocin') > -1) {
+			bOxytocin = true;
+			break;
+		}
+	}
+
 	// Render
 	return (
 		<Box className="mipCurrent">
 			<Box className="section">
-				<Typography className="title">Details</Typography>
+				{/*<Typography className="title">Details</Typography>*/}
 				<Grid container spacing={1}>
 					<Grid item xs={6} md={3}><Typography><strong>Gender: </strong>{q['gender'].answer}</Typography></Grid>
 					<Grid item xs={6} md={3}><Typography><strong>Age: </strong>{Utils.age(new Date(q['birthdate'].answer + 'T00:00:00'))}</Typography></Grid>
@@ -267,28 +310,42 @@ export default function MIP(props) {
 					</Hidden>
 				</Grid>
 			</Box>
-			<Box className="section">
-				<Typography className="title">Oxytocin</Typography>
-				<Grid container spacing={1}>
-					<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Increased Intensity</strong></Typography></Grid>
-					<Grid item xs={12} sm={8} md={9} lg={10}>{q['betterAfterED'].answer}</Grid>
-					<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Increased Intimacy</strong></Typography></Grid>
-					<Grid item xs={12} sm={8} md={9} lg={10}>{q['increasedIntimacy'].answer}</Grid>
-					<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Migraines?</strong></Typography></Grid>
-					<Grid item xs={12} sm={8} md={9} lg={10}>{q['sufferFrom'].answer}</Grid>
-					<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Migraine Cause</strong></Typography></Grid>
-					<Grid item xs={12} sm={8} md={9} lg={10}>{q['headacheCause'].answer}</Grid>
-					<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Migraine Cause</strong></Typography></Grid>
-					<Grid item xs={12} sm={8} md={9} lg={10}>{q['haloperidol'].answer}</Grid>
-					<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Misoprostol?</strong></Typography></Grid>
-					<Grid item xs={12} sm={8} md={9} lg={10}>{q['misoprostol'].answer}</Grid>
-				</Grid>
-			</Box>
+			{bOxytocin &&
+				<Box className="section">
+					<Typography className="title">Oxytocin</Typography>
+					<Grid container spacing={1}>
+						<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Increased Intensity</strong></Typography></Grid>
+						<Grid item xs={12} sm={8} md={9} lg={10}>{q['betterAfterED'].answer}</Grid>
+						<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Increased Intimacy</strong></Typography></Grid>
+						<Grid item xs={12} sm={8} md={9} lg={10}>{q['increasedIntimacy'].answer}</Grid>
+						<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Migraines?</strong></Typography></Grid>
+						<Grid item xs={12} sm={8} md={9} lg={10}>{q['sufferFrom'].answer}</Grid>
+						<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Migraine Cause</strong></Typography></Grid>
+						<Grid item xs={12} sm={8} md={9} lg={10}>{q['headacheCause'].answer}</Grid>
+						<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Haloperidol?</strong></Typography></Grid>
+						<Grid item xs={12} sm={8} md={9} lg={10}>{q['haloperidol'].answer}</Grid>
+						<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>Misoprostol?</strong></Typography></Grid>
+						<Grid item xs={12} sm={8} md={9} lg={10}>{q['misoprostol'].answer}</Grid>
+					</Grid>
+				</Box>
+			}
+			<PreviousMeds
+				customerId={props.customerId}
+				onPatientCreate={id => patientSet(id)}
+				patientId={patient}
+				user={props.user}
+			/>
+			<SOAP
+				order={props.order}
+				ref={refSOAP}
+				treated={q['treatedForED'].answer === 'No' ? false : true}
+			/>
 		</Box>
 	);
 }
 
 // Valid props
 MIP.propTypes = {
-	customerId: PropTypes.string.isRequired
+	customerId: PropTypes.string.isRequired,
+	order: PropTypes.object.isRequired
 }

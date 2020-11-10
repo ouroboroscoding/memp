@@ -33,6 +33,7 @@ import NoUser from './dialogs/NoUser';
 import Appointments from './pages/Appointments';
 import ED from './pages/ED';
 import Queue from './pages/Queue';
+import Templates from './pages/Templates';
 import VersionHistory from './pages/VersionHistory';
 
 // Local modules
@@ -117,6 +118,9 @@ export default function Site(props) {
 						<Route exact path="/">
 							<VersionHistory />
 						</Route>
+						<Route exact path="/templates">
+							<Templates user={user} />
+						</Route>
 						<Route exact path="/appointments">
 							<Appointments user={user} />
 						</Route>
@@ -138,7 +142,10 @@ export default function Site(props) {
 							exact
 							path="/ed/:customerId/:orderId"
 							children={
-								<ED user={user} />
+								<ED
+									mobile={mobile}
+									user={user}
+								/>
 							}
 						/>
 					</Switch>
