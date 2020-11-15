@@ -10,6 +10,7 @@
  */
 
 // NPM modules
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -26,6 +27,10 @@ import Notes from '../composites/Notes';
 
 // Page components
 import MIP from './ED/MIP';
+import RX from './ED/RX';
+
+// Data modules
+import DoseSpot from '../../data/dosespot';
 
 // Generic modules
 import Events from '../../generic/events';
@@ -52,16 +57,26 @@ export default function ED(props) {
 	// State
 	let [encounter, encounterSet] = useState('');
 	let [order, orderSet] = useState(null);
+	let [patientId, patientSet] = useState(0);
 	let [tab, tabSet] = useState(0);
 
 	// Hooks
 	let { customerId, orderId } = useParams();
 
-	// Effects
+	// Page load effects
 	useEffect(() => {
-		fetchOrder();
+		Events.add('patientCreate', patientCreate);
+		return () => Events.remove('patientCreate', patientCreate)
+	}, []);
+
+	// Order effects
+	useEffect(() => {
+		if(props.user) {
+			fetchOrder();
+			fetchPatientId();
+		}
 	// eslint-disable-next-line
-	}, [orderId]);
+	}, [props.user, customerId, orderId]);
 
 	// Fetch the encounter type
 	function fetchEncounter(state) {
@@ -112,9 +127,33 @@ export default function ED(props) {
 		});
 	}
 
+	// Fetch the customer's DoseSpot patient ID
+	function fetchPatientId() {
+		DoseSpot.fetch(customerId).then(res => {
+			patientSet(res);
+		}, error => {
+			Events.trigger('error', JSON.stringify(error));
+		});
+	}
+
+	function patientCreate(id) {
+		patientSet(id);
+	}
+
 	// If we have no order
 	if(order === null) {
-		return <p>Loading Order...</p>
+		return <p style={{padding: '10px'}}>Loading Order...</p>
+	}
+
+	// Child
+	let Child = null, sTab = 'Order';
+	if(order.status === 'PENDING') {
+		Child = MIP;
+		sTab = 'MIP';
+	}
+	else if(order.status === 'COMPLETE') {
+		Child = RX;
+		sTab = 'RX';
 	}
 
 	// Render
@@ -126,27 +165,27 @@ export default function ED(props) {
 					value={tab}
 					variant="fullWidth"
 				>
-					<Tab label="Order / RX" />
+					<Tab label={sTab} />
 					<Tab label="Notes" />
 					<Tab label="SMS" />
 				</Tabs>
 			</AppBar>
 			<Grid container spacing={0} className="details">
-				<Grid item xs={7} sm={8} md={9} lg={10} className="left">
+				<Grid item xs={7} sm={8} md={9} className="left">
 					<Typography className="name">{order.shipping.lastName}, {order.shipping.firstName}</Typography>
 					<Typography className="medication">{order.items.map(o => o.description).join(', ')}</Typography>
 				</Grid>
-				<Grid item xs={5} sm={4} md={3} lg={2} className="right">
+				<Grid item xs={5} sm={4} md={3} className="right">
 					<Typography className="status">{order.status}</Typography>
 					<Typography className="encounter">{Encounters[encounter]}</Typography>
 				</Grid>
 			</Grid>
 			<Box className="tabSection" style={{display: tab === 0 ? 'block' : 'none'}}>
-				{order.status === 'PENDING' &&
-					<MIP
+				{Child &&
+					<Child
 						customerId={customerId}
 						order={order}
-						user={props.user}
+						patientId={patientId}
 					/>
 				}
 			</Box>
@@ -156,9 +195,14 @@ export default function ED(props) {
 					mobile={props.mobile}
 					order={order}
 					type={tab === 1 ? 'notes' : 'sms'}
-					user={props.user}
 				/>
 			</Box>
 		</Box>
 	);
+}
+
+// Valid props
+ED.propTypes = {
+	mobile: PropTypes.bool.isRequired,
+	user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]).isRequired
 }

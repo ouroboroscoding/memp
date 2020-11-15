@@ -88,7 +88,6 @@ export function fetch(customer_id) {
 				resolve(res.data);
 			}
 		});
-
 	});
 }
 

@@ -292,7 +292,7 @@ export default function Notes(props) {
 				lNotes.push({
 					action: oData.action,
 					note: oData.action === 'Send Communication' ? '[Content] ' + oData.content : oData.content,
-					createdBy: props.user.firstName + ' ' + props.user.lastName,
+					createdBy: 'You',
 					createdAt: Utils.datetime(new Date()),
 					userRole: 'Doctor'
 				});
@@ -431,6 +431,5 @@ export default function Notes(props) {
 // Valid props
 Notes.propTypes = {
 	customerId: PropTypes.string.isRequired,
-	type: PropTypes.oneOf(['notes', 'sms']).isRequired,
-	user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]).isRequired
+	type: PropTypes.oneOf(['notes', 'sms']).isRequired
 }

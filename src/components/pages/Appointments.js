@@ -78,8 +78,6 @@ export default function Appointments(props) {
 	// Store by day
 	function byDay(l) {
 
-		console.log(l);
-
 		// Results
 		let lReturn = [];
 
@@ -93,12 +91,8 @@ export default function Appointments(props) {
 			// Split the date/time into date and time
 			let lDate = o.start.split(' ');
 
-			console.log(lDate);
-
 			// If the date doesn't match the previous one
 			if((lDate[0] + 'T00:00:00') !== sDate) {
-
-				console.log('date changed, was ' + sDate + ', is now ' + lDate[0] + 'T00:00:00');
 
 				// If we have a list
 				if(lDates) {
@@ -120,8 +114,6 @@ export default function Appointments(props) {
 		if(lDates) {
 			lReturn.push([sDate, lDates]);
 		}
-
-		console.log(lReturn);
 
 		// Return the new list of lists
 		return lReturn;

@@ -18,12 +18,11 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
+// Data modules
+import DoseSpot from '../../data/dosespot';
+
 // Generic modules
 import Events from '../../generic/events';
-import Rest from '../../generic/rest';
-
-// Local modules
-import Utils from '../../utils';
 
 /**
  * PreviousMeds
@@ -52,47 +51,20 @@ export default function PreviousMeds(props) {
 
 	// Fetch the meds
 	function fetch() {
-		Rest.read('prescriptions', 'patient/medications', {
-			clinician_id: parseInt(props.user.dsClinicianId),
-			patient_id: props.patientId
-		}).done(res => {
-
-			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
-				Events.trigger('error', JSON.stringify(res.error));
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If we got data
-			if(res.data) {
-				medsSet(res.data);
-			}
-		})
+		DoseSpot.medications(props.patientId).then(res => {
+			medsSet(res);
+		}, error => {
+			Events.trigger('error', JSON.stringify(error));
+		});
 	}
 
+	// Create the patient in DoseSpot
 	function patientCreate() {
-		Rest.create('monolith', 'customer/dsid', {
-			clinician_id: parseInt(props.user.dsClinicianId),
-			customerId: props.customerId
-		}).done(res => {
-
-			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
-				Events.trigger('error', JSON.stringify(res.error));
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If we got data
-			if(res.data) {
-
-				// Let the parent know
-				props.onPatientCreate(res.data);
-			}
-		})
+		DoseSpot.create(props.customerId).then(res => {
+			Events.trigger('patientCreate', res);
+		}, error => {
+			Events.trigger('error', JSON.stringify(error));
+		});
 	}
 
 	// Render
@@ -135,7 +107,6 @@ export default function PreviousMeds(props) {
 
 // Valid props
 PreviousMeds.propTypes = {
-	onPatientCreate: PropTypes.func.isRequired,
-	patientId: PropTypes.number.isRequired,
-	user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]).isRequired
+	customerId: PropTypes.string.isRequired,
+	patientId: PropTypes.number.isRequired
 }

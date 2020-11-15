@@ -14,12 +14,16 @@ import React, { useEffect, useRef, useState } from 'react';
 
 // Material UI
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
 
 // Composite components
 import PreviousMeds from '../../composites/PreviousMeds';
+
+// Element components
+import { GreenButton } from '../../elements/Buttons';
 
 // Sibling components
 import SOAP from './SOAP';
@@ -65,7 +69,6 @@ export default function MIP(props) {
 
 	// State
 	let [mip, mipSet] = useState(null);
-	let [patient, patientSet] = useState(0);
 
 	// Refs
 	let refSOAP = useRef();
@@ -73,8 +76,7 @@ export default function MIP(props) {
 	// Effects
 	useEffect(() => {
 		fetchMIP();
-		fetchPatientId();
-		// eslint-disable-next-line
+	// eslint-disable-next-line
 	}, [props.customerId]);
 
 	// Fetch the mip
@@ -106,7 +108,6 @@ export default function MIP(props) {
 					}
 				}
 				res.data.questions = oQuestions
-				console.log(res.data.questions);
 
 				// Set the state
 				mipSet(res.data);
@@ -114,27 +115,16 @@ export default function MIP(props) {
 		});
 	}
 
-	// Fetch the customer's DoseSpot patient ID
-	function fetchPatientId() {
+	function orderApprove() {
 
-		// Request the order info from the server
-		Rest.read('monolith', 'customer/dsid', {
-			customerId: props.customerId
-		}).done(res => {
+	}
 
-			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
-				Events.trigger('error', JSON.stringify(res.error));
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
+	function orderDecline() {
 
-			// If we got data
-			if(res.data) {
-				patientSet(res.data);
-			}
-		});
+	}
+
+	function orderTransfer() {
+
 	}
 
 	// If we don't have the MIP yet
@@ -331,15 +321,24 @@ export default function MIP(props) {
 			}
 			<PreviousMeds
 				customerId={props.customerId}
-				onPatientCreate={id => patientSet(id)}
-				patientId={patient}
-				user={props.user}
+				patientId={props.patientId}
 			/>
 			<SOAP
 				order={props.order}
 				ref={refSOAP}
 				treated={q['treatedForED'].answer === 'No' ? false : true}
 			/>
+			<Grid container spacing={1} className="rta">
+				<Grid item xs={4}>
+					<Button color="secondary" onClick={orderDecline} variant="contained">Decline</Button>
+				</Grid>
+				<Grid item xs={4}>
+					<Button onClick={orderTransfer} variant="contained">Transfer</Button>
+				</Grid>
+				<Grid item xs={4}>
+					<GreenButton onClick={orderApprove} variant="contained">Approve</GreenButton>
+				</Grid>
+			</Grid>
 		</Box>
 	);
 }
@@ -347,5 +346,6 @@ export default function MIP(props) {
 // Valid props
 MIP.propTypes = {
 	customerId: PropTypes.string.isRequired,
-	order: PropTypes.object.isRequired
+	order: PropTypes.object.isRequired,
+	patientId: PropTypes.number.isRequired
 }

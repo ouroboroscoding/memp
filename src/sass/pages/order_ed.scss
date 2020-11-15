@@ -2,18 +2,19 @@
 
 	header {
 		flex-basis: 0;
-		flex-shrink: 0;
 		flex-grow: 0;
+		flex-shrink: 0;
 	}
 
 	.details {
 		border-bottom: 1px solid #3f51b5;
 		flex-basis: 0;
-		flex-shrink: 0;
 		flex-grow: 0;
+		flex-shrink: 0;
 		padding: 5px 20px 0 20px;
 
 		.left {
+			padding: 0 5px 0 0;
 
 			.name {
 				font-size: 2.5rem;
@@ -27,6 +28,8 @@
 		}
 
 		.right {
+			overflow: hidden;
+			padding: 0 0 0 5px;
 			text-align: right;
 
 			.status {
@@ -42,8 +45,8 @@
 
 	.tabSection {
 		flex-basis: 0;
-		flex-shrink: 1;
 		flex-grow: 1;
+		flex-shrink: 1;
 		overflow: auto;
 	}
 
@@ -51,6 +54,7 @@
 		padding: 0 20px;
 
 		#soap {
+
 			select, .select {
 				width: 100%;
 			}
@@ -60,6 +64,14 @@
 			}
 		}
 
+		.rta {
+
+			button {
+				width: 100%;
+			}
+		}
+
+
 		.section {
 
 			.no {
@@ -68,6 +80,49 @@
 
 			.mipEdDetails {
 				text-align: center;
+			}
+		}
+	}
+
+	.rxCurrent {
+		height: 100%;
+
+		.create {
+			padding: 0 20px;
+		}
+
+		.matchUp {
+			padding: 0 20px;
+
+			.MuiOutlinedInput-root {
+				width: 100%;
+			}
+
+			.right {
+				text-align: right;
+			}
+		}
+
+		.sso {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+
+			iframe {
+				flex-basis: 0;
+				flex-grow: 1;
+				flex-shrink: 1;
+			}
+
+			.close {
+				flex-basis: 0;
+				flex-grow: 0;
+				flex-shrink: 0;
+				padding: 5px 20px;
+
+				button {
+					width: 100%;
+				}
 			}
 		}
 	}

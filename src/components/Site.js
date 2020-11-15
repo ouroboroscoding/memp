@@ -10,8 +10,11 @@
 
 // NPM modules
 import React, { useState } from 'react';
-import { Switch, Route, useHistory } from 'react-router-dom';
+import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
+
+// Data modules
+import DoseSpot from '../data/dosespot';
 
 // Generic modules
 import Events from '../generic/events';
@@ -88,10 +91,17 @@ export default function Site(props) {
 
 	// Hooks
 	let history = useHistory();
+	let location = useLocation();
 
 	// User hooks
-	useSignedIn(user => userSet(user));
-	useSignedOut(() => userSet(false));
+	useSignedIn(user => {
+		userSet(user)
+		DoseSpot.init(user.dsClinicianId);
+	});
+	useSignedOut(() => {
+		userSet(false)
+		DoseSpot.init(0);
+	});
 
 	// Resize hooks
 	useResize(() => mobileSet(document.documentElement.clientWidth < 600 ? true : false));
@@ -143,6 +153,7 @@ export default function Site(props) {
 							path="/ed/:customerId/:orderId"
 							children={
 								<ED
+									key={location.pathname}
 									mobile={mobile}
 									user={user}
 								/>

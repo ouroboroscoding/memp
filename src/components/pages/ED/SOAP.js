@@ -132,5 +132,4 @@ export default class SOAP extends React.Component {
 // Valid props
 SOAP.propTypes = {
 	order: PropTypes.object.isRequired
-
 }
