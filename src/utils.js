@@ -119,7 +119,7 @@ export default {
 		return (user.permissions[name].rights & oRights[type]) ? true : false;
 	},
 
-	niceDate: function(d) {
+	niceDate: function(d, text='long') {
 
 		// Convert if not a date
 		if(typeof d === 'number') {
@@ -132,8 +132,8 @@ export default {
 		// Return locale date
 		return d.toLocaleDateString('en-US', {
 			day: 'numeric',
-			month: 'long',
-			weekday: 'long',
+			month: text,
+			weekday: text,
 			year: 'numeric'
 		});
 	},

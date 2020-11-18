@@ -74,6 +74,10 @@ export default function ED(props) {
 		if(props.user) {
 			fetchOrder();
 			fetchPatientId();
+		} else {
+			orderSet(null);
+			patientSet(null);
+
 		}
 	// eslint-disable-next-line
 	}, [props.user, customerId, orderId]);
@@ -184,6 +188,7 @@ export default function ED(props) {
 				{Child &&
 					<Child
 						customerId={customerId}
+						mobile={props.mobile}
 						order={order}
 						patientId={patientId}
 					/>

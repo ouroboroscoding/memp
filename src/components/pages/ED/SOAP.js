@@ -89,15 +89,15 @@ export default class SOAP extends React.Component {
 				<Grid container spacing={1}>
 					<Grid item xs={12} md={6} lg={3}>
 						<Typography><strong>Subjective</strong></Typography>
-						<textarea defaultValue={sSubjective} ref={this.subjective} rows={4} />
+						<textarea defaultValue={sSubjective} ref={this.subjective} rows={7} />
 					</Grid>
 					<Grid item xs={12} md={6} lg={3}>
 						<Typography><strong>Objective</strong></Typography>
-						<textarea defaultValue={sObjective} ref={this.objective} rows={4} />
+						<textarea defaultValue={sObjective} ref={this.objective} rows={7} />
 					</Grid>
 					<Grid item xs={12} md={6} lg={3}>
 						<Typography><strong>Assessment</strong></Typography>
-						<textarea defaultValue={sAssessment} ref={this.assessment} rows={4} />
+						<textarea defaultValue={sAssessment} ref={this.assessment} rows={7} />
 					</Grid>
 					<Grid item xs={12} md={6} lg={3}>
 						<Typography><strong>Plan</strong></Typography>

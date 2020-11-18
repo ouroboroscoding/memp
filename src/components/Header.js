@@ -10,7 +10,7 @@
 
 // NPM modules
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // Material UI
 import Avatar from '@material-ui/core/Avatar';
@@ -54,9 +54,6 @@ import Utils from '../utils';
 // Customer Item component
 function CustomerItem(props) {
 
-	// Hooks
-	let history = useHistory();
-
 	// Click event
 	function click(event) {
 		props.onClick(props);
@@ -71,17 +68,10 @@ function CustomerItem(props) {
 			event.preventDefault();
 		}
 
-		// If we're currently selected, change the page
-		let sPath = null;
-		if(props.selected) {
-			sPath = '/queue/' + props.type;
-			history.push(sPath);
-		}
-
 		// Send the request to the server
 		claimed.remove(props.customerId, 'rejected').then(() => {
 			// Trigger the claimed being removed
-			Events.trigger('claimedRemove', props, sPath);
+			Events.trigger('claimedRemove', props.customerId, props.selected);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
 		});
@@ -230,10 +220,10 @@ export default class Header extends React.Component {
 		});
 	}
 
-	claimedRemove(order, switch_path) {
+	claimedRemove(customerId, switch_path) {
 
 		// Find the index of the remove customer
-		let iClaimed = Tools.afindi(this.state.claimed, 'customerId', order.customerId);
+		let iClaimed = Tools.afindi(this.state.claimed, 'customerId', customerId);
 
 		// If we found one
 		if(iClaimed > -1) {
@@ -242,29 +232,27 @@ export default class Header extends React.Component {
 			let lClaimed = Tools.clone(this.state.claimed);
 
 			// Remove the element
-			lClaimed.splice(iClaimed, 1);
+			let oClaim = lClaimed.splice(iClaimed, 1)[0];
 
 			// Create new instance of state
 			let oState = {claimed: lClaimed}
 
 			// If the path has switch
 			if(switch_path) {
-				oState.path = switch_path;
+				oState.path = '/queue/' + oClaim.type;
+				this.props.history.push(oState.path);
 			}
 
 			// If it's in the new messages
-			if(order.customerId.toString() in this.state.newMsgs) {
+			if(customerId.toString() in this.state.newMsgs) {
 				let dNewMsgs = Tools.clone(this.state.newMsgs);
-				delete dNewMsgs[order.customerId];
+				delete dNewMsgs[customerId];
 				localStorage.setItem('newMsgs', JSON.stringify(dNewMsgs))
 				oState.newMsgs = dNewMsgs;
 			}
 
 			// Set the new state
 			this.setState(oState);
-
-			// Trigger the event that a customer was queue
-			Events.trigger('Queue', order.customerId);
 		}
 	}
 
