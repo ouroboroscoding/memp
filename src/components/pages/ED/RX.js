@@ -109,7 +109,11 @@ export default function RX(props) {
 			ssoFetch(res);
 			Events.trigger('patientCreate', res);
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			if(error.code === 1602) {
+				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
+			} else {
+				Events.trigger('error', JSON.stringify(error));
+			}
 		});
 	}
 
@@ -207,7 +211,11 @@ export default function RX(props) {
 			prescriptionsSet(lRX);
 
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			if(error.code === 1602) {
+				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
+			} else {
+				Events.trigger('error', JSON.stringify(error));
+			}
 		});
 	}
 
@@ -250,8 +258,11 @@ export default function RX(props) {
 		DoseSpot.sso(patient_id).then(res => {
 			ssoSet(res);
 		}, error => {
-			console.error('error:', error)
-			Events.trigger('error', JSON.stringify(error));
+			if(error.code === 1602) {
+				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
+			} else {
+				Events.trigger('error', JSON.stringify(error));
+			}
 		});
 	}
 

@@ -54,7 +54,11 @@ export default function PreviousMeds(props) {
 		DoseSpot.medications(props.patientId).then(res => {
 			medsSet(res);
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			if(error.code === 1602) {
+				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
+			} else {
+				Events.trigger('error', JSON.stringify(error));
+			}
 		});
 	}
 
@@ -63,7 +67,11 @@ export default function PreviousMeds(props) {
 		DoseSpot.create(props.customerId).then(res => {
 			Events.trigger('patientCreate', res);
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			if(error.code === 1602) {
+				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
+			} else {
+				Events.trigger('error', JSON.stringify(error));
+			}
 		});
 	}
 
