@@ -11,7 +11,7 @@
 
 // Material UI
 import Button from '@material-ui/core/Button';
-import { green } from '@material-ui/core/colors';
+import { green, blueGrey } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
 
 export const GreenButton = withStyles((theme) => ({
@@ -20,6 +20,16 @@ export const GreenButton = withStyles((theme) => ({
 		backgroundColor: green[500],
 		'&:hover': {
 			backgroundColor: green[700],
+		}
+	}
+}))(Button);
+
+export const GreyButton = withStyles((theme) => ({
+	root: {
+		color: 'white',
+		backgroundColor: blueGrey[500],
+		'&:hover': {
+			backgroundColor: blueGrey[700],
 		}
 	}
 }))(Button);

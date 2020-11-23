@@ -359,14 +359,14 @@ export default class Header extends React.Component {
 						</ListItem>
 					</Link>
 				}
-				{this.state.user.hormoneFlag === 'Y' &&
+				{/*this.state.user.hormoneFlag === 'Y' &&
 					<Link to="/queue/hrt" onClick={this.menuClick}>
 						<ListItem button selected={this.state.path === "/queue/hrt"}>
 							<ListItemIcon><AllInboxIcon /></ListItemIcon>
 							<ListItemText primary="HRT Queue" />
 						</ListItem>
 					</Link>
-				}
+				*/}
 				{this.state.claimed.length > 0 &&
 					<React.Fragment>
 						<Divider />

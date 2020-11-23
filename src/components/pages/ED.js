@@ -35,6 +35,7 @@ import DoseSpot from '../../data/dosespot';
 // Generic modules
 import Events from '../../generic/events';
 import Rest from '../../generic/rest';
+import { clone } from '../../generic/tools';
 
 // Local modules
 import Utils from '../../utils';
@@ -72,18 +73,17 @@ export default function ED(props) {
 	// Order effects
 	useEffect(() => {
 		if(props.user) {
-			fetchOrder();
-			fetchPatientId();
+			orderFetch();
+			patientFetch();
 		} else {
 			orderSet(null);
-			patientSet(null);
-
+			patientSet(0);
 		}
 	// eslint-disable-next-line
 	}, [props.user, customerId, orderId]);
 
 	// Fetch the encounter type
-	function fetchEncounter(state) {
+	function encounterFetch(state) {
 
 		// Request the encounter type from the server
 		Rest.read('monolith', 'encounter', {
@@ -105,8 +105,15 @@ export default function ED(props) {
 		})
 	}
 
+	// If the order was approved in MIP tab
+	function orderApprove() {
+		let oOrder = clone(order);
+		oOrder.status = 'COMPLETE';
+		orderSet(oOrder);
+	}
+
 	// Fetch the order
-	function fetchOrder() {
+	function orderFetch() {
 
 		// Request the order info from the server
 		Rest.read('konnektive', 'order', {
@@ -126,13 +133,13 @@ export default function ED(props) {
 				orderSet(res.data);
 
 				// Get the encounter type
-				fetchEncounter(res.data.shipping.state);
+				encounterFetch(res.data.shipping.state);
 			}
 		});
 	}
 
 	// Fetch the customer's DoseSpot patient ID
-	function fetchPatientId() {
+	function patientFetch() {
 		DoseSpot.fetch(customerId).then(res => {
 			patientSet(res);
 		}, error => {
@@ -189,8 +196,10 @@ export default function ED(props) {
 					<Child
 						customerId={customerId}
 						mobile={props.mobile}
+						onApprove={orderApprove}
 						order={order}
 						patientId={patientId}
+						user={props.user}
 					/>
 				}
 			</Box>

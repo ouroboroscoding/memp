@@ -50,8 +50,19 @@
 		overflow: auto;
 	}
 
-	.mipCurrent {
+	.mips {
 		padding: 0 20px;
+
+		.mip {
+			.section.header {
+				color: #ffffff;
+				background-color: #6b90d4;
+
+				.title {
+					margin: 0;
+				}
+			}
+		}
 
 		#soap {
 

@@ -54,7 +54,7 @@ export default function Signin(props) {
 	let userRef = useRef();
 	let passRef = useRef();
 
-	function fetchUser() {
+	function fetchUser(agent) {
 
 		// Fetch the account data
 		Rest.read('monolith', 'user', {}).done(res => {
@@ -76,6 +76,7 @@ export default function Signin(props) {
 				Events.trigger('success', 'Welcome!');
 
 				// Trigger the signedIn event
+				res.data.agent = agent;
 				Events.trigger('signedIn', res.data);
 			}
 		});
@@ -130,7 +131,7 @@ export default function Signin(props) {
 				Rest.session(res.data.session);
 
 				// Fetch the user info
-				fetchUser();
+				fetchUser(res.data.user.agent);
 			}
 		});
 	}
