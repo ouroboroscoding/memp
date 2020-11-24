@@ -10,6 +10,7 @@
 
 // Generic modules
 import Events from './generic/events';
+import Rest from './generic/rest';
 
 // Regex
 const rePhone = /^1?(\d{3})(\d{3})(\d{4})$/
@@ -163,8 +164,8 @@ export default {
 			// No Session
 			case 102:
 
-				// Trigger signout
-				Events.trigger("signout");
+				// Clear session
+				Rest.session(null);
 
 				// Nothing else to do
 				return true;
