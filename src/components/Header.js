@@ -27,14 +27,14 @@ import Typography from '@material-ui/core/Typography';
 
 // Material UI Icons
 import AllInboxIcon from '@material-ui/icons/AllInbox';
-import CloseIcon from '@material-ui/icons/Close';
+//import CloseIcon from '@material-ui/icons/Close';
 import CommentIcon from '@material-ui/icons/Comment';
 import EventIcon from '@material-ui/icons/Event';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import ForumIcon from '@material-ui/icons/Forum';
 import MenuIcon from '@material-ui/icons/Menu';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
+import PersonIcon from '@material-ui/icons/Person';
 
 // Dialog components
 import Account from './dialogs/Account';
@@ -60,7 +60,7 @@ function CustomerItem(props) {
 	}
 
 	// X click
-	function remove(event) {
+	/*function remove(event) {
 
 		// Stop all propogation of the event
 		if(event) {
@@ -75,7 +75,7 @@ function CustomerItem(props) {
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
 		});
-	}
+	}*/
 
 	// Render
 	return (
@@ -85,7 +85,7 @@ function CustomerItem(props) {
 					<ListItemAvatar>
 						{props.newMsgs ?
 							<Avatar style={{backgroundColor: 'red'}}><NewReleasesIcon /></Avatar> :
-							<Avatar><ForumIcon /></Avatar>
+							<Avatar><PersonIcon /></Avatar>
 						}
 					</ListItemAvatar>
 					<ListItemText
@@ -95,7 +95,7 @@ function CustomerItem(props) {
 								<span>
 									ID: {props.customerId}<br/>
 								</span>
-								<span className="customerActions">
+								{/*<span className="customerActions">
 									<span className="tooltip">
 										<Tooltip title="Remove Claim">
 											<IconButton className="close" onClick={remove}>
@@ -103,7 +103,7 @@ function CustomerItem(props) {
 											</IconButton>
 										</Tooltip>
 									</span>
-								</span>
+								</span>*/}
 							</React.Fragment>
 						}
 					/>
