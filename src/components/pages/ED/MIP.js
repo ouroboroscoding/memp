@@ -107,7 +107,7 @@ function ATwo(props) {
 		<React.Fragment>
 			<Box className="section">
 				<Grid container spacing={1}>
-					<Grid item xs={6} md={3}><Typography><strong>Gender: </strong>{q('gender') || ''}</Typography></Grid>
+					<Grid item xs={6} md={3}><Typography><strong>Gender: </strong>{q('gender')}</Typography></Grid>
 					<Grid item xs={6} md={3}><Typography><strong>Age: </strong>{Utils.age(new Date(q('birthdate') + 'T00:00:00'))}</Typography></Grid>
 					<Grid item xs={6} md={3}><Typography><strong>Height: </strong>{q('height').replace(' ft', "'").replace(' in', '"')}</Typography></Grid>
 					<Grid item xs={6} md={3}><Typography><strong>Weight: </strong>{q('weight')} lbs</Typography></Grid>
@@ -128,18 +128,18 @@ function ATwo(props) {
 									<Grid item xs={12} sm={8} md={9} lg={10}>
 										<Typography>{q[v + 'MedsDose'].answer}</Typography>
 										<Typography>
-											{q[v + 'SideEffects'].answer === 'No' ?
+											{q(v + 'SideEffects') === 'No' ?
 												'No side effects'
 											:
-												q[v + 'SideEffectsDescription'].answer.split('|').join(', ') +
-												(q[v + 'SideEffectsDescription_other'].answer !== '' ?
-													(' | ' + q[v + 'SideEffectsDescription_other'].answer) :
+												q(v + 'SideEffectsDescription').split('|').join(', ') +
+												(q(v + 'SideEffectsDescription_other') !== '' ?
+													(' | ' + q(v + 'SideEffectsDescription_other')) :
 													''
 												)
 											}
 										</Typography>
-										{q[v + 'StopTakingIt'].answer === 'Yes' &&
-											<Typography>No longer taking | {q[v + 'WhyStopTaking'].answer}</Typography>
+										{q(v + 'StopTakingIt') === 'Yes' &&
+											<Typography>No longer taking | {q(v + 'WhyStopTaking')}</Typography>
 										}
 									</Grid>
 								</React.Fragment>
