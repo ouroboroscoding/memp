@@ -95,7 +95,7 @@ function ATwo(props) {
 	function q(name) {
 		if(!(name in props.mip.questions) || !props.mip.questions[name].answer) {
 			console.log('MIP questions missing: ', name);
-			return '';
+			return 'NO ANSWER!';
 		}
 
 		// Return the question's answer
@@ -126,7 +126,7 @@ function ATwo(props) {
 								<React.Fragment key={v}>
 									<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>{m}</strong></Typography></Grid>
 									<Grid item xs={12} sm={8} md={9} lg={10}>
-										<Typography>{q[v + 'MedsDose'].answer}</Typography>
+										<Typography>{q(v + 'MedsDose')}</Typography>
 										<Typography>
 											{q(v + 'SideEffects') === 'No' ?
 												'No side effects'
@@ -292,7 +292,7 @@ function CED(props) {
 	function q(name) {
 		if(!(name in props.mip.questions) || !props.mip.questions[name].answer) {
 			console.log('MIP questions missing: ', name);
-			return '';
+			return 'NO ANSWER!';
 		}
 
 		// Return the question's answer
