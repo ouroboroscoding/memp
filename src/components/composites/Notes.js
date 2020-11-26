@@ -128,10 +128,10 @@ export default function Notes(props) {
 		// eslint-disable-next-line
 	}, [props.customerId]);
 
-	// Effect on new notes
+	// Effect on type change
 	useEffect(() => {
-		scrollToBottom();
-	}, [notes])
+		setTimeout(() => scrollToBottom('auto'), 100);
+	}, [props.type])
 
 	// Effect on type change
 	useEffect(() => {
@@ -192,6 +192,11 @@ export default function Notes(props) {
 
 	// Return only notes or sms
 	function filterRecords(type) {
+
+		// If it's neither a note nor an sms
+		if(['notes', 'sms'].includes(type) === false) {
+			return [];
+		}
 
 		// Init the return
 		let lRet = [];
@@ -299,12 +304,15 @@ export default function Notes(props) {
 
 				// Set the new state
 				notesSet(lNotes);
+
+				// Scroll down
+				setTimeout(() => scrollToBottom('smooth'), 100);
 			}
 		});
 	}
 
-	function scrollToBottom() {
-		refScroll.current.scrollIntoView({ behavior: 'smooth' });
+	function scrollToBottom(behaviour) {
+		refScroll.current.scrollIntoView({ behavior: behaviour });
 	}
 
 	// Track any text enterered into an input box
@@ -367,13 +375,16 @@ export default function Notes(props) {
 	}
 
 	// Figure out the class, filter, etc.
-	let Child, iMax, sButton, sFilter;
+	let Child = null;
+	let iMax = 0;
+	let sButton = '';
+	let sFilter = '';
 	if(props.type === 'notes') {
 		Child = Note;
 		iMax = -1;
 		sButton = 'Add Note';
 		sFilter = 'notes';
-	} else {
+	} else if(props.type === 'sms') {
 		Child = Message;
 		iMax = 1600;
 		sButton = 'Send';

@@ -43,6 +43,13 @@ import Utils from '../../utils';
 // Data
 import Encounters from '../../data/encounters';
 
+// Note types
+const _NOTES = {
+	'0': '',
+	'1': 'notes',
+	'2': 'sms'
+}
+
 /**
  * ED
  *
@@ -208,7 +215,7 @@ export default function ED(props) {
 					customerId={customerId}
 					mobile={props.mobile}
 					order={order}
-					type={tab === 1 ? 'notes' : 'sms'}
+					type={_NOTES[tab]}
 				/>
 			</Box>
 		</Box>

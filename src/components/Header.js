@@ -81,7 +81,7 @@ function CustomerItem(props) {
 	return (
 		<React.Fragment>
 			<Link to={Utils.orderPath(props)} onClick={click}>
-				<ListItem button selected={props.selected}>
+				<ListItem button selected={props.selected} className={props.transferredBy ? 'transferred' : ''}>
 					<ListItemAvatar>
 						{props.newMsgs ?
 							<Avatar style={{backgroundColor: 'red'}}><NewReleasesIcon /></Avatar> :
@@ -499,6 +499,8 @@ export default class Header extends React.Component {
 
 	// WebSocket message
 	wsMessage(data) {
+
+		console.log('ws:', data);
 
 		// Move forward based on the type
 		switch(data.type) {

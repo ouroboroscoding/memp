@@ -466,7 +466,7 @@ export default function MIP(props) {
 	// Remove the claim
 	function orderTransfer() {
 		Claimed.remove(props.customerId, 'transfer').then(res => {
-			Events.trigger('claimedRemove', props.customerId, true);
+			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
 		});
