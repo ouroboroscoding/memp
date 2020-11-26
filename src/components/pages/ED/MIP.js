@@ -423,7 +423,7 @@ export default function MIP(props) {
 
 			// No MIPs
 			else {
-				mipsSet([])
+				mipsSet(0);
 			}
 		});
 	}
@@ -499,57 +499,61 @@ export default function MIP(props) {
 		return <p style={{padding: '10px'}}>Loading...</p>
 	}
 
-	// If we got no MIP
-	if(mips.length === 0) {
-		return <p style={{padding: '10px'}}>No MIPs found for customer!</p>
-	}
-
-	// Check for oxytocin
+	// Check for oxytocin and treated for ED
 	let bOxytocin = false;
-	for(let o of props.order.items) {
-		if(o.description.toLowerCase().search('oxytocin') > -1) {
-			bOxytocin = true;
-			break;
-		}
-	}
-
-	// Check if they've ever been treated for ED
 	let bTreatedForEd = false;
-	for(let o of mips) {
-		if(o.form === 'MIP-CED' ||
-			(o.form === 'MIP-A2' && o.questions['treatedForED'].answer === 'Yes')) {
-			bTreatedForEd = true;
-			break;
+
+	if(mips !== 0) {
+		for(let o of props.order.items) {
+			if(o.description.toLowerCase().search('oxytocin') > -1) {
+				bOxytocin = true;
+				break;
+			}
+		}
+		for(let o of mips) {
+			if(o.form === 'MIP-CED' ||
+				(o.form === 'MIP-A2' && o.questions['treatedForED'].answer === 'Yes')) {
+				bTreatedForEd = true;
+				break;
+			}
 		}
 	}
 
 	// Render
 	return (
 		<Box className="mips">
-			{mips.map(o => {
-				let Child = null;
-				switch(o.form) {
-					case 'MIP-A1': Child = AOne; break;
-					case 'MIP-A2': Child = ATwo; break;
-					case 'MIP-CED': Child = CED; break;
-					default: throw new Error('Invalid MIP form type');
-				}
-				return (
-					<Box className="mip">
-						<Box className="section header">
-							<Typography className="title">
-								{o.form} - {Utils.niceDate(o.date, props.mobile ? 'short' : 'long')}
-								{!o.display &&
-									<span> - <GreyButton variant="outlined" onClick={() => mipDisplay(o.id)}>Display</GreyButton></span>
-								}
-							</Typography>
-						</Box>
-						{o.display &&
-							<Child key={o.id} mip={o} oxytocin={bOxytocin} />
-						}
+			{mips === 0 ?
+				<Box className="mip">
+					<Box className="section header">
+						<Typography className="title">No MIP(s) found for customer</Typography>
 					</Box>
-				);
-			})}
+				</Box>
+			:
+				mips.map(o => {
+					let Child = null;
+					switch(o.form) {
+						case 'MIP-A1': Child = AOne; break;
+						case 'MIP-A2': Child = ATwo; break;
+						case 'MIP-CED': Child = CED; break;
+						default: throw new Error('Invalid MIP form type');
+					}
+					return (
+						<Box className="mip">
+							<Box className="section header">
+								<Typography className="title">
+									{o.form} - {Utils.niceDate(o.date, props.mobile ? 'short' : 'long')}
+									{!o.display &&
+										<span> - <GreyButton variant="outlined" onClick={() => mipDisplay(o.id)}>Display</GreyButton></span>
+									}
+								</Typography>
+							</Box>
+							{o.display &&
+								<Child key={o.id} mip={o} oxytocin={bOxytocin} />
+							}
+						</Box>
+					);
+				})
+			}
 			<PreviousMeds
 				customerId={props.customerId}
 				patientId={props.patientId}
