@@ -394,7 +394,7 @@ export default function MIP(props) {
 			}
 
 			// If there's data
-			if('data' in res) {
+			if(res.data) {
 
 				// Go through each landing
 				for(let i in res.data) {
@@ -419,6 +419,11 @@ export default function MIP(props) {
 
 				// Set the state
 				mipsSet(res.data);
+			}
+
+			// No MIPs
+			else {
+				mipsSet([])
 			}
 		});
 	}
