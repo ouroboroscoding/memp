@@ -179,9 +179,10 @@ function ATwo(props) {
 					<Grid container spacing={1}>
 						{q('conditionsTreated').split('|').map(s => {
 							let v = _CONDITIONS[s];
+							let m = s === 'Other' ? q('conditionsTreated_other') : s;
 							return (
 								<React.Fragment key={v}>
-									<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>{s}</strong></Typography></Grid>
+									<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>{m}</strong></Typography></Grid>
 									<Grid item xs={12} sm={8} md={9} lg={10}>
 										<Typography>
 											{q(v + 'Medication').split('|').map(s =>
