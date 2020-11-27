@@ -1,0 +1,24 @@
+#templates {
+
+	header {
+		flex-grow: 0;
+		flex-shrink: 0;
+	}
+
+	.templates, .legend {
+		flex-basis: 0;
+		overflow: auto;
+		padding: 10px;
+		width: 100%;
+	}
+
+	.templates {
+		flex-grow: 2;
+		flex-shrink: 2;
+	}
+
+	.legend {
+		flex-grow: 1;
+		flex-shrink: 1;
+	}
+}

@@ -1,0 +1,192 @@
+#orderEd {
+
+	header {
+		flex-basis: 0;
+		flex-grow: 0;
+		flex-shrink: 0;
+	}
+
+	.details {
+		border-bottom: 1px solid #3f51b5;
+		flex-basis: 0;
+		flex-grow: 0;
+		flex-shrink: 0;
+		padding: 5px 20px 0 20px;
+
+		.left {
+			padding: 0 5px 0 0;
+
+			.name {
+				font-size: 2.5rem;
+				font-weight: bold;
+			}
+
+			.medication {
+				font-size: 1.5rem;
+				color: #0a5394;
+			}
+		}
+
+		.right {
+			overflow: hidden;
+			padding: 0 0 0 5px;
+			text-align: right;
+
+			.status {
+				font-size: 2.5rem;
+			}
+
+			.encounter {
+				font-size: 1.5rem;
+				color: #0a5394;
+			}
+		}
+	}
+
+	.tabSection {
+		flex-basis: 0;
+		flex-grow: 1;
+		flex-shrink: 1;
+		overflow: auto;
+	}
+
+	.mips {
+		padding: 0 20px;
+
+		.mip {
+			.section.header {
+				color: #ffffff;
+				background-color: #6b90d4;
+
+				.title {
+					margin: 0;
+				}
+			}
+		}
+
+		#soap {
+
+			select, .select {
+				height: 45px;
+				padding-bottom: 0;
+				padding-top: 0;
+				width: 100%;
+			}
+
+			textarea {
+				width: 98%;
+			}
+		}
+
+		.rta {
+
+			button {
+				width: 100%;
+			}
+		}
+
+
+		.section {
+
+			.no {
+				color: red;
+			}
+
+			.mipEdDetails {
+				text-align: center;
+			}
+		}
+	}
+
+	.rxCurrent {
+		height: 100%;
+
+		.create {
+			padding: 0 20px;
+		}
+
+		.matchUp {
+			padding: 0 20px;
+
+			.MuiOutlinedInput-root {
+				width: 100%;
+			}
+
+			.right {
+				text-align: right;
+			}
+		}
+
+		.sso {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+
+			iframe {
+				flex-basis: 0;
+				flex-grow: 1;
+				flex-shrink: 1;
+			}
+
+			.close {
+				flex-basis: 0;
+				flex-grow: 0;
+				flex-shrink: 0;
+				padding: 5px 20px;
+
+				button {
+					width: 100%;
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 600px) {
+
+	#orderEd {
+
+		.details {
+			padding: 5px 10px 0 10px;
+
+			.left {
+
+				.name {
+					font-size: 1.75rem;
+				}
+
+				.medication {
+					font-size: 1.0rem;
+				}
+			}
+
+			.right {
+				text-align: right;
+
+				.status {
+					font-size: 1.75rem;
+				}
+
+				.encounter {
+					font-size: 1.0rem;
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 960px) {
+
+	#orderEd {
+
+		.mipCurrent {
+
+			.section {
+
+				.mipEdDetails {
+					text-align: left;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,155 @@
+/* html5doctor reset */
+@import '3rd/reset';
+
+/* variables */
+$menu-width: 250px;
+
+/* components */
+@import 'dialogs';
+@import 'format';
+@import 'header';
+@import 'loader';
+
+/* composites */
+@import 'composites/customer_summary';
+@import 'composites/notes';
+@import 'composites/previous_meds';
+
+/* pages */
+@import 'pages/appointments';
+@import 'pages/order_ed';
+@import 'pages/queue';
+@import 'pages/templates';
+@import 'pages/version';
+
+html, body, #root, #site, #content {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+		'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+		'Helvetica Neue', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+a, a:active, a:hover, a:link, a:visited {
+	color: inherit;
+	text-decoration: none;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+		monospace;
+}
+
+p {
+	margin-bottom: 10px;
+}
+
+span.title {
+	display: inline-block;
+	font-weight: bold;
+	font-size: 110%;
+	margin: 10px 10px 10px 0;
+	vertical-align: middle;
+}
+
+div.title {
+	display: block;
+	font-size: 2rem;
+	font-weight: 400;
+	margin: 0 0 10px 0;
+}
+
+div.subtitle {
+	display: block;
+	font-size: 1.5rem;
+	font-weight: 400;
+	margin: 0 0 8px 0;
+}
+
+td {
+	vertical-align: top !important;
+}
+
+// Site
+#site {
+	display: flex;
+	flex-direction: column;
+}
+
+#content {
+	flex-basis: 0;
+	flex-grow: 1;
+	flex-shrink: 1;
+	margin-left: $menu-width;
+	width: calc(100% - #{$menu-width});
+}
+
+@media (max-width: 600px) {
+
+	#content {
+		width: 100%;
+		margin-left: 0;
+	}
+}
+
+.page {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+}
+
+.section {
+	border: 2px solid black;
+	background-color: #e2e2e2;
+	margin: 10px 0;
+	padding: 10px;
+
+	.title {
+		font-size: 1.25rem;
+		font-weight: bold;
+		margin-bottom: 5px;
+	}
+
+	.MuiInputBase-root {
+		background-color: #ffffff;
+	}
+}
+
+.MuiPaper-root.padded {
+	margin-bottom: 20px;
+	padding: 10px;
+}
+
+.MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3,
+.MuiTypography-h4, .MuiTypography-h5, .MuiTypography-h6 {
+	margin-bottom: 5px !important;
+}
+
+.MuiBox-root.actions {
+	text-align: right;
+
+	button {
+		margin-left: 10px;
+	}
+}
+
+.pageHeader {
+	display: flex;
+
+	.title {
+		flex-grow: 1
+	}
+
+	.icon {
+		font-size: 3.5rem;
+	}
+}
+
+.right20 {
+	margin: 10px 20px 10px 0;
+}
