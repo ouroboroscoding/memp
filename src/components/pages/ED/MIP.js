@@ -186,8 +186,12 @@ function ATwo(props) {
 									<Grid item xs={12} sm={8} md={9} lg={10}>
 										<Typography>
 											{q(v + 'Medication').split('|').map(s =>
-												s === 'Other' ? q(v + 'Medication_other') : s
-											)}
+												s === 'Other' ? 
+													(v === 'Other' ?
+														'' :
+														q(v + 'Medication_other')
+													) : s
+											).join(', ')}
 										</Typography>
 										{v === 'diabetes' && q('diabetesLevel') !== '' &&
 											<Typography>{q('diabetesLevel')}</Typography>

@@ -55,7 +55,9 @@ export default function PreviousMeds(props) {
 			medsSet(res);
 		}, error => {
 			if(error.code === 1602) {
-				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
+				let sMsg = 'DoseSpot error: "' + error.msg + '"'
+				Events.trigger('error', sMsg)
+				medsSet(sMsg);
 			} else {
 				Events.trigger('error', JSON.stringify(error));
 			}
@@ -68,47 +70,63 @@ export default function PreviousMeds(props) {
 			Events.trigger('patientCreate', res);
 		}, error => {
 			if(error.code === 1602) {
-				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
+				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"');
 			} else {
 				Events.trigger('error', JSON.stringify(error));
 			}
 		});
 	}
 
+	// Inner HTML
+	let inner = null;
+	
+	// If we have no patient ID
+	if(!props.patientId) {
+		inner = [
+			<Typography>No DoseSpot patient account found. Create one and fetch previous medication?</Typography>,
+			<Button color="primary" onClick={patientCreate} variant="contained">Create</Button>
+		]
+	}
+
+	// Else, if we have a patient
+	else {
+
+		// Was there an error?
+		if(typeof meds === 'string') {
+			inner = <Typography>{meds}</Typography>
+		}
+
+		// Else, we have medications
+		else {
+
+			// If we got a result, but it's empty
+			if(meds.length === 0) {
+				inner = <Typography>None found</Typography>
+			} else {
+				inner = (
+					<Grid container spacing={1}>
+						{meds.map((o,i) =>
+							<React.Fragment key={i}>
+								<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>{o.DisplayName}</strong></Typography></Grid>
+								<Grid item xs={12} sm={8} md={9} lg={10}>
+									<Typography>{o.LastFillDate.split('T')[0]} - {o.DaysSupply}</Typography>
+									{o.PharmacyNotes &&
+										<Typography>{o.PharmacyNotes}</Typography>
+									}
+								</Grid>
+							</React.Fragment>
+						)}
+					</Grid>
+				);
+			}
+		}
+	}
+
 	// Render
 	return (
 		<Box id="previousMeds" className="section">
 			<Typography className="title">Previous Medications</Typography>
-			{props.patientId ?
-				<React.Fragment>
-					{meds.length === 0 ?
-						<Typography>None found</Typography>
-					:
-						<Grid container spacing={1}>
-							{meds.map((o,i) =>
-								<React.Fragment key={i}>
-									<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>{o.DisplayName}</strong></Typography></Grid>
-									<Grid item xs={12} sm={8} md={9} lg={10}>
-										<Typography>{o.LastFillDate.split('T')[0]} - {o.DaysSupply}</Typography>
-										{o.PharmacyNotes &&
-											<Typography>{o.PharmacyNotes}</Typography>
-										}
-									</Grid>
-								</React.Fragment>
-							)}
-						</Grid>
-					}
-				</React.Fragment>
-			:
-				<React.Fragment>
-					<Typography>No DoseSpot patient account found. Create one and fetch previous medication?</Typography>
-					<Button
-						color="primary"
-						onClick={patientCreate}
-						variant="contained"
-					>Create</Button>
-				</React.Fragment>
-			}
+			{inner}
 		</Box>
 	);
 }
