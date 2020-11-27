@@ -18,8 +18,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 const VERSION = [
-	['0.1.0', 'October 14th, 2020', [
-		'Development.'
+	['1.0.0', 'November 26th, 2020', [
+		'First release'
 	]]
 ]
 
