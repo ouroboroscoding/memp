@@ -442,5 +442,5 @@ export default function Notes(props) {
 // Valid props
 Notes.propTypes = {
 	customerId: PropTypes.string.isRequired,
-	type: PropTypes.oneOf(['notes', 'sms']).isRequired
+	type: PropTypes.oneOf(['', 'notes', 'sms']).isRequired
 }
