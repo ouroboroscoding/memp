@@ -16,6 +16,7 @@ import Cookies from './cookies.js';
 
 // Rest services domain
 let _domain = '';
+let _cookie = '';
 
 // Default error function
 let _error = function() {}
@@ -39,7 +40,7 @@ function clear() {
 	delete localStorage['_session'];
 
 	// Delete the cookie
-	Cookies.remove('_session', window.location.hostname, '/');
+	Cookies.remove('_session', _cookie, '/');
 }
 
 /**
@@ -146,7 +147,7 @@ function store(token) {
 	localStorage['_session'] = token
 
 	// Set the session in a cookie
-	Cookies.set('_session', token, 86400, window.location.hostname, '/');
+	Cookies.set('_session', token, 86400, _cookie, '/');
 }
 
 /**
@@ -157,15 +158,17 @@ function store(token) {
  * @name init
  * @access public
  * @param string domain		The domain rest services can be reached through
+ * @param string cookie		The domain to store the cookie on
  * @param function error	Callback for when http errors occur
  * @param function before	Optional callback to run before any request
  * @param function after	Optional callback to run after any request
  * @return void
  */
-function init(domain, error=null, before=null, after=null) {
+function init(domain, cookie, error=null, before=null, after=null) {
 
-	// Store the domain
+	// Store the domains
 	_domain = 'https://' + domain + '/';
+	_cookie = cookie;
 
 	// Do we have a session in storage
 	if('_session' in localStorage && localStorage['_session']) {
