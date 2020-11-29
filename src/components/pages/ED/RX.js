@@ -30,7 +30,7 @@ import DoseSpot from '../../../data/dosespot';
 // Generic modules
 import Events from '../../../generic/events';
 import Rest from '../../../generic/rest';
-import { afindi, dateInc } from '../../../generic/tools';
+import { afindi, clone, dateInc } from '../../../generic/tools';
 
 // Site modules
 import Utils from '../../../utils';
@@ -50,10 +50,11 @@ export default function RX(props) {
 	// State
 	let [matches, matchesSet] = useState({})
 	let [prescriptions, prescriptionsSet] = useState([]);
+	let [selects, selectsSet] = useState([]);
 	let [sso, ssoSet] = useState(false);
 
 	// Refs
-	let refItems = useRef(props.order.items.reduce((r,o) => ({...r, [o.itemId]: React.createRef()}), {}));
+	let refItems = useRef(props.order.items.reduce((r,o) => ({...r, [o.productId]: React.createRef()}), {}));
 
 	// Patient ID effect
 	useEffect(() => {
@@ -68,16 +69,27 @@ export default function RX(props) {
 	// eslint-disable-next-line
 	}, [props.patientId]);
 
+	// Matches or Prescriptions effect
+	useEffect(() => {
+		selectsSet(
+			processSelects(
+				matches,
+				prescriptions
+			)
+		);
+	// eslint-disable-next-line
+	}, [matches, prescriptions]);
+
 	// Component load effect
 	useEffect(() => {
 		matchesFetch();
 	// eslint-disable-next-line
 	}, []);
 
-	// Fetch matches of order items to
+	// Fetch matches of customer products to prescription IDs
 	function matchesFetch() {
-		Rest.read('providers', 'order/to/rx', {
-			order_id: props.order.orderId
+		Rest.read('providers', 'customer/to/rx', {
+			customer_id: props.order.customerId
 		}).done(res => {
 
 			// If there's an error or warning
@@ -94,7 +106,7 @@ export default function RX(props) {
 				// Map the rx IDs to the item IDs
 				let oMatches = {}
 				for(let o of res.data) {
-					oMatches[o.item_id] = o.ds_id;
+					oMatches[o.product_id] = o.ds_id;
 				}
 
 				// Set the new state
@@ -117,21 +129,68 @@ export default function RX(props) {
 		});
 	}
 
+	// Go through each product and match up the select values
+	function processSelects(m, p) {
+
+		// Init the return list
+		let dRet = {}
+
+		// Copy the list of items
+		let lItems = clone(props.order.items);
+
+		// Create a list of prescriptions not used
+		let lRXs = p.map(o => o.PrescriptionId);
+
+		// Go through each existing match
+		for(let iProdId in m) {
+
+			// Does the item exist in the order?
+			let i = afindi(lItems, 'productId', iProdId);
+			if(i > -1) {
+
+				// Store the prescription ID
+				let iRX = m[iProdId];
+
+				// Does it still exist (it might have expired or been
+				//	deactivated)
+				let j = lRXs.indexOf(iRX)
+				if(j > -1) {
+
+					// Store it in the return
+					dRet[iProdId] = iRX;
+
+					// Delete the RX from the list
+					lRXs.splice(j, 1);
+
+					// Delete the product from the items
+					lItems.splice(i, 1);
+				}
+			}
+		}
+
+		// Now go through the remaining items
+		for(let o of lItems) {
+
+			// Do we (not) have enough prescriptions?
+			if(lRXs.length === 0) {
+				dRet[o.productId] = 0;
+				continue;
+			}
+
+			// Grab the first prescription and then remove it from the list
+			dRet[o.productId] = lRXs[0];
+			lRXs.splice(0, 1);
+		}
+
+		// Return the processed list of product IDs to prescription IDs
+		return dRet;
+	}
+
 	// Confirm the rx associated with each item
 	function rxConfirm() {
 
-		// If the number of items matches the set rxs, we're already done here
-		if(props.order.items.length === Object.keys(matches).length) {
-			Claimed.remove(props.customerId, 'approve').then(res => {
-				Events.trigger('claimedRemove', props.customerId, true);
-			}, error => {
-				Events.trigger('error', JSON.stringify(error));
-			});
-			return;
-		}
-
 		// Init the list we will send to the server
-		let lItems = [];
+		let lProducts = [];
 
 		// Keep track of prescriptions already used
 		let lUsed = [];
@@ -139,13 +198,8 @@ export default function RX(props) {
 		// Go through each item and get the value of the select
 		for(let o of props.order.items) {
 
-			// If there's no ref, skip it
-			if(!(o.itemId in refItems.current)) {
-				continue;
-			}
-
 			// Get the rx ID
-			let iDsID = refItems.current[o.itemId].current.value;
+			let iDsID = parseInt(refItems.current[o.productId].current.value, 10);
 
 			// If we already have it
 			if(lUsed.includes(iDsID)) {
@@ -153,17 +207,23 @@ export default function RX(props) {
 				return;
 			}
 
+			// If it's not valid
+			if(iDsID === 0) {
+				Events.trigger('error', 'Must set prescriptions for all items!');
+				return;
+			}
+
 			// Mark it as used
 			lUsed.push(iDsID);
 
 			// Generate and add on the record to be sent
-			lItems.push({item_id: o.itemId, ds_id: iDsID});
+			lProducts.push({product_id: parseInt(o.productId, 10), ds_id: iDsID});
 		}
 
 		// No issues? Send it to the server
-		Rest.create('providers', 'order/to/rx', {
-			order_id: props.order.orderId,
-			items: lItems
+		Rest.update('providers', 'customer/to/rx', {
+			customer_id: props.order.customerId,
+			products: lProducts
 		}).done(res => {
 
 			// If there's an error or warning
@@ -177,9 +237,13 @@ export default function RX(props) {
 			// If we got data
 			if(res.data) {
 
+				// Convert the customer ID to an int
+				let iCustID = parseInt(props.customerId, 10);
+
 				// We can successfully close this claim
-				Claimed.remove(props.customerId, 'approve').then(res => {
-					Events.trigger('claimedRemove', props.customerId, true);
+				Claimed.remove(iCustID, 'approve').then(res => {
+					Events.trigger('claimedRemove', iCustID, true);
+					Events.trigger('success', 'Customer approved!');
 				}, error => {
 					Events.trigger('error', JSON.stringify(error));
 				});
@@ -244,6 +308,13 @@ export default function RX(props) {
 		});
 	}
 
+	// Called when one of the selects (drop downs) changes
+	function selectChange(productId, rxId) {
+		let dSelects = clone(selects);
+		dSelects[productId] = rxId;
+		selectsSet(dSelects);
+	}
+
 	// Close the SSO iframe and fetch prescriptions
 	function ssoClose() {
 		ssoSet(false);
@@ -267,7 +338,9 @@ export default function RX(props) {
 	}
 
 	// Prescription options
-	let lRxOptions = [];
+	let lRxOptions = [
+		<option key={0} value={0}>Select Prescription...</option>
+	];
 	for(let o of prescriptions) {
 		lRxOptions.push(
 			<option key={o.PrescriptionId} value={o.PrescriptionId}>{Utils.niceDate(o.WrittenDate, props.mobile ? 'short' : 'long')} - {o.DisplayName}</option>
@@ -292,37 +365,25 @@ export default function RX(props) {
 						</Box>
 					:
 						<Box className="matchUp">
-							{props.order.items.map((o,i) => {
-
-								// Figure out if we need a select or to just
-								//	display the rx
-								let mItem = null;
-								let iIndex = null;
-								if(o.itemId in matches && (iIndex = afindi(prescriptions, 'PrescriptionId', matches[o.itemId])) > -1) {
-									mItem = Utils.niceDate(prescriptions[iIndex].WrittenDate, props.mobile ? 'short' : 'long') + ' - ' + prescriptions[iIndex].DisplayName;
-								} else {
-									mItem = (
-										<Select
-											className='select'
-											defaultValue={prescriptions[i] ? prescriptions[i].PrescriptionId : '0'}
-											inputProps={{
-												ref: refItems.current[o.itemId]
-											}}
-											native
-											variant="outlined"
-										>{lRxOptions}</Select>
-									);
-								}
-
-								return (
-									<Box key={o.itemId} className="section">
-										<Grid container spacing={1}>
-											<Grid item xs={12} sm={6}>{o.description}</Grid>
-											<Grid item xs={12} sm={6}>{mItem}</Grid>
+							{props.order.items.map((o,i) =>
+								<Box key={o.productId} className="section">
+									<Grid container spacing={1}>
+										<Grid item xs={12} sm={6}>{o.description}</Grid>
+										<Grid item xs={12} sm={6}>
+											<Select
+												className='select'
+												inputProps={{
+													ref: refItems.current[o.productId]
+												}}
+												native
+												onChange={ev => selectChange(o.productId, ev.currentTarget.value)}
+												value={selects[o.productId]}
+												variant="outlined"
+											>{lRxOptions}</Select>
 										</Grid>
-									</Box>
-								);
-							})}
+									</Grid>
+								</Box>
+							)}
 							<Grid container spacing={1}>
 								<Grid item xs={6} className="left">
 									<Button

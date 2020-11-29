@@ -193,7 +193,7 @@ function _openSocket() {
 	Rest.read('webpoll', 'websocket', {}).done(res => {
 
 		// Create the websocket
-		__socket = WSHelper('wss://' + window.location.hostname + '/ws', {
+		__socket = WSHelper('wss://' + process.env.REACT_APP_WS_DOMAIN + '/ws', {
 			open: function(sock) {
 
 				// Init the message list

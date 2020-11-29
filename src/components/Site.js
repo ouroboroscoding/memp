@@ -46,7 +46,7 @@ import { LoaderHide, LoaderShow } from './Loader';
 import '../sass/site.scss';
 
 // Init the rest services
-Rest.init(process.env.REACT_APP_MEMS_DOMAIN, xhr => {
+Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xhr => {
 
 	// If we got a 401, let everyone know we signed out
 	if(xhr.status === 401) {
