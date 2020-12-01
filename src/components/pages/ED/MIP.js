@@ -435,7 +435,6 @@ export default function MIP(props) {
 	// Approve the order we're on
 	function orderApprove() {
 		Rest.update('monolith', 'order/approve', {
-			customerId: props.customerId,
 			orderId: props.order.orderId,
 			soap: refSOAP.current.value
 		}).done(res => {
@@ -462,7 +461,6 @@ export default function MIP(props) {
 	// Decline the order we're on
 	function orderDecline() {
 		Rest.update('monolith', 'order/decline', {
-			customerId: props.customerId,
 			orderId: props.order.orderId
 		}).done(res => {
 
