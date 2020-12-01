@@ -22,7 +22,7 @@ $menu-width: 250px;
 @import 'pages/templates';
 @import 'pages/version';
 
-html, body, #root, #site, #content {
+html, body, #root, #site {
 	height: 100%;
 }
 
@@ -86,13 +86,11 @@ td {
 	flex-grow: 1;
 	flex-shrink: 1;
 	margin-left: $menu-width;
-	width: calc(100% - #{$menu-width});
 }
 
 @media (max-width: 600px) {
 
 	#content {
-		width: 100%;
 		margin-left: 0;
 	}
 }
@@ -142,7 +140,9 @@ td {
 	display: flex;
 
 	.title {
-		flex-grow: 1
+		flex-basis: 0;
+		flex-grow: 1;
+		flex-shrink: 1;
 	}
 
 	.icon {
