@@ -1,14 +1,14 @@
 #orderEd {
 
 	header {
-		flex-basis: 0;
+		flex-basis: auto;
 		flex-grow: 0;
 		flex-shrink: 0;
 	}
 
 	.details {
 		border-bottom: 1px solid #3f51b5;
-		flex-basis: 0;
+		flex-basis: auto;
 		flex-grow: 0;
 		flex-shrink: 0;
 		padding: 5px 20px 0 20px;
@@ -129,7 +129,7 @@
 			}
 
 			.close {
-				flex-basis: 0;
+				flex-basis: auto;
 				flex-grow: 0;
 				flex-shrink: 0;
 				padding: 5px 20px;
