@@ -36,6 +36,7 @@ import NoUser from './dialogs/NoUser';
 import Appointments from './pages/Appointments';
 import ED from './pages/ED';
 import Queue from './pages/Queue';
+import QueueCont from './pages/QueueCont';
 import Templates from './pages/Templates';
 import VersionHistory from './pages/VersionHistory';
 
@@ -143,8 +144,22 @@ export default function Site(props) {
 								user={user}
 							/>
 						</Route>
+						<Route exact path="/queue/ed/cont">
+							<QueueCont
+								key="ed"
+								type="ed"
+								user={user}
+							/>
+						</Route>
 						<Route exact path="/queue/hrt">
 							<Queue
+								key="hrt"
+								type="hrt"
+								user={user}
+							/>
+						</Route>
+						<Route exact path="/queue/hrt/cont">
+							<QueueCont
 								key="hrt"
 								type="hrt"
 								user={user}
