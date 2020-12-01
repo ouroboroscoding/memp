@@ -482,6 +482,7 @@ export default function MIP(props) {
 				// Remove the claim
 				Claimed.remove(props.customerId, 'decline').then(res => {
 					Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
+					Events.trigger('success', 'Order Declined!');
 				}, error => {
 					Events.trigger('error', JSON.stringify(error));
 				});
