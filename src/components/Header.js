@@ -401,7 +401,7 @@ export default class Header extends React.Component {
 						</IconButton>
 					}
 					<Typography className="title">
-						<Link to="/" onClick={this.menuClick}>{this.props.mobile ? 'ME' : 'Male Excel Provider Portal'}</Link>
+						<Link to="/" onClick={this.menuClick}>{this.props.mobile ? 'ME' : 'Male Excel Provider Portal'} {process.env.REACT_APP_VERSION}</Link>
 					</Typography>
 					{this.state.user &&
 						<React.Fragment>
