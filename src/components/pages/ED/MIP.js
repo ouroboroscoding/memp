@@ -152,14 +152,12 @@ function ATwo(props) {
 				}
 			</Box>
 			<Box className="section">
-			{q('deathNitrates') === 'None Apply' ?
-				<Typography>None Apply</Typography>
-			:
-				<React.Fragment>
-					<Typography className="title">Nitrate Medications</Typography>
+				<Typography className="title">Nitrate Medications</Typography>
+				{q('deathNitrates') === 'None Apply' ?
+					<Typography>None Apply</Typography>
+				:
 					<Typography>{q('deathNitrates')} | {q('NitrateMed')}</Typography>
-				</React.Fragment>
-			}
+				}
 			</Box>
 			{q('deathRecreationalDrugs') !== 'None Apply' &&
 				<Box className="section">
