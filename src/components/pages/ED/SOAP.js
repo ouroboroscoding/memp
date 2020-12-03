@@ -66,7 +66,7 @@ export default class SOAP extends React.Component {
 	render() {
 		let sSubjective = "Mr " + this.props.order.shipping.firstName + " " + this.props.order.shipping.lastName + " presents to the clinic requesting a prescription for erectile dysfuntion issues. He has " + (this.props.treated ? '' : 'not ') + "been treated for these issues prior.";
 		let sObjective = "Intake reviewed. No contraindications found in medical or prescription history preventing use of medications for erectile dysfunction."
-		let sAssessment = "Erectile Dysfuntion";
+		let sAssessment = "Erectile Dysfunction";
 		let sPlan = '', iPlan = -1;
 		if(this.items.includes('Sildenafil')) {
 			if(this.items.includes('100mg')) {
