@@ -35,6 +35,7 @@ import NoUser from './dialogs/NoUser';
 // Page component modules
 import Appointments from './pages/Appointments';
 import ED from './pages/ED';
+import ED_C from './pages/ED-C';
 import Queue from './pages/Queue';
 import QueueCont from './pages/QueueCont';
 import Templates from './pages/Templates';
@@ -170,6 +171,17 @@ export default function Site(props) {
 							path="/ed/:customerId/:orderId"
 							children={
 								<ED
+									key={location.pathname}
+									mobile={mobile}
+									user={user}
+								/>
+							}
+						/>
+						<Route
+							exact
+							path="/ed-c/:customerId/:orderId"
+							children={
+								<ED_C
 									key={location.pathname}
 									mobile={mobile}
 									user={user}

@@ -1,11 +1,11 @@
 /**
- * ED MIP
+ * Continuous ED MIP
  *
  * Handles fetching the correct MIP and displaying the relevant data
  *
  * @author Chris Nasr <bast@maleexcel.com>
  * @copyright MaleExcelMedical
- * @created 2020-10-31
+ * @created 2020-11-03
  */
 
 // NPM modules
@@ -21,6 +21,7 @@ import Typography from '@material-ui/core/Typography';
 // Composite components
 import A1 from '../../composites/MIPs/A1';
 import A2 from '../../composites/MIPs/A2';
+import CED from '../../composites/MIPs/CED';
 import PreviousMeds from '../../composites/PreviousMeds';
 import Transfer from '../../composites/Transfer';
 
@@ -96,7 +97,7 @@ export default function MIP(props) {
 		// Request the order info from the server
 		Rest.read('monolith', 'customer/mips', {
 			customerId: props.customerId,
-			form: ['MIP-A1', 'MIP-A2']
+			form: ['MIP-A1', 'MIP-A2', 'MIP-CED']
 		}).done(res => {
 
 			// If there's an error or warning
@@ -117,7 +118,7 @@ export default function MIP(props) {
 					res.data[i].display = (i === '0');
 
 					// If it's an A2 or CED
-					if(res.data[i].form === 'MIP-A2') {
+					if(['MIP-A2', 'MIP-CED'].includes(res.data[i].form)) {
 
 						// Store the questions by ref
 						let oQuestions = {}
@@ -144,60 +145,12 @@ export default function MIP(props) {
 
 	// Approve the order we're on
 	function orderApprove() {
-		Rest.update('monolith', 'order/approve', {
-			orderId: props.order.orderId,
-			soap: refSOAP.current.value
-		}).done(res => {
 
-			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
-				if(res.error.code === 1103) {
-					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
-				} else {
-					Events.trigger('error', JSON.stringify(res.error));
-				}
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If there's data
-			if(res.data) {
-				props.onApprove();
-			}
-		});
 	}
 
 	// Decline the order we're on
 	function orderDecline() {
-		Rest.update('monolith', 'order/decline', {
-			orderId: props.order.orderId
-		}).done(res => {
 
-			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
-				if(res.error.code === 1103) {
-					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
-				} else {
-					Events.trigger('error', JSON.stringify(res.error));
-				}
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If there's data
-			if(res.data) {
-
-				// Remove the claim
-				Claimed.remove(props.customerId, 'decline').then(res => {
-					Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
-					Events.trigger('success', 'Order Declined!');
-				}, error => {
-					Events.trigger('error', JSON.stringify(error));
-				});
-			}
-		});
 	}
 
 	// Remove the claim
@@ -216,18 +169,11 @@ export default function MIP(props) {
 
 	// Check for oxytocin and treated for ED
 	let bOxytocin = false;
-	let bTreatedForEd = false;
 
 	if(mips !== 0) {
 		for(let o of props.order.items) {
 			if(o.description.toLowerCase().search('oxytocin') > -1) {
 				bOxytocin = true;
-				break;
-			}
-		}
-		for(let o of mips) {
-			if(o.form === 'MIP-A2' && o.questions['treatedForED'].answer === 'Yes') {
-				bTreatedForEd = true;
 				break;
 			}
 		}
@@ -267,7 +213,7 @@ export default function MIP(props) {
 			<SOAP
 				order={props.order}
 				ref={refSOAP}
-				treated={bTreatedForEd}
+				treated={true}
 			/>
 			<Grid container spacing={1} className="rta">
 				<Grid item xs={4}>

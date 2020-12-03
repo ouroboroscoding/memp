@@ -148,7 +148,13 @@ export default {
 	},
 
 	orderPath(order) {
-		return '/' + order.type + '/' + order.customerId + '/' + order.orderId;
+		let sType = order.type;
+		if(order.continuous) {
+			sType += '-c';
+		}
+
+		// Generate the uri
+		return '/' + sType + '/' + order.customerId + '/' + order.orderId;
 	},
 
 	parsePath(path) {
