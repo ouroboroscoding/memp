@@ -15,6 +15,9 @@ $menu-width: 250px;
 @import 'composites/notes';
 @import 'composites/previous_meds';
 
+/* elements */
+@import 'elements/pharmacies';
+
 /* pages */
 @import 'pages/appointments';
 @import 'pages/order_ed';

@@ -22,6 +22,7 @@ import Typography from '@material-ui/core/Typography';
 
 // Element components
 import { GreenButton } from '../../elements/Buttons';
+import Pharmacies from '../../elements/Pharmacies';
 
 // Data modules
 import Claimed from '../../../data/claimed';
@@ -55,6 +56,7 @@ export default function RX(props) {
 
 	// Refs
 	let refItems = useRef(props.order.items.reduce((r,o) => ({...r, [o.productId]: React.createRef()}), {}));
+	let refPharmacy = useRef();
 
 	// Patient ID effect
 	useEffect(() => {
@@ -117,7 +119,18 @@ export default function RX(props) {
 
 	// Create the patient account with DoseSpot
 	function patientCreate() {
-		DoseSpot.create(props.customerId).then(res => {
+
+		// Get the default pharmacy
+		let iPharmacy = refPharmacy.current.value;
+
+		// If it's 0
+		if(iPharmacy === 0) {
+			Events.trigger('error', 'Please select a default pharmacy for the patient');
+			return;
+		}
+
+		// Create the patient
+		DoseSpot.create(props.customerId, iPharmacy).then(res => {
 			ssoFetch(res);
 			Events.trigger('patientCreate', res);
 		}, error => {
@@ -405,6 +418,7 @@ export default function RX(props) {
 				<Box className="create">
 					<Box className="section">
 						<Typography>No DoseSpot patient account found. Create one and open DoseSpot page?</Typography>
+						<Pharmacies defaultValue={56387} ref={refPharmacy} />
 						<Button
 							color="primary"
 							onClick={patientCreate}

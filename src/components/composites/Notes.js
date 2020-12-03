@@ -133,11 +133,6 @@ export default function Notes(props) {
 		setTimeout(() => scrollToBottom('auto'), 100);
 	}, [props.type])
 
-	// Effect on type change
-	useEffect(() => {
-		refInput.current.value = '';
-	}, [props.type])
-
 	// Refs
 	let refScroll = useRef();
 	let refInput = useRef();
@@ -250,7 +245,7 @@ export default function Notes(props) {
 	}
 
 	// Add a note to the patient's file
-	function noteAdd(action) {
+	function noteAdd() {
 
 		// Get the content of the note
 		let content = refInput.current.value;
@@ -272,13 +267,7 @@ export default function Notes(props) {
 
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {
-				if(res.error.code === 1500) {
-					Events.trigger('error', 'The customer has requested a STOP on all Provider SMS communications.');
-				} else if(res.error.code === 1510) {
-					Events.trigger('error', 'SMS Content is more than 1600 characters. Please split your message into multiple messages.');
-				} else {
-					Events.trigger('error', JSON.stringify(res.error));
-				}
+				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
@@ -313,6 +302,68 @@ export default function Notes(props) {
 
 	function scrollToBottom(behaviour) {
 		refScroll.current.scrollIntoView({ behavior: behaviour });
+	}
+
+	// Send an SMS message to the customer as the provider
+	function smsSend() {
+
+		// Get the content of the note
+		let content = refInput.current.value;
+
+		// If there's nothing, do nothing
+		if(content.trim() === '') {
+			return;
+		}
+
+		// Init the data
+		let oData = {
+			content: content,
+			customerId: props.customerId,
+			orderId: props.order.orderId
+		}
+
+		// Send the message to the server
+		Rest.create('monolith', 'provider/sms', oData).done(res => {
+
+			// If there's an error or warning
+			if(res.error && !Utils.restError(res.error)) {
+				if(res.error.code === 1500) {
+					Events.trigger('error', 'The customer has requested a STOP on all Provider SMS communications.');
+				} else if(res.error.code === 1510) {
+					Events.trigger('error', 'SMS Content is more than 1600 characters. Please split your message into multiple messages.');
+				} else {
+					Events.trigger('error', JSON.stringify(res.error));
+				}
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If we're ok
+			if(res.data) {
+
+				// Clear the note content
+				refInput.current.value = '';
+
+				// Copy the current state
+				let lNotes = clone(notes);
+
+				// Add the new one to the end
+				lNotes.push({
+					action: 'Send Communication',
+					note: '[Content] ' + oData.content,
+					createdBy: 'You',
+					createdAt: Utils.datetime(new Date()),
+					userRole: 'Doctor'
+				});
+
+				// Set the new state
+				notesSet(lNotes);
+
+				// Scroll down
+				setTimeout(() => scrollToBottom('smooth'), 100);
+			}
+		});
 	}
 
 	// Track any text enterered into an input box
@@ -376,16 +427,19 @@ export default function Notes(props) {
 
 	// Figure out the class, filter, etc.
 	let Child = null;
+	let fSubmit = null;
 	let iMax = 0;
 	let sButton = '';
 	let sFilter = '';
 	if(props.type === 'notes') {
 		Child = Note;
+		fSubmit = noteAdd;
 		iMax = -1;
 		sButton = 'Add Note';
 		sFilter = 'notes';
 	} else if(props.type === 'sms') {
 		Child = Message;
+		fSubmit = smsSend;
 		iMax = 1600;
 		sButton = 'Send';
 		sFilter = 'sms';
@@ -429,7 +483,7 @@ export default function Notes(props) {
 				<Button
 					color="primary"
 					size="large"
-					onClick={noteAdd}
+					onClick={fSubmit}
 					variant="contained"
 				>
 					{sButton}
