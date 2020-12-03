@@ -60,7 +60,7 @@ export default class SOAP extends React.Component {
 		// Blank out the plan if they choose "Choose Plan..." otherwise use the
 		//	value from the const
 		this.plan.current.value = (event.target.value === '-1') ? '' :
-									_PLANS[event.target.value];
+									_PLANS[event.target.value][1];
 	}
 
 	render() {
