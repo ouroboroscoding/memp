@@ -10,13 +10,16 @@
 
 // NPM modules
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Material UI
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+
+// Element components
+import Pharmacies from '../elements/Pharmacies';
 
 // Data modules
 import DoseSpot from '../../data/dosespot';
@@ -38,6 +41,9 @@ export default function PreviousMeds(props) {
 
 	// State
 	let [meds, medsSet] = useState([]);
+
+	// Refs
+	let refPharmacy = useRef();
 
 	// Effects
 	useEffect(() => {
@@ -66,7 +72,18 @@ export default function PreviousMeds(props) {
 
 	// Create the patient in DoseSpot
 	function patientCreate() {
-		DoseSpot.create(props.customerId).then(res => {
+
+		// Get the default pharmacy
+		let iPharmacy = refPharmacy.current.value;
+
+		// If it's 0
+		if(iPharmacy === 0) {
+			Events.trigger('error', 'Please select a default pharmacy for the patient');
+			return;
+		}
+
+		// Create the patient
+		DoseSpot.create(props.customerId, iPharmacy).then(res => {
 			Events.trigger('patientCreate', res);
 		}, error => {
 			if(error.code === 1602) {
@@ -79,11 +96,12 @@ export default function PreviousMeds(props) {
 
 	// Inner HTML
 	let inner = null;
-	
+
 	// If we have no patient ID
 	if(!props.patientId) {
 		inner = [
 			<Typography>No DoseSpot patient account found. Create one and fetch previous medication?</Typography>,
+			<Pharmacies defaultValue={props.pharmacyId} ref={refPharmacy} />,
 			<Button color="primary" onClick={patientCreate} variant="contained">Create</Button>
 		]
 	}
@@ -107,8 +125,8 @@ export default function PreviousMeds(props) {
 					<Grid container spacing={1}>
 						{meds.map((o,i) =>
 							<React.Fragment key={i}>
-								<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>{o.DisplayName}</strong></Typography></Grid>
-								<Grid item xs={12} sm={8} md={9} lg={10}>
+								<Grid item xs={12} sm={4}><Typography><strong>{o.DisplayName}</strong></Typography></Grid>
+								<Grid item xs={12} sm={8}>
 									<Typography>{o.LastFillDate.split('T')[0]} - {o.DaysSupply}</Typography>
 									{o.PharmacyNotes &&
 										<Typography>{o.PharmacyNotes}</Typography>
@@ -134,5 +152,6 @@ export default function PreviousMeds(props) {
 // Valid props
 PreviousMeds.propTypes = {
 	customerId: PropTypes.string.isRequired,
-	patientId: PropTypes.number.isRequired
+	patientId: PropTypes.number.isRequired,
+	pharmacyId: PropTypes.number
 }

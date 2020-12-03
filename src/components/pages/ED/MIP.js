@@ -116,12 +116,13 @@ function ATwo(props) {
 			<Box className="section">
 				<Typography className="title">Previous ED Medication</Typography>
 				{q('treatedForED') === 'No' ?
-					<Typography className="no">No</Typography>
+					<Typography>No</Typography>
 				:
 					<Grid container spacing={1}>
 						{q('prescribedMeds').split('|').map(s => {
 							let v = _ED_MEDS[s];
 							let m = s === 'Other' ? q('prescribedMeds_other') : s;
+							let sTaking = q(v + 'StopTakingIt');
 							return (
 								<React.Fragment key={v}>
 									<Grid item xs={12} sm={4} md={3} lg={2}><Typography><strong>{m}</strong></Typography></Grid>
@@ -138,8 +139,10 @@ function ATwo(props) {
 												)
 											}
 										</Typography>
-										{q(v + 'StopTakingIt') === 'Yes' &&
+										{sTaking === 'Yes' ?
 											<Typography>No longer taking | {q(v + 'WhyStopTaking')}</Typography>
+										:
+											<Typography className="no">{sTaking === 'No' ? 'Still using medication' : 'Did not specify if still using medication'}</Typography>
 										}
 									</Grid>
 								</React.Fragment>
@@ -148,12 +151,16 @@ function ATwo(props) {
 					</Grid>
 				}
 			</Box>
-			{q('deathNitrates') !== 'None Apply' &&
-				<Box className="section">
+			<Box className="section">
+			{q('deathNitrates') === 'None Apply' ?
+				<Typography>None Apply</Typography>
+			:
+				<React.Fragment>
 					<Typography className="title">Nitrate Medications</Typography>
 					<Typography>{q('deathNitrates')} | {q('NitrateMed')}</Typography>
-				</Box>
+				</React.Fragment>
 			}
+			</Box>
 			{q('deathRecreationalDrugs') !== 'None Apply' &&
 				<Box className="section">
 					<Typography className="title">Recreational Drug Use</Typography>
@@ -186,7 +193,7 @@ function ATwo(props) {
 									<Grid item xs={12} sm={8} md={9} lg={10}>
 										<Typography>
 											{q(v + 'Medication').split('|').map(s =>
-												s === 'Other' ? 
+												s === 'Other' ?
 													(v === 'Other' ?
 														'' :
 														q(v + 'Medication_other')
@@ -373,7 +380,7 @@ export default function MIP(props) {
 			let lMips = clone(mips);
 
 			// Change the display
-			lMips[iIndex].display = true;
+			lMips[iIndex].display = !lMips[iIndex].display;
 
 			// Set the new state
 			mipsSet(lMips);
@@ -547,9 +554,7 @@ export default function MIP(props) {
 							<Box className="section header">
 								<Typography className="title">
 									{o.form} - {Utils.niceDate(o.date, props.mobile ? 'short' : 'long')}
-									{!o.display &&
-										<span> - <GreyButton variant="outlined" onClick={() => mipDisplay(o.id)}>Display</GreyButton></span>
-									}
+									<span> - <GreyButton variant="outlined" onClick={() => mipDisplay(o.id)}>{o.display ? 'Hide' : 'Display'}</GreyButton></span>
 								</Typography>
 							</Box>
 							{o.display &&
@@ -562,6 +567,7 @@ export default function MIP(props) {
 			<PreviousMeds
 				customerId={props.customerId}
 				patientId={props.patientId}
+				pharmacyId={56387}
 			/>
 			<SOAP
 				order={props.order}

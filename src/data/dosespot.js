@@ -17,6 +17,7 @@ import Utils from '../utils';
 
 // Module data
 let _clinicianId = null;
+let _pharmacies = null;
 
 /**
  * Create
@@ -26,9 +27,10 @@ let _clinicianId = null;
  * @name create
  * @access public
  * @param Number customer_id The ID of the customer to create a patient for
- * @return Number
+ * @param Number [varname] [description]
+ * @return Promise(Number)
  */
-export function create(customer_id) {
+export function create(customer_id, pharmacy_id=null) {
 
 	// If init not called
 	if(!_clinicianId) {
@@ -38,10 +40,60 @@ export function create(customer_id) {
 	// Return promise
 	return new Promise((resolve, reject) => {
 
-		// Call the rest request
-		Rest.create('monolith', 'customer/dsid', {
+		// Init the data
+		let dData = {
 			clinician_id: _clinicianId,
 			customerId: customer_id
+		}
+
+		// If a pharmacy was passed
+		if(pharmacy_id) {
+			dData['pharmacy_id'] = pharmacy_id;
+		}
+
+		// Call the rest request
+		Rest.create('monolith', 'customer/dsid', dData).done(res => {
+
+			// If there's an error or warning
+			if(res.error && !Utils.restError(res.error)) {
+				reject(res.error);
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If we got data
+			if('data' in res) {
+				resolve(res.data);
+			}
+		});
+	});
+}
+
+/**
+ * Details
+ *
+ * Fetches patient details
+ *
+ * @name details
+ * @access public
+ * @param Number patient_id The ID of the patient to fetch the details for
+ * @return Promise(Object)
+ */
+export function details(patient_id) {
+
+	// If init not called
+	if(!_clinicianId) {
+		throw new Error('Must call DoseSpot.init() before details().');
+	}
+
+	// Return promise
+	return new Promise((resolve, reject) => {
+
+		// Call the rest request
+		Rest.read('prescriptions', 'patient', {
+			clinician_id: _clinicianId,
+			patient_id: patient_id
 		}).done(res => {
 
 			// If there's an error or warning
@@ -53,7 +105,7 @@ export function create(customer_id) {
 			}
 
 			// If we got data
-			if(res.data) {
+			if('data' in res) {
 				resolve(res.data);
 			}
 		});
@@ -68,7 +120,7 @@ export function create(customer_id) {
  * @name fetch
  * @access public
  * @param Number customer_id The ID of the customer to fetch the patient for
- * @return Number
+ * @return Promise(Number)
  */
 export function fetch(customer_id) {
 
@@ -89,7 +141,7 @@ export function fetch(customer_id) {
 			}
 
 			// If we got data
-			if(res.data) {
+			if('data' in res) {
 				resolve(res.data);
 			}
 		});
@@ -114,6 +166,9 @@ export function init(clinician_id) {
 	} else {
 		_clinicianId = parseInt(clinician_id, 10);
 	}
+
+	// Reset the pharmacies
+	_pharmacies = null;
 }
 
 /**
@@ -124,7 +179,7 @@ export function init(clinician_id) {
  * @name medications
  * @access public
  * @param Number patient_id The ID of the patient to fetch the medications for
- * @return String
+ * @return Promise(Array)
  */
 export function medications(patient_id) {
 
@@ -151,7 +206,45 @@ export function medications(patient_id) {
 			}
 
 			// If we got data
-			if(res.data) {
+			if('data' in res) {
+				resolve(res.data);
+			}
+		});
+	});
+}
+
+/**
+ * Pharmacies
+ *
+ * Fetches a list of active pharmacies used
+ *
+ * @name pharmacies
+ * @access public
+ * @return Promise(Array)
+ */
+export function pharmacies(patient_id) {
+
+	// Return promise
+	return new Promise((resolve, reject) => {
+
+		// If we already have the data
+		if(_pharmacies !== null) {
+			resolve(_pharmacies);
+		}
+
+		// Call the rest request
+		Rest.read('prescriptions', 'pharmacies', {}).done(res => {
+
+			// If there's an error or warning
+			if(res.error && !Utils.restError(res.error)) {
+				reject(res.error);
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if('data' in res) {
 				resolve(res.data);
 			}
 		});
@@ -166,7 +259,7 @@ export function medications(patient_id) {
  * @name prescriptions
  * @access public
  * @param Number patient_id The ID of the patient to fetch the prescriptions for
- * @return String
+ * @return Promise(Array)
  */
 export function prescriptions(patient_id) {
 
@@ -208,7 +301,7 @@ export function prescriptions(patient_id) {
  * @name sso
  * @access public
  * @param Number patient_id The ID of the patient to fetch the URL for
- * @return String
+ * @return Promise(String)
  */
 export function sso(patient_id) {
 
@@ -235,7 +328,7 @@ export function sso(patient_id) {
 			}
 
 			// If there's data
-			if(res.data) {
+			if('data' in res) {
 				resolve(res.data);
 			}
 		});
@@ -245,9 +338,11 @@ export function sso(patient_id) {
 // Export all
 export default {
 	create: create,
+	details: details,
 	fetch: fetch,
 	init: init,
 	medications: medications,
+	pharmacies: pharmacies,
 	prescriptions: prescriptions,
 	sso: sso
 }
