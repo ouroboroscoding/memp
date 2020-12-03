@@ -19,7 +19,7 @@ import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 
 const _PLANS = [
-	["Sildenafil 100mg/2", "Cleared for Sildenafil. Patient instructed to break tab in half for initial dose to administer 50mg by mouth once daily 60 minutes prior to sexual activity as needed. If no results with the initial 50mg dose by first 60 minutes after administration patient may take other half tab dose for a total of 100mg. May increase to 100mg by mouth once daily as tolerated. Precautions and side effects reviewed with patient."],
+	["Sildenafil 50mg/100mg", "Cleared for Sildenafil. Patient instructed to break tab in half for initial dose to administer 50mg by mouth once daily 60 minutes prior to sexual activity as needed. If no results with the initial 50mg dose by first 60 minutes after administration patient may take other half tab dose for a total of 100mg. May increase to 100mg by mouth once daily as tolerated. Precautions and side effects reviewed with patient."],
 	["Sildenafil 100mg", "Cleared for Sildenafil 100mg po qday prn sexual activity. Dose to be taken 60 minutes prior to anticipated sexual activity. Precautions and side effects reviewed with patient."],
 	["Tadalafil 5mg", "Cleared for Tadalafil 5 mg po daily. Precautions given. Follow up as needed."],
 	["Tadalafil 20mg", "Cleared for Generic Tadalafil 20mg po q72h prn sexual activity.  Dose to be taken 3-4 hours prior to anticipated sexual activity.  Precautions and side effects reviewed with patient."]
@@ -60,7 +60,7 @@ export default class SOAP extends React.Component {
 		// Blank out the plan if they choose "Choose Plan..." otherwise use the
 		//	value from the const
 		this.plan.current.value = (event.target.value === '-1') ? '' :
-									_PLANS[event.target.value];
+									_PLANS[event.target.value][1];
 	}
 
 	render() {
