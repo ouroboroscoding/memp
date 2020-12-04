@@ -95,7 +95,7 @@ export default function ED(props) {
 		// Request the encounter type from the server
 		Rest.read('monolith', 'encounter', {
 			state: state
-		}, false).done(res => {
+		}, {"session": false}).done(res => {
 
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {

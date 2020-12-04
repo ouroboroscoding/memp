@@ -53,14 +53,19 @@ function clear() {
  * @param string method			The method used to send the request
  * @param string url			The full URL to the service/noun
  * @param object data			The data to send to the service
- * @param bool session			Send the session if one exists
+ * @param object opts			Optional flags that can be set
  * @return xhr
  */
-function request(method, url, data, session) {
+function request(method, url, data, opts) {
+
+	// If session opts is not set
+	if(!('session' in opts)) {
+		opts['session'] = true;
+	}
 
 	// If we have a before callback
 	if(_before) {
-		_before(method, url, data);
+		_before(method, url, data, opts);
 	}
 
 	// Generate the ajax config
@@ -73,7 +78,7 @@ function request(method, url, data, session) {
 			xhr._url = url;
 
 			// If we have a session, add the authorization token
-			if(session && '_session' in localStorage) {
+			if(opts['session'] && '_session' in localStorage) {
 				xhr.setRequestHeader('Authorization', localStorage['_session']);
 			}
 		},
@@ -85,7 +90,7 @@ function request(method, url, data, session) {
 
 			// If we have an after callback
 			if(_after) {
-				_after(method, url, data);
+				_after(method, url, data, opts);
 			}
 		},
 
@@ -211,11 +216,11 @@ function init(domain, cookie, error=null, before=null, after=null) {
  * @param string service		The name of the service to call
  * @param string noun			The noun to call on the service
  * @param object data			The data to send to the service
- * @param bool session			Send the session if one exists
+ * @param object opts			Optional flags that can be set
  * @return xhr
  */
-function create(service, noun, data, session=true) {
-	return request('post', _domain + service + '/' + noun, data, session);
+function create(service, noun, data, opts={}) {
+	return request('post', _domain + service + '/' + noun, data, opts);
 }
 
 /**
@@ -228,11 +233,11 @@ function create(service, noun, data, session=true) {
  * @param string service		The name of the service to call
  * @param string noun			The noun to call on the service
  * @param object data			The data to send to the service
- * @param bool session			Send the session if one exists
+ * @param object opts			Optional flags that can be set
  * @return xhr
  */
-function delete_(service, noun, data, session=true) {
-	return request('delete', _domain + service + '/' + noun, data, session);
+function delete_(service, noun, data, opts={}) {
+	return request('delete', _domain + service + '/' + noun, data, opts);
 }
 
 /**
@@ -245,11 +250,11 @@ function delete_(service, noun, data, session=true) {
  * @param string service		The name of the service to call
  * @param string noun			The noun to call on the service
  * @param object data			The data to send to the service
- * @param bool session			Send the session if one exists
+ * @param object opts			Optional flags that can be set
  * @return xhr
  */
-function read(service, noun, data, session=true) {
-	return request('get', _domain + service + '/' + noun, data, session);
+function read(service, noun, data, opts={}) {
+	return request('get', _domain + service + '/' + noun, data, opts);
 }
 
 /**
@@ -296,11 +301,11 @@ function session(token) {
  * @param string service		The name of the service to call
  * @param string noun			The noun to call on the service
  * @param object data			The data to send to the service
- * @param bool session			Send the session if one exists
+ * @param object opts			Optional flags that can be set
  * @return xhr
  */
-function update(service, noun, data, session=true) {
-	return request('put', _domain + service + '/' + noun, data, session);
+function update(service, noun, data, opts={}) {
+	return request('put', _domain + service + '/' + noun, data, opts);
 }
 
 // export module
