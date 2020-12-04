@@ -125,13 +125,20 @@ export default function Notes(props) {
 	useEffect(() => {
 		fetchNotes();
 		fetchTemplates()
-		// eslint-disable-next-line
+	// eslint-disable-next-line
 	}, [props.customerId]);
 
 	// Effect on type change
 	useEffect(() => {
 		setTimeout(() => scrollToBottom('auto'), 100);
 	}, [props.type])
+
+	// Effect on component load
+	useEffect(() => {
+		Events.add('newNotes', fetchNotes);
+		return () => Events.remove('newNotes', fetchNotes)
+	// eslint-disable-next-line
+	}, [])
 
 	// Refs
 	let refScroll = useRef();

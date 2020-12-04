@@ -71,7 +71,7 @@ export default function Change(props) {
 		Rest.update('patient', 'account/forgot', {
 			"key": props.keyVal,
 			"passwd": passRef.current.value
-		}, false).done(res => {
+		}, {"session": false}).done(res => {
 
 			// If there's an error
 			if(res.error && !Utils.restError(res.error)) {

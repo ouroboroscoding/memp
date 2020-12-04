@@ -94,7 +94,7 @@ export default function Signin(props) {
 		Rest.create('providers', 'signin', {
 			"userName": userRef.current.value,
 			"passwd": passRef.current.value
-		}, false).done(res => {
+		}, {"session": false}).done(res => {
 
 			// If there's an error
 			if(res.error && !Utils.restError(res.error)) {
