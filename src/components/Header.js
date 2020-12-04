@@ -44,6 +44,7 @@ import claimed from '../data/claimed';
 
 // Generic modules
 import Events from '../generic/events';
+import PageVisibility from '../generic/pageVisibility';
 import Rest from '../generic/rest';
 import Tools from '../generic/tools';
 
@@ -83,7 +84,7 @@ function CustomerItem(props) {
 			<Link to={Utils.orderPath(props)} onClick={click}>
 				<ListItem button selected={props.selected} className={props.transferredBy ? 'transferred' : ''}>
 					<ListItemAvatar>
-						{props.newMsgs ?
+						{props.newNotes ?
 							<Avatar style={{backgroundColor: 'red'}}><NewReleasesIcon /></Avatar> :
 							<Avatar><PersonIcon /></Avatar>
 						}
@@ -126,11 +127,14 @@ export default class Header extends React.Component {
 			account: false,
 			claimed: [],
 			menu: false,
-			newMsgs: {},
+			newNotes: Tools.safeLocalStorageJSON('newNotes', {}),
 			overwrite: props.user ? Utils.hasRight(props.user, 'prov_overwrite', 'create') : false,
 			path: window.location.pathname,
 			user: props.user || false,
 		}
+
+		// Timers
+		this.iUpdates = null;
 
 		// Bind methods to this instance
 		this.accountToggle = this.accountToggle.bind(this);
@@ -143,6 +147,7 @@ export default class Header extends React.Component {
 		this.signedIn = this.signedIn.bind(this);
 		this.signedOut = this.signedOut.bind(this);
 		this.signout = this.signout.bind(this);
+		this.visibilityChange = this.visibilityChange.bind(this);
 		this.wsMessage = this.wsMessage.bind(this);
 	}
 
@@ -153,6 +158,9 @@ export default class Header extends React.Component {
 		Events.add('signedOut', this.signedOut);
 		Events.add('claimedAdd', this.claimedAdd);
 		Events.add('claimedRemove', this.claimedRemove);
+
+		// Track document visibility
+		PageVisibility.add(this.visibilityChange);
 	}
 
 	componentWillUnmount() {
@@ -162,6 +170,15 @@ export default class Header extends React.Component {
 		Events.remove('signedOut', this.signedOut);
 		Events.remove('claimedAdd', this.claimedAdd);
 		Events.remove('claimedRemove', this.claimedRemove);
+
+		// Track document visibility
+		PageVisibility.remove(this.visibilityChange);
+
+		// Stop checking for new messages and unclaimed counts
+		if(this.iUpdates) {
+			clearInterval(this.iUpdates);
+			this.iUpdates = null;
+		}
 	}
 
 	accountToggle() {
@@ -213,7 +230,11 @@ export default class Header extends React.Component {
 			}
 
 			// Set the new path
-			this.setState(oState);
+			this.setState(oState, () => {
+
+				// Look for new notes
+				this.update();
+			});
 
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
@@ -243,12 +264,12 @@ export default class Header extends React.Component {
 				this.props.history.push(oState.path);
 			}
 
-			// If it's in the new messages
-			if(customerId.toString() in this.state.newMsgs) {
-				let dNewMsgs = Tools.clone(this.state.newMsgs);
-				delete dNewMsgs[customerId];
-				localStorage.setItem('newMsgs', JSON.stringify(dNewMsgs))
-				oState.newMsgs = dNewMsgs;
+			// If it's in the new notes
+			if(customerId.toString() in this.state.newNotes) {
+				let dNewNotes = Tools.clone(this.state.newNotes);
+				delete dNewNotes[customerId];
+				localStorage.setItem('newNotes', JSON.stringify(dNewNotes))
+				oState.newNotes = dNewNotes;
 			}
 
 			// Set the new state
@@ -281,6 +302,22 @@ export default class Header extends React.Component {
 
 		// If we clicked on a claimed id
 		if(state.path.indexOf(order.orderId) > -1) {
+
+			// Do we have a new notes flag for this customerId?
+			if(order.customerId in this.state.newNotes) {
+
+				// Clone the new notes
+				let dNewNotes = Tools.clone(this.state.newNotes);
+
+				// Remove the corresponding key
+				delete dNewNotes[order.customerId];
+
+				// Update the state
+				state.newNotes = dNewNotes;
+
+				// Store the new notes in local storage
+				localStorage.setItem('newNotes', JSON.stringify(dNewNotes))
+			}
 
 			// Look for it in claimed
 			let iIndex = Tools.afindi(this.state.claimed, 'customerId', order.customerId);
@@ -321,6 +358,68 @@ export default class Header extends React.Component {
 		// Toggle the state of the menu
 		this.setState({
 			menu: !this.state.menu
+		});
+	}
+
+	newNotes() {
+
+		// Generate the list of customerIds
+		let lIDs = this.state.claimed.map(o => o.customerId);
+
+		// Send the removal to the server
+		Rest.read('monolith', 'notes/claimed/new', {
+			customerIds: lIDs
+		}, {"background": true}).done(res => {
+
+			// If there's an error or warning
+			if(res.error && !Utils.restError(res.error)) {
+				Events.trigger('error', JSON.stringify(res.error));
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if('data' in res) {
+
+				// If there's any
+				if(!Tools.empty(res.data)) {
+
+					// Do we set the state?
+					let bSetState = false;
+
+					// Clone the current messages
+					let dNewNotes = Tools.clone(this.state.newNotes);
+
+					// Go through each one sent
+					for(let sCustomerId in res.data) {
+
+						// If we're on the customer's page
+						if(this.state.path.indexOf('/'+sCustomerId+'/') > -1) {
+							Events.trigger('newNotes');
+						}
+
+						// Else, if we don't already have this in newNotes
+						else if(!(sCustomerId in dNewNotes)) {
+							bSetState = true;
+							dNewNotes[sCustomerId] = true;
+						}
+					}
+
+					// If something changed
+					if(bSetState) {
+
+						// Store the new messages
+						localStorage.setItem('newNotes', JSON.stringify(dNewNotes));
+
+						// Set the new state
+						this.setState({newNotes: dNewNotes});
+					}
+
+					// Notify
+					Events.trigger('info', 'New Notes/SMS!');
+				}
+			}
 		});
 	}
 
@@ -381,6 +480,7 @@ export default class Header extends React.Component {
 						{this.state.claimed.map((o,i) =>
 							<CustomerItem
 								key={i}
+								newNotes={o.customerId in this.state.newNotes}
 								onClick={this.menuItem}
 								selected={this.state.path === Utils.orderPath(o)}
 								user={this.state.user}
@@ -461,6 +561,9 @@ export default class Header extends React.Component {
 
 			// Fetch the claimed conversations
 			this.claimedFetch();
+
+			// Start checking for new messages
+			this.iUpdates = setInterval(this.update.bind(this), 60000);
 		});
 	}
 
@@ -503,6 +606,44 @@ export default class Header extends React.Component {
 			"overwrite": false,
 			"user": false
 		});
+
+		// Stop checking for new notes
+		if(this.iUpdates) {
+			clearInterval(this.iUpdates);
+			this.iUpdates = null;
+		}
+	}
+
+	update() {
+		this.newNotes();
+	}
+
+	// Current tab changed state from hidden/visible
+	visibilityChange(property, state) {
+
+		// If we've become visible
+		if(state === 'visible') {
+
+			// If we have a user
+			if(this.state.user) {
+
+				// Update
+				this.update();
+
+				// Start checking for new messages
+				this.iUpdates = setInterval(this.update.bind(this), 60000);
+			}
+		}
+
+		// Else if we're hidden
+		else if(state === 'hidden') {
+
+			// Stop checking for new messages and unclaimed counts
+			if(this.iUpdates) {
+				clearInterval(this.iUpdates);
+				this.iUpdates = null;
+			}
+		}
 	}
 
 	// WebSocket message

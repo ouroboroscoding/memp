@@ -68,7 +68,7 @@ export default function Forgot(props) {
 		Rest.create('patient', 'account/forgot', {
 			"email": emailRef.current.value,
 			"url": 'https://' + process.env.REACT_APP_SELF_DOMAIN + '/#key=c'
-		}, false).done(res => {
+		}, {"session": false}).done(res => {
 
 			// If there's an error
 			if(res.error && !Utils.restError(res.error)) {

@@ -60,10 +60,14 @@ Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xh
 			': ' + xhr.statusText +
 			' (' + xhr.status + ')');
 	}
-}, (method, url, data) => {
-	LoaderShow();
-}, (method, url, data) => {
-	LoaderHide();
+}, (method, url, data, opts) => {
+	if(!opts.background) {
+		LoaderShow();
+	}
+}, (method, url, data, opts) => {
+	if(!opts.background) {
+		LoaderHide();
+	}
 });
 
 // If we have a session, fetch the user
