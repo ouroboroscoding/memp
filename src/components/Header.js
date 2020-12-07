@@ -366,6 +366,11 @@ export default class Header extends React.Component {
 		// Generate the list of customerIds
 		let lIDs = this.state.claimed.map(o => o.customerId);
 
+		// If we have none
+		if(lIDs.length === 0) {
+			return;
+		}
+
 		// Send the removal to the server
 		Rest.read('monolith', 'notes/new', {
 			customerIds: lIDs,
