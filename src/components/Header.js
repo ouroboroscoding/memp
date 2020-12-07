@@ -367,8 +367,9 @@ export default class Header extends React.Component {
 		let lIDs = this.state.claimed.map(o => o.customerId);
 
 		// Send the removal to the server
-		Rest.read('monolith', 'notes/claimed/new', {
-			customerIds: lIDs
+		Rest.read('monolith', 'notes/new', {
+			customerIds: lIDs,
+			ignore: this.state.user.id
 		}, {"background": true}).done(res => {
 
 			// If there's an error or warning
