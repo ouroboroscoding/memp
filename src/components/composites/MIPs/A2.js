@@ -147,7 +147,7 @@ export default function A2(props) {
 						{q('bloodPressure') === 'Controlled with Medicine' &&
 							<Typography>{q('bloodPressureMedication').split('|').join(', ')}</Typography>
 						}
-						{q('bloodPressureMedication') === 'Other' &&
+						{q('bloodPressureMedication').includes('Other') &&
 							<Typography>{q('bloodPressureMedication_other')}</Typography>
 						}
 					</Box>
