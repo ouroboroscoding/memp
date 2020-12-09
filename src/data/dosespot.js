@@ -195,7 +195,7 @@ export function medications(patient_id) {
 		Rest.read('prescriptions', 'patient/medications', {
 			clinician_id: _clinicianId,
 			patient_id: patient_id
-		}).done(res => {
+		}, {background: true}).done(res => {
 
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {
@@ -233,7 +233,7 @@ export function pharmacies(patient_id) {
 		}
 
 		// Call the rest request
-		Rest.read('prescriptions', 'pharmacies', {}).done(res => {
+		Rest.read('prescriptions', 'pharmacies', {}, {background: true}).done(res => {
 
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {

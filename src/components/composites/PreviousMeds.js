@@ -40,7 +40,7 @@ import Events from '../../generic/events';
 export default function PreviousMeds(props) {
 
 	// State
-	let [meds, medsSet] = useState([]);
+	let [meds, medsSet] = useState(0);
 
 	// Refs
 	let refPharmacy = useRef();
@@ -109,9 +109,16 @@ export default function PreviousMeds(props) {
 	// Else, if we have a patient
 	else {
 
+		// Get the type of meds
+		let sType = typeof meds;
+
 		// Was there an error?
-		if(typeof meds === 'string') {
+		if(sType === 'string') {
 			inner = <Typography>{meds}</Typography>
+		}
+
+		else if(sType === 'number') {
+			inner = <Typography>Loading...</Typography>
 		}
 
 		// Else, we have medications

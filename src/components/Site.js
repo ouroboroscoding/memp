@@ -22,7 +22,7 @@ import Hash from '../generic/hash';
 import Rest from '../generic/rest';
 
 // Hooks
-import { useSignedIn, useSignedOut } from '../hooks/user';
+import { useEvent } from '../hooks/event';
 import { useResize } from '../hooks/resize';
 
 // Composite component modules
@@ -31,6 +31,7 @@ import Header from './Header';
 
 // Dialogs
 import NoUser from './dialogs/NoUser';
+import SignOutWarning from './dialogs/SignOutWarning';
 
 // Page component modules
 import Appointments from './pages/Appointments';
@@ -42,10 +43,17 @@ import Templates from './pages/Templates';
 import VersionHistory from './pages/VersionHistory';
 
 // Local modules
+import ActivityWatch from '../activityWatch';
 import { LoaderHide, LoaderShow } from './Loader';
 
 // css
 import '../sass/site.scss';
+
+// Init the activity watch with a 15 minute timer
+ActivityWatch.init(15, {
+	warning: () => Events.trigger('activityWarning'),
+	signout: () => Events.trigger('activitySignout')
+});
 
 // Init the rest services
 Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xhr => {
@@ -62,6 +70,7 @@ Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xh
 	}
 }, (method, url, data, opts) => {
 	if(!opts.background) {
+		ActivityWatch.reset();
 		LoaderShow();
 	}
 }, (method, url, data, opts) => {
@@ -94,6 +103,7 @@ Hash.init();
 export default function Site(props) {
 
 	// State
+	let [signoutWarning, signoutWarningSet] = useState(false);
 	let [mobile, mobileSet] = useState(document.documentElement.clientWidth < 600 ? true : false);
 	let [user, userSet] = useState(false);
 
@@ -101,18 +111,27 @@ export default function Site(props) {
 	let history = useHistory();
 	let location = useLocation();
 
-	// User hooks
-	useSignedIn(user => {
-		userSet(user)
+	// Event hooks
+	useEvent('signedIn', user => {
+		userSet(user);
+		ActivityWatch.start();
 		DoseSpot.init(user.dsClinicianId);
 	});
-	useSignedOut(() => {
-		userSet(false)
+	useEvent('signedOut', () => {
+		userSet(false);
+		signoutWarningSet(false);
+		ActivityWatch.stop();
 		DoseSpot.init(0);
 	});
+	useEvent('activityWarning', () => signoutWarningSet(true));
 
 	// Resize hooks
 	useResize(() => mobileSet(document.documentElement.clientWidth < 600 ? true : false));
+
+	function staySignedIn() {
+		signoutWarningSet(false);
+		ActivityWatch.reset();
+	}
 
 	// Return the Site
 	return (
@@ -195,6 +214,9 @@ export default function Site(props) {
 					</Switch>
 				</div>
 			</div>
+			{signoutWarning &&
+				<SignOutWarning onClose={staySignedIn} />
+			}
 		</SnackbarProvider>
 	);
 }

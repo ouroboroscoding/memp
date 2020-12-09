@@ -155,7 +155,7 @@ export default function MIP(props) {
 
 	// Remove the claim
 	function orderTransfer() {
-		Claimed.remove(props.customerId, 'transfer').then(res => {
+		Claimed.remove(props.customerId, 'transferred').then(res => {
 			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
@@ -194,6 +194,7 @@ export default function MIP(props) {
 					switch(o.form) {
 						case 'MIP-A1': Child = A1; break;
 						case 'MIP-A2': Child = A2; break;
+						case 'MIP-CED': Child = CED; break;
 						default: throw new Error('Invalid MIP form type');
 					}
 					return <Child

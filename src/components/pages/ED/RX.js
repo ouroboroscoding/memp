@@ -254,7 +254,7 @@ export default function RX(props) {
 				let iCustID = parseInt(props.customerId, 10);
 
 				// We can successfully close this claim
-				Claimed.remove(iCustID, 'approve').then(res => {
+				Claimed.remove(iCustID, 'approved').then(res => {
 					Events.trigger('claimedRemove', iCustID, true);
 					Events.trigger('success', 'Customer approved!');
 				}, error => {

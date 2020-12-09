@@ -190,7 +190,7 @@ export default function MIP(props) {
 			if(res.data) {
 
 				// Remove the claim
-				Claimed.remove(props.customerId, 'decline').then(res => {
+				Claimed.remove(props.customerId, 'declined').then(res => {
 					Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 					Events.trigger('success', 'Order Declined!');
 				}, error => {
@@ -202,7 +202,7 @@ export default function MIP(props) {
 
 	// Remove the claim
 	function orderTransfer() {
-		Claimed.remove(props.customerId, 'transfer').then(res => {
+		Claimed.remove(props.customerId, 'transferred').then(res => {
 			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
