@@ -1,7 +1,7 @@
 /**
  * Account
  *
- * Handles
+ * Handles showing and saving the user's account info
  *
  * @author Chris Nasr <bast@maleexcel.com>
  * @copyright MaleExcelMedical

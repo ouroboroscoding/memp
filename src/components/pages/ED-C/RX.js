@@ -63,9 +63,9 @@ export default function RX(props) {
 
 		// If we have an ID
 		if(props.patientId) {
-			ssoFetch();
+			rxFetch();
 		} else {
-			ssoSet(false);
+			prescriptionsSet([]);
 		}
 
 	// eslint-disable-next-line

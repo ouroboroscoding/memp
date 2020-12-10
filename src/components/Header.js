@@ -82,7 +82,7 @@ function CustomerItem(props) {
 	return (
 		<React.Fragment>
 			<Link to={Utils.orderPath(props)} onClick={click}>
-				<ListItem button selected={props.selected} className={props.transferredBy ? 'transferred' : ''}>
+				<ListItem button selected={props.selected} className={!props.viewed ? 'transferred' : ''}>
 					<ListItemAvatar>
 						{props.newNotes ?
 							<Avatar style={{backgroundColor: 'red'}}><NewReleasesIcon /></Avatar> :
@@ -158,6 +158,7 @@ export default class Header extends React.Component {
 		Events.add('signedOut', this.signedOut);
 		Events.add('claimedAdd', this.claimedAdd);
 		Events.add('claimedRemove', this.claimedRemove);
+		Events.add('activitySignout', this.signout);
 
 		// Track document visibility
 		PageVisibility.add(this.visibilityChange);
@@ -170,6 +171,7 @@ export default class Header extends React.Component {
 		Events.remove('signedOut', this.signedOut);
 		Events.remove('claimedAdd', this.claimedAdd);
 		Events.remove('claimedRemove', this.claimedRemove);
+		Events.remove('activitySignout', this.signout);
 
 		// Track document visibility
 		PageVisibility.remove(this.visibilityChange);
@@ -191,6 +193,7 @@ export default class Header extends React.Component {
 		let lClaimed = Tools.clone(this.state.claimed);
 
 		// Add the record to the end
+		order.viewed = true;
 		lClaimed.push(order);
 
 		// Generate the path
@@ -323,19 +326,19 @@ export default class Header extends React.Component {
 			let iIndex = Tools.afindi(this.state.claimed, 'customerId', order.customerId);
 
 			// If we have it, and it's a transfer
-			if(iIndex > -1 && this.state.claimed[iIndex].transferredBy) {
+			if(iIndex > -1 && !this.state.claimed[iIndex].viewed) {
 
 				// Clone the claims
 				let lClaimed = Tools.clone(this.state.claimed);
 
-				// Remove the transferredBy
-				lClaimed[iIndex].transferredBy = null;
+				// Set the viewed flag
+				lClaimed[iIndex].viewed = true;
 
 				// Update the state
 				state.claimed = lClaimed;
 
 				// Tell the server
-				Rest.update('monolith', 'order/claim/clear', {
+				Rest.update('monolith', 'order/claim/view', {
 					customerId: order.customerId
 				}).done(res => {
 					// If there's an error or warning
@@ -460,7 +463,15 @@ export default class Header extends React.Component {
 					<Link to="/queue/ed" onClick={this.menuClick}>
 						<ListItem button selected={this.state.path === "/queue/ed"}>
 							<ListItemIcon><AllInboxIcon /></ListItemIcon>
-							<ListItemText primary="ED Queue" />
+							<ListItemText primary="ED Initial Queue" />
+						</ListItem>
+					</Link>
+				}
+				{this.state.user.eDFlag === 'Y' &&
+					<Link to="/queue/ed/cont" onClick={this.menuClick}>
+						<ListItem button selected={this.state.path === "/queue/ed/cont"}>
+							<ListItemIcon><AllInboxIcon /></ListItemIcon>
+							<ListItemText primary="ED Expiring Queue" />
 						</ListItem>
 					</Link>
 				}

@@ -24,9 +24,10 @@ import Utils from '../utils';
  * @public
  * @param Number customer_id The customer ID
  * @param String order_id The order ID
+ * @param Boolean continuous Is the order a continuous one?
  * @return Promise
  */
-export function add(customer_id, order_id) {
+export function add(customer_id, order_id, continuous=false) {
 
 	// Return promise
 	return new Promise((resolve, reject) => {
@@ -34,7 +35,8 @@ export function add(customer_id, order_id) {
 		// Send the claim  to the server
 		Rest.create('monolith', 'order/claim', {
 			customerId: customer_id,
-			orderId: order_id
+			orderId: order_id,
+			continuous: continuous
 		}).done(res => {
 
 			// If there's an error or warning
