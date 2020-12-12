@@ -463,18 +463,18 @@ export default class Header extends React.Component {
 					<Link to="/queue/ed" onClick={this.menuClick}>
 						<ListItem button selected={this.state.path === "/queue/ed"}>
 							<ListItemIcon><AllInboxIcon /></ListItemIcon>
-							<ListItemText primary="ED Initial Queue" />
+							<ListItemText primary="ED Queue" />
 						</ListItem>
 					</Link>
 				}
-				{this.state.user.eDFlag === 'Y' &&
+				{/*this.state.user.eDFlag === 'Y' &&
 					<Link to="/queue/ed/cont" onClick={this.menuClick}>
 						<ListItem button selected={this.state.path === "/queue/ed/cont"}>
 							<ListItemIcon><AllInboxIcon /></ListItemIcon>
 							<ListItemText primary="ED Expiring Queue" />
 						</ListItem>
 					</Link>
-				}
+				*/}
 				{/*this.state.user.hormoneFlag === 'Y' &&
 					<Link to="/queue/hrt" onClick={this.menuClick}>
 						<ListItem button selected={this.state.path === "/queue/hrt"}>
