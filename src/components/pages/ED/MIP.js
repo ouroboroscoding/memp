@@ -16,11 +16,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 
 // Composite components
-import A1 from '../../composites/MIPs/A1';
-import A2 from '../../composites/MIPs/A2';
+import MIPs from '../../composites/MIPs';
 import PreviousMeds from '../../composites/PreviousMeds';
 import Transfer from '../../composites/Transfer';
 
@@ -36,7 +34,7 @@ import Claimed from '../../../data/claimed';
 // Generic modules
 import Events from '../../../generic/events';
 import Rest from '../../../generic/rest';
-import { afindi, clone } from '../../../generic/tools';
+import { afindo } from '../../../generic/tools';
 
 // Local modules
 import Utils from '../../../utils';
@@ -70,26 +68,6 @@ export default function MIP(props) {
 	// eslint-disable-next-line
 	}, [props.customerId, props.user]);
 
-	// Display a hidden mip
-	function mipDisplay(id) {
-
-		// Find the mip
-		let iIndex = afindi(mips, 'id', id);
-
-		// If found
-		if(iIndex > -1) {
-
-			// Clone the mips
-			let lMips = clone(mips);
-
-			// Change the display
-			lMips[iIndex].display = !lMips[iIndex].display;
-
-			// Set the new state
-			mipsSet(lMips);
-		}
-	}
-
 	// Fetch the mips
 	function mipsFetch() {
 
@@ -107,38 +85,8 @@ export default function MIP(props) {
 				Events.trigger('warning', JSON.stringify(res.warning));
 			}
 
-			// If there's data
-			if(res.data) {
-
-				// Go through each landing
-				for(let i in res.data) {
-
-					// Set the display
-					res.data[i].display = (i === '0');
-
-					// If it's an A2 or CED
-					if(res.data[i].form === 'MIP-A2') {
-
-						// Store the questions by ref
-						let oQuestions = {}
-						for(let o of res.data[i].questions) {
-							oQuestions[o.ref] = {
-								title: o.title,
-								answer: o.answer
-							}
-						}
-						res.data[i].questions = oQuestions;
-					}
-				}
-
-				// Set the state
-				mipsSet(res.data);
-			}
-
-			// No MIPs
-			else {
-				mipsSet(0);
-			}
+			// Set the MIPs
+			mipsSet(res.data || 0);
 		});
 	}
 
@@ -226,9 +174,12 @@ export default function MIP(props) {
 			}
 		}
 		for(let o of mips) {
-			if(o.form === 'MIP-A2' && o.questions['treatedForED'].answer === 'Yes') {
-				bTreatedForEd = true;
-				break;
+			if(o.form === 'MIP-A2') {
+				let q = afindo(o.questions, 'ref', 'treatedForED');
+				if(q && q.answer === 'Yes') {
+					bTreatedForEd = true;
+					break;
+				}
 			}
 		}
 	}
@@ -236,29 +187,10 @@ export default function MIP(props) {
 	// Render
 	return (
 		<Box className="mips">
-			{mips === 0 ?
-				<Box className="mip">
-					<Box className="section header">
-						<Typography className="title">No MIP(s) found for customer</Typography>
-					</Box>
-				</Box>
-			:
-				mips.map(o => {
-					let Child = null;
-					switch(o.form) {
-						case 'MIP-A1': Child = A1; break;
-						case 'MIP-A2': Child = A2; break;
-						default: throw new Error('Invalid MIP form type');
-					}
-					return <Child
-								key={o.id}
-								mobile={props.mobile}
-								onChange={() => mipDisplay(o.id)}
-								oxytocin={bOxytocin}
-								{...o}
-							/>
-				})
-			}
+			<MIPs
+				forms={mips === 0 ? [] : mips}
+				oxytocin={bOxytocin}
+			/>
 			<PreviousMeds
 				customerId={props.customerId}
 				patientId={props.patientId}

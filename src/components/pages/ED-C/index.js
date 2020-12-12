@@ -23,25 +23,23 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
-import Notes from '../composites/Notes';
+import Notes from '../../composites/Notes';
 
 // Page components
-import MIP from './ED-C/MIP';
-import RX from './ED-C/RX';
+import DS from './DS';
+import MIP from './MIP';
 
 // Data modules
-import DoseSpot from '../../data/dosespot';
+import DoseSpot from '../../../data/dosespot';
+import Encounters from '../../../data/encounters';
 
 // Generic modules
-import Events from '../../generic/events';
-import Rest from '../../generic/rest';
-import { clone } from '../../generic/tools';
+import Events from '../../../generic/events';
+import Rest from '../../../generic/rest';
+import { clone } from '../../../generic/tools';
 
 // Local modules
-import Utils from '../../utils';
-
-// Data
-import Encounters from '../../data/encounters';
+import Utils from '../../../utils';
 
 // Note types
 const _NOTES = {
@@ -95,7 +93,7 @@ export default function ED(props) {
 		// Request the encounter type from the server
 		Rest.read('monolith', 'encounter', {
 			state: state
-		}, false).done(res => {
+		}, {session: false}).done(res => {
 
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {
@@ -167,11 +165,11 @@ export default function ED(props) {
 	let Child = null, sTab = 'Order';
 	if(order.status === 'PENDING') {
 		Child = MIP;
-		sTab = 'MIP';
+		sTab = 'MIPs';
 	}
 	else if(order.status === 'COMPLETE') {
-		Child = RX;
-		sTab = 'RX';
+		Child = DS;
+		sTab = 'DoseSpot';
 	}
 
 	// Render
@@ -212,9 +210,8 @@ export default function ED(props) {
 			</Box>
 			<Box className="tabSection" style={{display: tab > 0 ? 'block' : 'none'}}>
 				<Notes
-					customerId={customerId}
 					mobile={props.mobile}
-					order={order}
+					customer={order}
 					type={_NOTES[tab]}
 				/>
 			</Box>

@@ -126,7 +126,7 @@ export default function Notes(props) {
 		fetchNotes();
 		fetchTemplates()
 	// eslint-disable-next-line
-	}, [props.customerId]);
+	}, [props.customer.customerId]);
 
 	// Effect on type change
 	useEffect(() => {
@@ -149,7 +149,7 @@ export default function Notes(props) {
 
 		// Find the Notes using the customer ID
 		Rest.read('monolith', 'customer/notes', {
-			customerId: props.customerId
+			customerId: props.customer.customerId
 		}).done(res => {
 
 			// If there's an error or warning
@@ -266,7 +266,7 @@ export default function Notes(props) {
 		let oData = {
 			action: props.type === 'notes' ? 'Save Notes' : 'Send Communication',
 			content: content,
-			customerId: props.customerId
+			customerId: props.customer.customerId
 		}
 
 		// Send the message to the server
@@ -325,8 +325,12 @@ export default function Notes(props) {
 		// Init the data
 		let oData = {
 			content: content,
-			customerId: props.customerId,
-			orderId: props.order.orderId
+			customerId: props.customer.customerId
+		}
+
+		// If we got an order ID, add it to the data
+		if(props.customer.orderId) {
+			oData.orderId = props.customer.orderId;
 		}
 
 		// Send the message to the server
@@ -382,9 +386,9 @@ export default function Notes(props) {
 
 	function useTemplate(event) {
 
-		// If we have no order
-		if(!props.order) {
-			Event.trigger('error', 'Can not use template without order data');
+		// If we have no customer
+		if(!props.customer) {
+			Event.trigger('error', 'Can not use template without customer data');
 			return;
 		}
 
@@ -410,13 +414,13 @@ export default function Notes(props) {
 			let sReplacement = null;
 			switch(lMatch[1]) {
 				case 'first_name':
-					sReplacement = props.order.shipping.firstName;
+					sReplacement = props.customer.shipping.firstName;
 					break;
 				case 'last_name':
-					sReplacement = props.order.shipping.lastName;
+					sReplacement = props.customer.shipping.lastName;
 					break;
 				case 'medications':
-					sReplacement = props.order.items.map(o => o.description).join(', ')
+					sReplacement = props.customer.items.map(o => o.description).join(', ')
 					break;
 				default:
 					sReplacement = 'UNKNOWN VARIABLE "' + lMatch[1] + '"';
