@@ -171,7 +171,8 @@ export default function MIP(props) {
 	// Decline the order we're on
 	function orderDecline() {
 		Rest.update('monolith', 'order/decline', {
-			orderId: props.order.orderId
+			orderId: props.order.orderId,
+			reason: 'Medical'
 		}).done(res => {
 
 			// If there's an error or warning
