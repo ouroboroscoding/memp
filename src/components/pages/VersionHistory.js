@@ -18,6 +18,10 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 const VERSION = [
+	['1.1.2', 'December 12th, 2020', [
+		'Stopped allowing DoseSpot prescriptions that are "Entered" but not approved.',
+		'Removed "ED Expiring Queue" which was still in development and should not have been in production.'
+	]],
 	['1.1.0', 'December 10th, 2020', [
 		'Numerous fixes and tweaks after testing first release.',
 		'Implemented tracking of all user activity.',
