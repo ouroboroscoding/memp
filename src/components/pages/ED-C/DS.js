@@ -301,12 +301,15 @@ export default function RX(props) {
 		return items.filter(rx => {
 
 			// If the status is invalid
-			if([6,7,8].indexOf(rx.Status) > -1) {
+			//	Entered, Error, Deleted, Requested
+			if([1,6,7,8].indexOf(rx.Status) > -1) {
 				return false;
 			}
 
 			// If the medication status is invalid
-			if([2,3,4].indexOf(rx.MedicationStatus) > -1) {
+			//	Inactive, Discontinued, Deleted, CancelRequested,
+			//	CancelPending, Cancelled, CancelDenied
+			if([2,3,4,6,7,8,9].indexOf(rx.MedicationStatus) > -1) {
 				return false;
 			}
 
