@@ -10,7 +10,7 @@
 
 // NPM modules
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Material UI
 import Box from '@material-ui/core/Box';
@@ -35,15 +35,33 @@ import Utils from '../../../utils';
  */
 export default function CED(props) {
 
+	// State
+	let [questions, questionsSet] = useState(null);
+
+	// Data effect
+	useEffect(() => {
+
+		// Store the questions by ref
+		let oQuestions = {}
+		for(let o of props.questions) {
+			oQuestions[o.ref] = {
+				title: o.title,
+				answer: o.answer
+			}
+		}
+		questionsSet(oQuestions);
+
+	}, [props.questions])
+
 	// Avoid issues with missing questions
 	function q(name) {
-		if(!(name in props.questions) || !props.questions[name].answer) {
+		if(!(name in questions) || !questions[name].answer) {
 			console.log('MIP questions missing: ', name);
 			return 'NO ANSWER!';
 		}
 
 		// Return the question's answer
-		return props.questions[name].answer;
+		return questions[name].answer;
 	}
 
 	// Render

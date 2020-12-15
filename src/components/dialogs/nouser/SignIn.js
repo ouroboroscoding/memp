@@ -82,8 +82,8 @@ export default function Signin(props) {
 		});
 	}
 
-	function keyPressed(event) {
-		if(event.key === 'Enter') {
+	function keyPressed(ev) {
+		if(ev.key === 'Enter') {
 			signin();
 		}
 	}

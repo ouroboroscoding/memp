@@ -25,7 +25,7 @@ import Typography from '@material-ui/core/Typography';
  *
  * @name SignOutWarning
  * @access public
- * @param Object props Properties passed to the component
+ * @param Object props Attributes passed to the component
  * @returns React.Component
  */
 export default function SignOutWarning(props) {

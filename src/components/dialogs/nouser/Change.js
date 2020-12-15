@@ -50,8 +50,8 @@ export default function Change(props) {
 	let passRef = useRef();
 	let confirmRef = useRef();
 
-	function keyPressed(event) {
-		if(event.key === 'Enter') {
+	function keyPressed(ev) {
+		if(ev.key === 'Enter') {
 			change();
 		} else {
 			errorsSet({});

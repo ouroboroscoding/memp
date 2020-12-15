@@ -35,12 +35,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import PersonIcon from '@material-ui/icons/Person';
+import SearchIcon from '@material-ui/icons/Search';
 
 // Dialog components
 import Account from './dialogs/Account';
 
 // Data modules
-import claimed from '../data/claimed';
+import Claimed from '../data/claimed';
 
 // Generic modules
 import Events from '../generic/events';
@@ -56,32 +57,14 @@ import Utils from '../utils';
 function CustomerItem(props) {
 
 	// Click event
-	function click(event) {
-		props.onClick(props);
+	function click(ev) {
+		props.onClick(ev.currentTarget.pathname, props);
 	}
-
-	// X click
-	/*function remove(event) {
-
-		// Stop all propogation of the event
-		if(event) {
-			event.stopPropagation();
-			event.preventDefault();
-		}
-
-		// Send the request to the server
-		claimed.remove(props.customerId, 'rejected').then(() => {
-			// Trigger the claimed being removed
-			Events.trigger('claimedRemove', props.customerId, props.selected);
-		}, error => {
-			Events.trigger('error', JSON.stringify(error));
-		});
-	}*/
 
 	// Render
 	return (
 		<React.Fragment>
-			<Link to={Utils.orderPath(props)} onClick={click}>
+			<Link to={Utils.path(props)} onClick={click}>
 				<ListItem button selected={props.selected} className={!props.viewed ? 'transferred' : ''}>
 					<ListItemAvatar>
 						{props.newNotes ?
@@ -92,20 +75,7 @@ function CustomerItem(props) {
 					<ListItemText
 						primary={props.customerName}
 						secondary={
-							<React.Fragment>
-								<span>
-									ID: {props.customerId}<br/>
-								</span>
-								{/*<span className="customerActions">
-									<span className="tooltip">
-										<Tooltip title="Remove Claim">
-											<IconButton className="close" onClick={remove}>
-												<CloseIcon />
-											</IconButton>
-										</Tooltip>
-									</span>
-								</span>*/}
-							</React.Fragment>
+							<span>ID: {props.customerId}</span>
 						}
 					/>
 				</ListItem>
@@ -197,7 +167,7 @@ export default class Header extends React.Component {
 		lClaimed.push(order);
 
 		// Generate the path
-		let sPath = Utils.orderPath(order);
+		let sPath = Utils.path(order);
 
 		// Create the new state
 		let oState = {
@@ -214,7 +184,7 @@ export default class Header extends React.Component {
 
 	claimedFetch() {
 
-		claimed.fetch().then(data => {
+		Claimed.fetch().then(data => {
 
 			// Init new state
 			let oState = {claimed: data};
@@ -263,7 +233,9 @@ export default class Header extends React.Component {
 
 			// If the path has switch
 			if(switch_path) {
-				oState.path = '/queue/' + oClaim.type;
+				oState.path = (oClaim.type === 'view') ?
+								'/search' :
+								'/queue/' + oClaim.type;
 				this.props.history.push(oState.path);
 			}
 
@@ -284,18 +256,17 @@ export default class Header extends React.Component {
 		this.setState({menu: false});
 	}
 
-	menuClick(event) {
+	menuClick(ev) {
 		this.menuItem(
-			event.currentTarget.pathname,
-			event.currentTarget.dataset.number
+			ev.currentTarget.pathname
 		);
 	}
 
-	menuItem(order) {
+	menuItem(path, customer=null) {
 
 		// New state
 		let state = {
-			path: Utils.orderPath(order)
+			path: path
 		};
 
 		// If we're in mobile, hide the menu
@@ -304,16 +275,16 @@ export default class Header extends React.Component {
 		}
 
 		// If we clicked on a claimed id
-		if(state.path.indexOf(order.orderId) > -1) {
+		if(customer) {
 
 			// Do we have a new notes flag for this customerId?
-			if(order.customerId in this.state.newNotes) {
+			if(customer.customerId in this.state.newNotes) {
 
 				// Clone the new notes
 				let dNewNotes = Tools.clone(this.state.newNotes);
 
 				// Remove the corresponding key
-				delete dNewNotes[order.customerId];
+				delete dNewNotes[customer.customerId];
 
 				// Update the state
 				state.newNotes = dNewNotes;
@@ -323,7 +294,7 @@ export default class Header extends React.Component {
 			}
 
 			// Look for it in claimed
-			let iIndex = Tools.afindi(this.state.claimed, 'customerId', order.customerId);
+			let iIndex = Tools.afindi(this.state.claimed, 'customerId', customer.customerId);
 
 			// If we have it, and it's a transfer
 			if(iIndex > -1 && !this.state.claimed[iIndex].viewed) {
@@ -339,7 +310,7 @@ export default class Header extends React.Component {
 
 				// Tell the server
 				Rest.update('monolith', 'order/claim/view', {
-					customerId: order.customerId
+					customerId: customer.customerId
 				}).done(res => {
 					// If there's an error or warning
 					if(res.error && !Utils.restError(res.error)) {
@@ -460,38 +431,42 @@ export default class Header extends React.Component {
 					</React.Fragment>
 				}
 				{this.state.user.eDFlag === 'Y' &&
-					<Link to="/queue/ed" onClick={this.menuClick}>
-						<ListItem button selected={this.state.path === "/queue/ed"}>
-							<ListItemIcon><AllInboxIcon /></ListItemIcon>
-							<ListItemText primary="ED Queue" />
-						</ListItem>
-					</Link>
+					<React.Fragment>
+						<Link to="/queue/ed" onClick={this.menuClick}>
+							<ListItem button selected={this.state.path === "/queue/ed"}>
+								<ListItemIcon><AllInboxIcon /></ListItemIcon>
+								<ListItemText primary="ED Queue" />
+							</ListItem>
+						</Link>
+						<Divider />
+					</React.Fragment>
 				}
 				{/*this.state.user.eDFlag === 'Y' &&
-					<Link to="/queue/ed/cont" onClick={this.menuClick}>
-						<ListItem button selected={this.state.path === "/queue/ed/cont"}>
-							<ListItemIcon><AllInboxIcon /></ListItemIcon>
-							<ListItemText primary="ED Expiring Queue" />
-						</ListItem>
-					</Link>
+					<React.Fragment>
+						<Link to="/queue/ed/cont" onClick={this.menuClick}>
+							<ListItem button selected={this.state.path === "/queue/ed/cont"}>
+								<ListItemIcon><AllInboxIcon /></ListItemIcon>
+								<ListItemText primary="ED Expiring Queue" />
+							</ListItem>
+						</Link>
+						<Divider />
+					</React.Fragment>
 				*/}
-				{/*this.state.user.hormoneFlag === 'Y' &&
-					<Link to="/queue/hrt" onClick={this.menuClick}>
-						<ListItem button selected={this.state.path === "/queue/hrt"}>
-							<ListItemIcon><AllInboxIcon /></ListItemIcon>
-							<ListItemText primary="HRT Queue" />
-						</ListItem>
-					</Link>
-				*/}
+				<Link to="/search" onClick={this.menuClick}>
+					<ListItem button selected={this.state.path === "/search"}>
+						<ListItemIcon><SearchIcon /></ListItemIcon>
+						<ListItemText primary="Search" />
+					</ListItem>
+				</Link>
+				<Divider />
 				{this.state.claimed.length > 0 &&
 					<React.Fragment>
-						<Divider />
 						{this.state.claimed.map((o,i) =>
 							<CustomerItem
 								key={i}
 								newNotes={o.customerId in this.state.newNotes}
 								onClick={this.menuItem}
-								selected={this.state.path === Utils.orderPath(o)}
+								selected={this.state.path === Utils.path(o)}
 								user={this.state.user}
 								{...o}
 							/>

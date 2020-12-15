@@ -54,8 +54,8 @@ export default function Forgot(props) {
 	// Refs
 	let emailRef = useRef();
 
-	function keyPressed(event) {
-		if(event.key === 'Enter') {
+	function keyPressed(ev) {
+		if(ev.key === 'Enter') {
 			forgot();
 		} else {
 			errorsSet({});

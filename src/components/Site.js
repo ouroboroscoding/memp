@@ -39,8 +39,10 @@ import ED from './pages/ED';
 import ED_C from './pages/ED-C';
 import Queue from './pages/Queue';
 import QueueCont from './pages/QueueCont';
+import Search from './pages/Search';
 import Templates from './pages/Templates';
 import VersionHistory from './pages/VersionHistory';
+import View from './pages/View';
 
 // Local modules
 import ActivityWatch from '../activityWatch';
@@ -82,11 +84,15 @@ Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xh
 // If we have a session, fetch the user
 if(Rest.session()) {
 	Rest.read('providers', 'session', {}).done(res => {
-		let iAgent = res.data.user.agent;
-		Rest.read('monolith', 'user', {}).done(res => {
-			res.data.agent = iAgent;
-			Events.trigger('signedIn', res.data);
-		});
+		if(res.error) {
+			Rest.session(null);
+		} else {
+			let iAgent = res.data.user.agent;
+			Rest.read('monolith', 'user', {}).done(res => {
+				res.data.agent = iAgent;
+				Events.trigger('signedIn', res.data);
+			});
+		}
 	});
 }
 
@@ -189,6 +195,12 @@ export default function Site(props) {
 								user={user}
 							/>
 						</Route>
+						<Route exact path="/search">
+							<Search
+								mobile={mobile}
+								user={user}
+							/>
+						</Route>
 						<Route
 							exact
 							path="/ed/:customerId/:orderId"
@@ -205,6 +217,17 @@ export default function Site(props) {
 							path="/ed-c/:customerId/:orderId"
 							children={
 								<ED_C
+									key={location.pathname}
+									mobile={mobile}
+									user={user}
+								/>
+							}
+						/>
+						<Route
+							exact
+							path="/view/:customerId"
+							children={
+								<View
 									key={location.pathname}
 									mobile={mobile}
 									user={user}

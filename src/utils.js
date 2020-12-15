@@ -147,19 +147,27 @@ export default {
 		return '(' + lMatch[1] + ') ' + lMatch[2] + '-' + lMatch[3];
 	},
 
-	orderPath(order) {
+	parsePath(path) {
+		// Split the path by /
+		return path.substr(1).split('/');
+	},
+
+	path(order) {
 		let sType = order.type;
 		if(order.continuous) {
 			sType += '-c';
 		}
 
-		// Generate the uri
-		return '/' + sType + '/' + order.customerId + '/' + order.orderId;
-	},
+		// Generate the base URI
+		let sURI = '/' + sType + '/' + order.customerId;
 
-	parsePath(path) {
-		// Split the path by /
-		return path.substr(1).split('/');
+		// If there's an order ID
+		if(order.orderId) {
+			sURI += '/' + order.orderId;
+		}
+
+		// Return the URI
+		return sURI;
 	},
 
 	restError: function(err) {
@@ -202,19 +210,10 @@ export default {
 				// But allow the child to deal with the messages themselves
 				return false;
 
-			// Invalid ID
-			case 1104:
-
-				// Notify the user
-				Events.trigger('error', 'The page or item you requested does not exist' + (err.msg ? ' (' + err.msg + ')' : ''));
-
-				// Nothing else to do
-				return true;
-
 			// no default
 		}
 
 		// Failed to process error
 		return false;
-	},
+	}
 }
