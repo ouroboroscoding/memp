@@ -182,7 +182,7 @@ export default function View(props) {
 	// If there was no info on the customer
 	if(customer === null) {
 		return (
-			<Box id="orderEd" className="page">
+			<Box id="view" className="page">
 				<Typography style={{padding: '10px'}}>No purchase infomation found for this customer.</Typography>
 				<Box style={{padding: '0 10px'}}>
 					<Button color="secondary" onClick={unclaim} variant="contained">Remove Claim</Button>
@@ -193,7 +193,7 @@ export default function View(props) {
 
 	// Render
 	return (
-		<Box id="orderEd" className="page">
+		<Box id="view" className="page">
 			<AppBar position="static" color="default">
 				<Tabs
 					onChange={(ev, tab) => tabSet(tab)}
