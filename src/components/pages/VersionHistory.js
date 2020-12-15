@@ -18,6 +18,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 const VERSION = [
+	['1.2.0', 'December 15th, 2020', [
+		'Added search page for looking up patients not awaiting approval and view all their info rather than just ED/HRT/etc.'
+	]],
 	['1.1.2', 'December 12th, 2020', [
 		'Stopped allowing DoseSpot prescriptions that are "Entered" but not approved.',
 		'Removed "ED Expiring Queue" which was still in development and should not have been in production.'
