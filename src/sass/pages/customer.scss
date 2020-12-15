@@ -1,4 +1,4 @@
-#orderEd {
+#order, #view {
 
 	header {
 		flex-basis: auto;
@@ -85,11 +85,15 @@
 			}
 		}
 	}
+
+	.badOrder {
+		padding: 0 20px;
+	}
 }
 
 @media (max-width: 600px) {
 
-	#orderEd {
+	#order, #view {
 
 		.details {
 			padding: 5px 10px 0 10px;
@@ -122,7 +126,7 @@
 
 @media (max-width: 960px) {
 
-	#orderEd {
+	#order, #view {
 
 		.mipCurrent {
 

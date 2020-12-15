@@ -431,7 +431,7 @@ export default function DS(props) {
 									<Button
 										onClick={() => ssoFetch()}
 										variant="contained"
-									>Open {props.mobile ? 'DS' : 'DoseSpot'}</Button>
+									>{props.mobile ? 'DS' : 'Open DoseSpot'}</Button>
 								</Grid>
 								{props.onRemove &&
 									<Grid item xs={iGrid}>

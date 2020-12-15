@@ -187,7 +187,7 @@ export default function ED(props) {
 
 	// Render
 	return (
-		<Box id="orderEd" className="page">
+		<Box id="order" className="page">
 			<AppBar position="static" color="default">
 				<Tabs
 					onChange={(ev, tab) => tabSet(tab)}
