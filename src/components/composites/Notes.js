@@ -126,7 +126,7 @@ export default function Notes(props) {
 		fetchNotes();
 		fetchTemplates()
 	// eslint-disable-next-line
-	}, [props.customerId]);
+	}, [props.customer.customerId]);
 
 	// Effect on type change
 	useEffect(() => {
@@ -149,7 +149,7 @@ export default function Notes(props) {
 
 		// Find the Notes using the customer ID
 		Rest.read('monolith', 'customer/notes', {
-			customerId: props.customerId
+			customerId: props.customer.customerId
 		}).done(res => {
 
 			// If there's an error or warning
@@ -266,7 +266,7 @@ export default function Notes(props) {
 		let oData = {
 			action: props.type === 'notes' ? 'Save Notes' : 'Send Communication',
 			content: content,
-			customerId: props.customerId
+			customerId: props.customer.customerId
 		}
 
 		// Send the message to the server
@@ -291,6 +291,7 @@ export default function Notes(props) {
 
 				// Add the new one to the end
 				lNotes.push({
+					id: res.data,
 					action: oData.action,
 					note: oData.action === 'Send Communication' ? '[Content] ' + oData.content : oData.content,
 					createdBy: 'You',
@@ -325,8 +326,12 @@ export default function Notes(props) {
 		// Init the data
 		let oData = {
 			content: content,
-			customerId: props.customerId,
-			orderId: props.order.orderId
+			customerId: props.customer.customerId
+		}
+
+		// If we got an order ID, add it to the data
+		if(props.customer.orderId) {
+			oData.orderId = props.customer.orderId;
 		}
 
 		// Send the message to the server
@@ -357,6 +362,7 @@ export default function Notes(props) {
 
 				// Add the new one to the end
 				lNotes.push({
+					id: res.data,
 					action: 'Send Communication',
 					note: '[Content] ' + oData.content,
 					createdBy: 'You',
@@ -374,27 +380,27 @@ export default function Notes(props) {
 	}
 
 	// Track any text enterered into an input box
-	function textPress(event) {
-		if(event.key === 'Enter') {
+	function textPress(ev) {
+		if(ev.key === 'Enter') {
 			noteAdd();
 		}
 	}
 
-	function useTemplate(event) {
+	function useTemplate(ev) {
 
-		// If we have no order
-		if(!props.order) {
-			Event.trigger('error', 'Can not use template without order data');
+		// If we have no customer
+		if(!props.customer) {
+			Event.trigger('error', 'Can not use template without customer data');
 			return;
 		}
 
 		// If it's the first one, do nothing
-		if(event.target.value === "-1") {
+		if(ev.target.value === "-1") {
 			return;
 		}
 
 		// Try to find the template index
-		let iIndex = afindi(templates, '_id', event.target.value);
+		let iIndex = afindi(templates, '_id', ev.target.value);
 
 		// If it doesn't exist
 		if(iIndex === -1) {
@@ -410,13 +416,13 @@ export default function Notes(props) {
 			let sReplacement = null;
 			switch(lMatch[1]) {
 				case 'first_name':
-					sReplacement = props.order.shipping.firstName;
+					sReplacement = props.customer.shipping.firstName;
 					break;
 				case 'last_name':
-					sReplacement = props.order.shipping.lastName;
+					sReplacement = props.customer.shipping.lastName;
 					break;
 				case 'medications':
-					sReplacement = props.order.items.map(o => o.description).join(', ')
+					sReplacement = props.customer.items.map(o => o.campaign).join(', ')
 					break;
 				default:
 					sReplacement = 'UNKNOWN VARIABLE "' + lMatch[1] + '"';
@@ -502,6 +508,6 @@ export default function Notes(props) {
 
 // Valid props
 Notes.propTypes = {
-	customerId: PropTypes.string.isRequired,
+	customer: PropTypes.object.isRequired,
 	type: PropTypes.oneOf(['', 'notes', 'sms']).isRequired
 }

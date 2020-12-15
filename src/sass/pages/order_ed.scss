@@ -74,7 +74,6 @@
 			}
 		}
 
-
 		.section {
 
 			.no {
@@ -83,49 +82,6 @@
 
 			.mipEdDetails {
 				text-align: center;
-			}
-		}
-	}
-
-	.rxCurrent {
-		height: 100%;
-
-		.create {
-			padding: 0 20px;
-		}
-
-		.matchUp {
-			padding: 0 20px;
-
-			.MuiOutlinedInput-root {
-				width: 100%;
-			}
-
-			.right {
-				text-align: right;
-			}
-		}
-
-		.sso {
-			display: flex;
-			flex-direction: column;
-			height: 100%;
-
-			iframe {
-				flex-basis: 0;
-				flex-grow: 1;
-				flex-shrink: 1;
-			}
-
-			.close {
-				flex-basis: auto;
-				flex-grow: 0;
-				flex-shrink: 0;
-				padding: 5px 20px;
-
-				button {
-					width: 100%;
-				}
 			}
 		}
 	}

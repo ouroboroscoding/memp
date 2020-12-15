@@ -23,25 +23,23 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
-import Notes from '../composites/Notes';
+import DS from '../../composites/DS';
+import Notes from '../../composites/Notes';
 
 // Page components
-import MIP from './ED/MIP';
-import RX from './ED/RX';
+import MIP from './MIP';
 
 // Data modules
-import DoseSpot from '../../data/dosespot';
+import DoseSpot from '../../../data/dosespot';
+import Encounters from '../../../data/encounters';
 
 // Generic modules
-import Events from '../../generic/events';
-import Rest from '../../generic/rest';
-import { clone } from '../../generic/tools';
+import Events from '../../../generic/events';
+import Rest from '../../../generic/rest';
+import { clone } from '../../../generic/tools';
 
 // Local modules
-import Utils from '../../utils';
-
-// Data
-import Encounters from '../../data/encounters';
+import Utils from '../../../utils';
 
 // Note types
 const _NOTES = {
@@ -89,29 +87,6 @@ export default function ED(props) {
 	// eslint-disable-next-line
 	}, [props.user, customerId, orderId]);
 
-	// Fetch the encounter type
-	function encounterFetch(state) {
-
-		// Request the encounter type from the server
-		Rest.read('monolith', 'encounter', {
-			state: state
-		}, {"session": false}).done(res => {
-
-			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
-				Events.trigger('error', JSON.stringify(res.error));
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If we got data
-			if(res.data) {
-				encounterSet(res.data);
-			}
-		})
-	}
-
 	// If the order was approved in MIP tab
 	function orderApprove() {
 		let oOrder = clone(order);
@@ -140,7 +115,11 @@ export default function ED(props) {
 				orderSet(res.data);
 
 				// Get the encounter type
-				encounterFetch(res.data.shipping.state);
+				Encounters.fetch(res.data.shipping.state).then(encounter => {
+					encounterSet(encounter);
+				}, error => {
+					Events.trigger('error', JSON.stringify(error));
+				});
 			}
 		});
 	}
@@ -154,6 +133,7 @@ export default function ED(props) {
 		});
 	}
 
+	// Set the patient ID
 	function patientCreate(id) {
 		patientSet(id);
 	}
@@ -166,12 +146,25 @@ export default function ED(props) {
 	// Child
 	let Child = null, sTab = 'Order';
 	if(order.status === 'PENDING') {
-		Child = MIP;
-		sTab = 'MIP';
+		Child = <MIP
+			customerId={customerId}
+			mobile={props.mobile}
+			onApprove={orderApprove}
+			order={order}
+			patientId={patientId}
+			user={props.user}
+		/>
+		sTab = 'MIPs';
 	}
 	else if(order.status === 'COMPLETE') {
-		Child = RX;
-		sTab = 'RX';
+		Child = <DS
+			mobile={props.mobile}
+			customer={order}
+			patientId={patientId}
+			start="sso"
+			user={props.user}
+		/>
+		sTab = 'DoseSpot';
 	}
 
 	// Render
@@ -195,26 +188,16 @@ export default function ED(props) {
 				</Grid>
 				<Grid item xs={5} sm={4} md={3} className="right">
 					<Typography className="status">{order.status}</Typography>
-					<Typography className="encounter">{Encounters[encounter]}</Typography>
+					<Typography className="encounter">{encounter}</Typography>
 				</Grid>
 			</Grid>
-			<Box className="tabSection" style={{display: tab === 0 ? 'block' : 'none'}}>
-				{Child &&
-					<Child
-						customerId={customerId}
-						mobile={props.mobile}
-						onApprove={orderApprove}
-						order={order}
-						patientId={patientId}
-						user={props.user}
-					/>
-				}
+			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
+				{Child && Child}
 			</Box>
 			<Box className="tabSection" style={{display: tab > 0 ? 'block' : 'none'}}>
 				<Notes
-					customerId={customerId}
 					mobile={props.mobile}
-					order={order}
+					customer={order}
 					type={_NOTES[tab]}
 				/>
 			</Box>

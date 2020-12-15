@@ -1,16 +1,16 @@
 /**
- * Continuous ED MIP
+ * ED MIP
  *
- * Handles fetching the correct MIP and displaying the relevant data
+ * Handles fetching all MIPs and displaying the relevant data
  *
  * @author Chris Nasr <bast@maleexcel.com>
  * @copyright MaleExcelMedical
- * @created 2020-11-03
+ * @created 2020-12-11
  */
 
 // NPM modules
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Material UI
 import Box from '@material-ui/core/Box';
@@ -21,12 +21,6 @@ import Grid from '@material-ui/core/Grid';
 import MIPs from '../../composites/MIPs';
 import PreviousMeds from '../../composites/PreviousMeds';
 import Transfer from '../../composites/Transfer';
-
-// Element components
-import { GreenButton } from '../../elements/Buttons';
-
-// Sibling components
-import SOAP from './SOAP';
 
 // Data modules
 import Claimed from '../../../data/claimed';
@@ -54,9 +48,6 @@ export default function MIP(props) {
 	let [mips, mipsSet] = useState(null);
 	let [transfer, transferSet] = useState(false);
 
-	// Refs
-	let refSOAP = useRef();
-
 	// Effects
 	useEffect(() => {
 		if(props.user) {
@@ -72,8 +63,7 @@ export default function MIP(props) {
 
 		// Request the order info from the server
 		Rest.read('monolith', 'customer/mips', {
-			customerId: props.customerId,
-			form: ['MIP-A1', 'MIP-A2', 'MIP-CED']
+			customerId: props.customerId
 		}).done(res => {
 
 			// If there's an error or warning
@@ -89,18 +79,10 @@ export default function MIP(props) {
 		});
 	}
 
-	// Approve the order we're on
-	function orderApprove() {
-
-	}
-
-	// Decline the order we're on
-	function orderDecline() {
-
-	}
-
 	// Remove the claim
-	function orderTransfer() {
+	function customerTransfer() {
+		transferSet(false);
+
 		Claimed.remove(props.customerId, 'transferred').then(res => {
 			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 		}, error => {
@@ -113,45 +95,29 @@ export default function MIP(props) {
 		return <p style={{padding: '10px'}}>Loading...</p>
 	}
 
-	// Check for oxytocin and treated for ED
-	let bOxytocin = false;
-
-	if(mips !== 0) {
-		for(let o of props.order.items) {
-			if(o.description.toLowerCase().search('oxytocin') > -1) {
-				bOxytocin = true;
-				break;
-			}
-		}
-	}
-
 	// Render
 	return (
 		<Box className="mips">
 			<MIPs
 				forms={mips === 0 ? [] : mips}
 				mobile={props.mobile}
-				oxytocin={bOxytocin}
+				oxytocin={true}
 			/>
 			<PreviousMeds
 				customerId={props.customerId}
 				patientId={props.patientId}
 				pharmacyId={56387}
 			/>
-			<SOAP
-				order={props.order}
-				ref={refSOAP}
-				treated={true}
-			/>
 			<Grid container spacing={1} className="rta">
-				<Grid item xs={4}>
-					<Button color="secondary" onClick={orderDecline} variant="contained">Decline</Button>
+				<Grid item xs={6}>
+					<Button
+						color="secondary"
+						onClick={props.onRemove}
+						variant="contained"
+					>Remove Claim</Button>
 				</Grid>
-				<Grid item xs={4}>
+				<Grid item xs={6}>
 					<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
-				</Grid>
-				<Grid item xs={4}>
-					<GreenButton onClick={orderApprove} variant="contained">Approve</GreenButton>
 				</Grid>
 			</Grid>
 			{transfer &&
@@ -159,7 +125,7 @@ export default function MIP(props) {
 					agent={props.user.agent}
 					customerId={props.customerId}
 					onClose={() => transferSet(false)}
-					onTransfer={orderTransfer}
+					onTransfer={customerTransfer}
 				/>
 			}
 		</Box>
@@ -170,8 +136,6 @@ export default function MIP(props) {
 MIP.propTypes = {
 	customerId: PropTypes.string.isRequired,
 	mobile: PropTypes.bool.isRequired,
-	onApprove: PropTypes.func.isRequired,
-	order: PropTypes.object.isRequired,
 	patientId: PropTypes.number.isRequired,
 	user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]).isRequired
 }

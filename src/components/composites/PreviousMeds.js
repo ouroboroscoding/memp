@@ -99,11 +99,13 @@ export default function PreviousMeds(props) {
 
 	// If we have no patient ID
 	if(!props.patientId) {
-		inner = [
-			<Typography>No DoseSpot patient account found. Create one and fetch previous medication?</Typography>,
-			<Pharmacies defaultValue={props.pharmacyId} ref={refPharmacy} />,
-			<Button color="primary" onClick={patientCreate} variant="contained">Create</Button>
-		]
+		inner = (
+			<React.Fragment>
+				<Typography>No DoseSpot patient account found. Create one and fetch previous medication?</Typography>
+				<Pharmacies defaultValue={props.pharmacyId} ref={refPharmacy} />&nbsp;
+				<Button color="primary" onClick={patientCreate} variant="contained">Create</Button>
+			</React.Fragment>
+		);
 	}
 
 	// Else, if we have a patient

@@ -56,7 +56,20 @@ export function create(customer_id, pharmacy_id=null) {
 
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {
-				reject(res.error);
+				switch(res.error.code) {
+					case 1104:
+						if(res.error.msg === 'mip') {
+							Events.trigger('error', 'No DOB found for customer');
+						} else {
+							Events.trigger('error', 'The page or item you requested does not exist');
+						}
+						break;
+					case 1910:
+						Events.trigger('error', 'No DOB found for customer');
+						break;
+					default:
+						reject(res.error);
+				}
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
