@@ -130,6 +130,7 @@ export default function MIP(props) {
 		<Box className="mips">
 			<MIPs
 				forms={mips === 0 ? [] : mips}
+				mobile={props.mobile}
 				oxytocin={bOxytocin}
 			/>
 			<PreviousMeds
@@ -168,6 +169,7 @@ export default function MIP(props) {
 // Valid props
 MIP.propTypes = {
 	customerId: PropTypes.string.isRequired,
+	mobile: PropTypes.bool.isRequired,
 	onApprove: PropTypes.func.isRequired,
 	order: PropTypes.object.isRequired,
 	patientId: PropTypes.number.isRequired,

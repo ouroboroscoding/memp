@@ -39,6 +39,7 @@ import ED from './pages/ED';
 import ED_C from './pages/ED-C';
 import Queue from './pages/Queue';
 import QueueCont from './pages/QueueCont';
+import Search from './pages/Search';
 import Templates from './pages/Templates';
 import VersionHistory from './pages/VersionHistory';
 import View from './pages/View';
@@ -191,6 +192,12 @@ export default function Site(props) {
 							<QueueCont
 								key="hrt"
 								type="hrt"
+								user={user}
+							/>
+						</Route>
+						<Route exact path="/search">
+							<Search
+								mobile={mobile}
 								user={user}
 							/>
 						</Route>

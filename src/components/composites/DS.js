@@ -20,42 +20,46 @@ import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 
+// Compisite components
+import Transfer from './Transfer';
+
 // Element components
-import { GreenButton } from '../../elements/Buttons';
-import Pharmacies from '../../elements/Pharmacies';
+import { GreenButton } from '../elements/Buttons';
+import Pharmacies from '../elements/Pharmacies';
 
 // Data modules
-import Claimed from '../../../data/claimed';
-import DoseSpot from '../../../data/dosespot';
+import Claimed from '../../data/claimed';
+import DoseSpot from '../../data/dosespot';
 
 // Generic modules
-import Events from '../../../generic/events';
-import Rest from '../../../generic/rest';
-import { afindi, clone, dateInc } from '../../../generic/tools';
+import Events from '../../generic/events';
+import Rest from '../../generic/rest';
+import { afindi, clone, dateInc } from '../../generic/tools';
 
 // Site modules
-import Utils from '../../../utils';
+import Utils from '../../utils';
 
 /**
- * RX
+ * DS
  *
- * Displays a RX based on its current state
+ * Displays DoseSpot info
  *
- * @name RX
+ * @name DS
  * @access public
  * @param Object props Attributes sent to the component
  * @return React.Component
  */
-export default function RX(props) {
+export default function DS(props) {
 
 	// State
 	let [matches, matchesSet] = useState({})
 	let [prescriptions, prescriptionsSet] = useState([]);
+	let [transfer, transferSet] = useState(false);
 	let [selects, selectsSet] = useState([]);
 	let [sso, ssoSet] = useState(false);
 
 	// Refs
-	let refItems = useRef(props.order.items.reduce((r,o) => ({...r, [o.productId]: React.createRef()}), {}));
+	let refItems = useRef(props.customer.items.reduce((r,o) => ({...r, [o.productId]: React.createRef()}), {}));
 	let refPharmacy = useRef();
 
 	// Patient ID effect
@@ -63,9 +67,15 @@ export default function RX(props) {
 
 		// If we have an ID
 		if(props.patientId) {
-			ssoFetch();
+			if(props.start === 'sso') {
+				ssoFetch();
+			} else if(props.start === 'matches') {
+				rxFetch();
+			}
+
 		} else {
 			ssoSet(false);
+			prescriptionsSet([]);
 		}
 
 	// eslint-disable-next-line
@@ -88,10 +98,21 @@ export default function RX(props) {
 	// eslint-disable-next-line
 	}, []);
 
+	// Remove the claim
+	function customerTransfer() {
+		transferSet(false);
+
+		Claimed.remove(props.customer.customerId, 'transferred').then(res => {
+			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
+		}, error => {
+			Events.trigger('error', JSON.stringify(error));
+		});
+	}
+
 	// Fetch matches of customer products to prescription IDs
 	function matchesFetch() {
 		Rest.read('providers', 'customer/to/rx', {
-			customer_id: props.order.customerId
+			customer_id: props.customer.customerId
 		}).done(res => {
 
 			// If there's an error or warning
@@ -130,7 +151,7 @@ export default function RX(props) {
 		}
 
 		// Create the patient
-		DoseSpot.create(props.customerId, iPharmacy).then(res => {
+		DoseSpot.create(props.customer.customerId, iPharmacy).then(res => {
 			ssoFetch(res);
 			Events.trigger('patientCreate', res);
 		}, error => {
@@ -149,7 +170,7 @@ export default function RX(props) {
 		let dRet = {}
 
 		// Copy the list of items
-		let lItems = clone(props.order.items);
+		let lItems = clone(props.customer.items);
 
 		// Create a list of prescriptions not used
 		let lRXs = p.map(o => o.PrescriptionId);
@@ -209,7 +230,7 @@ export default function RX(props) {
 		let lUsed = [];
 
 		// Go through each item and get the value of the select
-		for(let o of props.order.items) {
+		for(let o of props.customer.items) {
 
 			// Get the rx ID
 			let iDsID = parseInt(refItems.current[o.productId].current.value, 10);
@@ -235,7 +256,7 @@ export default function RX(props) {
 
 		// No issues? Send it to the server
 		Rest.update('providers', 'customer/to/rx', {
-			customer_id: props.order.customerId,
+			customer_id: props.customer.customerId,
 			products: lProducts
 		}).done(res => {
 
@@ -251,7 +272,7 @@ export default function RX(props) {
 			if(res.data) {
 
 				// Convert the customer ID to an int
-				let iCustID = parseInt(props.customerId, 10);
+				let iCustID = parseInt(props.customer.customerId, 10);
 
 				// We can successfully close this claim
 				Claimed.remove(iCustID, 'approved').then(res => {
@@ -359,13 +380,16 @@ export default function RX(props) {
 	];
 	for(let o of prescriptions) {
 		lRxOptions.push(
-			<option key={o.PrescriptionId} value={o.PrescriptionId}>{Utils.niceDate(o.WrittenDate, props.mobile ? 'short' : 'long')} - {o.DisplayName}</option>
+			<option key={o.PrescriptionId} value={o.PrescriptionId}>{Utils.niceDate(o.WrittenDate, props.mobile ? 'short' : 'long')} - {o.PharmacyName} - {o.DisplayName}</option>
 		)
 	}
 
+	// Grid size
+	let iGrid = (props.onRemove) ? 3 : 4
+
 	// Render
 	return (
-		<Box className="rxCurrent">
+		<Box id="DoseSpot">
 			{props.patientId ?
 				<React.Fragment>
 					{sso ?
@@ -381,11 +405,13 @@ export default function RX(props) {
 						</Box>
 					:
 						<Box className="matchUp">
-							{props.order.items.map((o,i) =>
+							{props.customer.items.map((o,i) =>
 								<Box key={o.productId} className="section">
 									<Grid container spacing={1}>
-										<Grid item xs={12} sm={6}>{o.description}</Grid>
-										<Grid item xs={12} sm={6}>
+										<Grid item xs={12} sm={5} className="product">
+											<Box><Box><Typography>{o.description}</Typography></Box></Box>
+										</Grid>
+										<Grid item xs={12} sm={7} className="prescription">
 											<Select
 												className='select'
 												inputProps={{
@@ -401,13 +427,28 @@ export default function RX(props) {
 								</Box>
 							)}
 							<Grid container spacing={1}>
-								<Grid item xs={6} className="left">
+								<Grid item xs={iGrid}>
 									<Button
 										onClick={() => ssoFetch()}
 										variant="contained"
-									>Open DoseSpot</Button>
+									>Open {props.mobile ? 'DS' : 'DoseSpot'}</Button>
 								</Grid>
-								<Grid item xs={6} className="right">
+								{props.onRemove &&
+									<Grid item xs={iGrid}>
+										<Button
+											color="secondary"
+											onClick={props.onRemove}
+											variant="contained"
+										>{props.mobile ? 'x' : 'Remove Claim'}</Button>
+									</Grid>
+								}
+								<Grid item xs={iGrid}>
+									<Button
+										onClick={() => transferSet(true)}
+										variant="contained"
+									>Transfer</Button>
+								</Grid>
+								<Grid item xs={iGrid}>
 									<GreenButton
 										onClick={rxConfirm}
 										variant="contained"
@@ -421,23 +462,56 @@ export default function RX(props) {
 				<Box className="create">
 					<Box className="section">
 						<Typography>No DoseSpot patient account found. Create one and open DoseSpot page?</Typography>
-						<Pharmacies defaultValue={56387} ref={refPharmacy} />
+						<Pharmacies defaultValue={56387} ref={refPharmacy} />&nbsp;
 						<Button
 							color="primary"
 							onClick={patientCreate}
 							variant="contained"
 						>Create</Button>
 					</Box>
+					<Grid container spacing={1} className="actions">
+						<Grid item xs={6}>
+							{props.onRemove &&
+								<Button
+									color="secondary"
+									onClick={props.onRemove}
+									variant="contained"
+								>Remove Claim</Button>
+							}
+						</Grid>
+						<Grid item xs={6}>
+							<Button
+								onClick={() => transferSet(true)}
+								variant="contained"
+							>Transfer</Button>
+						</Grid>
+					</Grid>
 				</Box>
+
+			}
+			{transfer &&
+				<Transfer
+					agent={props.user.agent}
+					customerId={props.customer.customerId}
+					onClose={() => transferSet(false)}
+					onTransfer={customerTransfer}
+				/>
 			}
 		</Box>
 	)
 }
 
 // Valid props
-RX.propTypes = {
-	customerId: PropTypes.string.isRequired,
+DS.propTypes = {
+	customer: PropTypes.object.isRequired,
 	mobile: PropTypes.bool.isRequired,
-	order: PropTypes.object.isRequired,
-	patientId: PropTypes.number.isRequired
+	onRemove: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
+	patientId: PropTypes.number.isRequired,
+	start: PropTypes.oneOf(['sso', 'matches']).isRequired,
+	user: PropTypes.object.isRequired
+}
+
+// Default props
+DS.defaultProps = {
+	onRemove: false
 }

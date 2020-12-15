@@ -289,5 +289,5 @@ A2.propTypes = {
 	form: PropTypes.string.isRequired,
 	mobile: PropTypes.bool.isRequired,
 	onChange: PropTypes.func.isRequired,
-	questions: PropTypes.object.isRequired
+	questions: PropTypes.array.isRequired
 }

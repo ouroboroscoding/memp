@@ -56,11 +56,11 @@ export default class SOAP extends React.Component {
 		this.items = props.order.items.map(o => o.description).join(', ');
 	}
 
-	setPlan(event) {
+	setPlan(ev) {
 		// Blank out the plan if they choose "Choose Plan..." otherwise use the
 		//	value from the const
-		this.plan.current.value = (event.target.value === '-1') ? '' :
-									_PLANS[event.target.value];
+		this.plan.current.value = (ev.target.value === '-1') ? '' :
+									_PLANS[ev.target.value];
 	}
 
 	render() {

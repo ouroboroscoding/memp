@@ -37,7 +37,7 @@ import { clone } from '../../../generic/tools';
 export default function MIPs(props) {
 
 	// State
-	let [display, displaySet] = useState({[props.forms[0].id]: true})
+	let [display, displaySet] = useState(props.forms.length ? {[props.forms[0].id]: true} : {});
 
 	// Display or hide a MIP
 	function mipToggle(id) {
@@ -91,6 +91,7 @@ export default function MIPs(props) {
 // Valid props
 MIPs.propTypes = {
 	forms: PropTypes.arrayOf(PropTypes.object).isRequired,
+	mobile: PropTypes.bool.isRequired,
 	oxytocin: PropTypes.bool
 }
 

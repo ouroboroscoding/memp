@@ -291,6 +291,7 @@ export default function Notes(props) {
 
 				// Add the new one to the end
 				lNotes.push({
+					id: res.data,
 					action: oData.action,
 					note: oData.action === 'Send Communication' ? '[Content] ' + oData.content : oData.content,
 					createdBy: 'You',
@@ -361,6 +362,7 @@ export default function Notes(props) {
 
 				// Add the new one to the end
 				lNotes.push({
+					id: res.data,
 					action: 'Send Communication',
 					note: '[Content] ' + oData.content,
 					createdBy: 'You',
@@ -378,13 +380,13 @@ export default function Notes(props) {
 	}
 
 	// Track any text enterered into an input box
-	function textPress(event) {
-		if(event.key === 'Enter') {
+	function textPress(ev) {
+		if(ev.key === 'Enter') {
 			noteAdd();
 		}
 	}
 
-	function useTemplate(event) {
+	function useTemplate(ev) {
 
 		// If we have no customer
 		if(!props.customer) {
@@ -393,12 +395,12 @@ export default function Notes(props) {
 		}
 
 		// If it's the first one, do nothing
-		if(event.target.value === "-1") {
+		if(ev.target.value === "-1") {
 			return;
 		}
 
 		// Try to find the template index
-		let iIndex = afindi(templates, '_id', event.target.value);
+		let iIndex = afindi(templates, '_id', ev.target.value);
 
 		// If it doesn't exist
 		if(iIndex === -1) {
@@ -420,7 +422,7 @@ export default function Notes(props) {
 					sReplacement = props.customer.shipping.lastName;
 					break;
 				case 'medications':
-					sReplacement = props.customer.items.map(o => o.description).join(', ')
+					sReplacement = props.customer.items.map(o => o.campaign).join(', ')
 					break;
 				default:
 					sReplacement = 'UNKNOWN VARIABLE "' + lMatch[1] + '"';
@@ -506,6 +508,6 @@ export default function Notes(props) {
 
 // Valid props
 Notes.propTypes = {
-	customerId: PropTypes.string.isRequired,
+	customer: PropTypes.object.isRequired,
 	type: PropTypes.oneOf(['', 'notes', 'sms']).isRequired
 }

@@ -23,10 +23,10 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
+import DS from '../../composites/DS';
 import Notes from '../../composites/Notes';
 
 // Page components
-import DS from './DS';
 import MIP from './MIP';
 
 // Data modules
@@ -146,11 +146,24 @@ export default function ED(props) {
 	// Child
 	let Child = null, sTab = 'Order';
 	if(order.status === 'PENDING') {
-		Child = MIP;
+		Child = <MIP
+			customerId={customerId}
+			mobile={props.mobile}
+			onApprove={orderApprove}
+			order={order}
+			patientId={patientId}
+			user={props.user}
+		/>
 		sTab = 'MIPs';
 	}
 	else if(order.status === 'COMPLETE') {
-		Child = DS;
+		Child = <DS
+			mobile={props.mobile}
+			customer={order}
+			patientId={patientId}
+			start="sso"
+			user={props.user}
+		/>
 		sTab = 'DoseSpot';
 	}
 
@@ -178,17 +191,8 @@ export default function ED(props) {
 					<Typography className="encounter">{encounter}</Typography>
 				</Grid>
 			</Grid>
-			<Box className="tabSection" style={{display: tab === 0 ? 'block' : 'none'}}>
-				{Child &&
-					<Child
-						customerId={customerId}
-						mobile={props.mobile}
-						onApprove={orderApprove}
-						order={order}
-						patientId={patientId}
-						user={props.user}
-					/>
-				}
+			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
+				{Child && Child}
 			</Box>
 			<Box className="tabSection" style={{display: tab > 0 ? 'block' : 'none'}}>
 				<Notes

@@ -22,6 +22,9 @@ import MIPs from '../../composites/MIPs';
 import PreviousMeds from '../../composites/PreviousMeds';
 import Transfer from '../../composites/Transfer';
 
+// Data modules
+import Claimed from '../../../data/claimed';
+
 // Generic modules
 import Events from '../../../generic/events';
 import Rest from '../../../generic/rest';
@@ -79,6 +82,12 @@ export default function MIP(props) {
 	// Remove the claim
 	function customerTransfer() {
 		transferSet(false);
+
+		Claimed.remove(props.customerId, 'transferred').then(res => {
+			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
+		}, error => {
+			Events.trigger('error', JSON.stringify(error));
+		});
 	}
 
 	// If we don't have the MIP yet
@@ -91,6 +100,7 @@ export default function MIP(props) {
 		<Box className="mips">
 			<MIPs
 				forms={mips === 0 ? [] : mips}
+				mobile={props.mobile}
 				oxytocin={true}
 			/>
 			<PreviousMeds
@@ -99,7 +109,14 @@ export default function MIP(props) {
 				pharmacyId={56387}
 			/>
 			<Grid container spacing={1} className="rta">
-				<Grid item xs={12}>
+				<Grid item xs={6}>
+					<Button
+						color="secondary"
+						onClick={props.onRemove}
+						variant="contained"
+					>Remove Claim</Button>
+				</Grid>
+				<Grid item xs={6}>
 					<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
 				</Grid>
 			</Grid>
@@ -118,6 +135,7 @@ export default function MIP(props) {
 // Valid props
 MIP.propTypes = {
 	customerId: PropTypes.string.isRequired,
+	mobile: PropTypes.bool.isRequired,
 	patientId: PropTypes.number.isRequired,
 	user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]).isRequired
 }
