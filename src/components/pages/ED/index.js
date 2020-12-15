@@ -205,6 +205,7 @@ export default function ED(props) {
 		Child = <BadOrder
 			onRemove={unclaim}
 		/>
+		sTab = 'N/A';
 	}
 
 	// Render
