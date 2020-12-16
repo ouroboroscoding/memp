@@ -435,7 +435,7 @@ export default class Header extends React.Component {
 						<Link to="/queue/ed" onClick={this.menuClick}>
 							<ListItem button selected={this.state.path === "/queue/ed"}>
 								<ListItemIcon><AllInboxIcon /></ListItemIcon>
-								<ListItemText primary="ED Queue" />
+								<ListItemText primary="ED New Orders" />
 							</ListItem>
 						</Link>
 						<Divider />
@@ -446,7 +446,7 @@ export default class Header extends React.Component {
 						<Link to="/queue/ed/cont" onClick={this.menuClick}>
 							<ListItem button selected={this.state.path === "/queue/ed/cont"}>
 								<ListItemIcon><AllInboxIcon /></ListItemIcon>
-								<ListItemText primary="ED Expiring Queue" />
+								<ListItemText primary="ED Expiring" />
 							</ListItem>
 						</Link>
 						<Divider />
