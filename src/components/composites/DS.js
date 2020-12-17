@@ -103,7 +103,7 @@ export default function DS(props) {
 		transferSet(false);
 
 		Claimed.remove(props.customer.customerId, 'transferred').then(res => {
-			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
+			Events.trigger('claimedRemove', props.customer.customerId, true);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
 		});
