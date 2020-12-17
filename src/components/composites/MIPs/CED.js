@@ -80,7 +80,7 @@ export default function CED(props) {
 				{props.display &&
 					<React.Fragment>
 						<Box className="section">
-							<Typography className="title">Did the prescriber medication work?</Typography>
+							<Typography className="title">Did the prescribed medication work?</Typography>
 							<Typography>{q('medicationEffectiveness')}</Typography>
 						</Box>
 						<Box className="section">
