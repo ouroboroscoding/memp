@@ -91,12 +91,63 @@ export default function MIP(props) {
 
 	// Approve the order we're on
 	function orderApprove() {
+		Rest.update('monolith', 'order/continuous/approve', {
+			customerId: props.customerId,
+			orderId: props.order.orderId,
+			soap: refSOAP.current.value
+		}).done(res => {
 
+			// If there's an error or warning
+			if(res.error && !Utils.restError(res.error)) {
+				if(res.error.code === 1103) {
+					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
+				} else {
+					Events.trigger('error', JSON.stringify(res.error));
+				}
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if(res.data) {
+				props.onApprove();
+			}
+		});
 	}
 
 	// Decline the order we're on
 	function orderDecline() {
+		Rest.update('monolith', 'order/continuous/decline', {
+			customerId: props.customerId,
+			orderId: props.order.orderId,
+			reason: 'Medical'
+		}).done(res => {
 
+			// If there's an error or warning
+			if(res.error && !Utils.restError(res.error)) {
+				if(res.error.code === 1103) {
+					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
+				} else {
+					Events.trigger('error', JSON.stringify(res.error));
+				}
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if(res.data) {
+
+				// Remove the claim
+				Claimed.remove(props.customerId, 'declined').then(res => {
+					Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
+					Events.trigger('success', 'Order Declined!');
+				}, error => {
+					Events.trigger('error', JSON.stringify(error));
+				});
+			}
+		});
 	}
 
 	// Remove the claim

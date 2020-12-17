@@ -17,13 +17,13 @@ import { useParams } from 'react-router-dom';
 // Material UI
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
+import BadOrder from '../../composites/BadOrder';
 import DS from '../../composites/DS';
 import Notes from '../../composites/Notes';
 
@@ -31,7 +31,6 @@ import Notes from '../../composites/Notes';
 import MIP from './MIP';
 
 // Data modules
-import Claimed from '../../../data/claimed';
 import DoseSpot from '../../../data/dosespot';
 import Encounters from '../../../data/encounters';
 
@@ -48,31 +47,6 @@ const _NOTES = {
 	'0': '',
 	'1': 'notes',
 	'2': 'sms'
-}
-
-/**
- * Bad Order
- *
- * Used when an order is neither pending or complete
- *
- * @name BadOrder
- * @access private
- * @param Object props Attributes sent to the component
- */
-function BadOrder(props) {
-	return (
-		<Box className="badOrder">
-			<Typography style={{padding: '10px'}}>Someone messed up and transferred you an order that can't be approved.</Typography>
-			<Box style={{padding: '0 10px'}}>
-				<Button color="secondary" onClick={props.onRemove} variant="contained">Remove Claim</Button>
-			</Box>
-		</Box>
-	)
-}
-
-// Valid props
-BadOrder.propTypes = {
-	onRemove: PropTypes.func.isRequired
 }
 
 /**
@@ -165,15 +139,6 @@ export default function ED(props) {
 		patientSet(id);
 	}
 
-	// Unclaim the customer
-	function unclaim() {
-		Claimed.remove(customerId, 'x').then(res => {
-			Events.trigger('claimedRemove', parseInt(customerId, 10), true);
-		}, error => {
-			Events.trigger('error', JSON.stringify(error));
-		});
-	}
-
 	// If we have no order
 	if(order === null) {
 		return <p style={{padding: '10px'}}>Loading Order...</p>
@@ -203,7 +168,7 @@ export default function ED(props) {
 		sTab = 'DoseSpot';
 	} else {
 		Child = <BadOrder
-			onRemove={unclaim}
+			customerId={customerId}
 		/>
 		sTab = 'N/A';
 	}
@@ -233,7 +198,7 @@ export default function ED(props) {
 				</Grid>
 			</Grid>
 			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
-				{Child && Child}
+				{Child}
 			</Box>
 			<Box className="tabSection" style={{display: tab > 0 ? 'block' : 'none'}}>
 				<Notes

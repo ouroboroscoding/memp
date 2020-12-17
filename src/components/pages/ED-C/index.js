@@ -23,6 +23,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
+import BadOrder from '../../composites/BadOrder';
 import DS from '../../composites/DS';
 import Notes from '../../composites/Notes';
 
@@ -121,7 +122,8 @@ export default function ED(props) {
 	function orderFetch() {
 
 		// Request the order info from the server
-		Rest.read('konnektive', 'order', {
+		Rest.read('monolith', 'order/continuous', {
+			customerId: parseInt(customerId, 10),
 			orderId: orderId
 		}).done(res => {
 
@@ -183,6 +185,11 @@ export default function ED(props) {
 			user={props.user}
 		/>
 		sTab = 'DoseSpot';
+	} else {
+		Child = <BadOrder
+			customerId={customerId}
+		/>
+		sTab = 'N/A';
 	}
 
 	// Render
@@ -210,7 +217,7 @@ export default function ED(props) {
 				</Grid>
 			</Grid>
 			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
-				{Child && Child}
+				{Child}
 			</Box>
 			<Box className="tabSection" style={{display: tab > 0 ? 'block' : 'none'}}>
 				<Notes
