@@ -151,6 +151,7 @@ export default function ED(props) {
 			customerId={customerId}
 			mobile={props.mobile}
 			onApprove={orderApprove}
+			onReload={orderFetch}
 			order={order}
 			patientId={patientId}
 			user={props.user}

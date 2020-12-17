@@ -99,8 +99,9 @@ export default function MIP(props) {
 
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {
-				if(res.error.code === 1103) {
-					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
+				if(res.error.code === 1515) {
+					Events.trigger('error', 'Order no longer PENDING');
+					props.onReload()
 				} else {
 					Events.trigger('error', JSON.stringify(res.error));
 				}
@@ -127,7 +128,10 @@ export default function MIP(props) {
 			// If there's an error or warning
 			if(res.error && !Utils.restError(res.error)) {
 				if(res.error.code === 1103) {
-					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
+					Events.trigger('error', 'Failed to cancel purchase in Konnektive, please try again or contact support');
+				} else if(res.error.code === 1515) {
+					Events.trigger('error', 'Order no longer PENDING');
+					props.onReload()
 				} else {
 					Events.trigger('error', JSON.stringify(res.error));
 				}
@@ -222,6 +226,7 @@ MIP.propTypes = {
 	customerId: PropTypes.string.isRequired,
 	mobile: PropTypes.bool.isRequired,
 	onApprove: PropTypes.func.isRequired,
+	onReload: PropTypes.func.isRequired,
 	order: PropTypes.object.isRequired,
 	patientId: PropTypes.number.isRequired,
 	user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]).isRequired
