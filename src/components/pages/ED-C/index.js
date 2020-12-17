@@ -88,29 +88,6 @@ export default function ED(props) {
 	// eslint-disable-next-line
 	}, [props.user, customerId, orderId]);
 
-	// Fetch the encounter type
-	function encounterFetch(state) {
-
-		// Request the encounter type from the server
-		Rest.read('monolith', 'encounter', {
-			state: state
-		}, {session: false}).done(res => {
-
-			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
-				Events.trigger('error', JSON.stringify(res.error));
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If we got data
-			if(res.data) {
-				encounterSet(res.data);
-			}
-		})
-	}
-
 	// If the order was approved in MIP tab
 	function orderApprove() {
 		let oOrder = clone(order);
@@ -140,7 +117,11 @@ export default function ED(props) {
 				orderSet(res.data);
 
 				// Get the encounter type
-				encounterFetch(res.data.shipping.state);
+				Encounters.fetch(res.data.shipping.state).then(encounter => {
+					encounterSet(encounter);
+				}, error => {
+					Events.trigger('error', JSON.stringify(error));
+				});
 			}
 		});
 	}
@@ -213,7 +194,7 @@ export default function ED(props) {
 				</Grid>
 				<Grid item xs={5} sm={4} md={3} className="right">
 					<Typography className="status">{order.status}</Typography>
-					<Typography className="encounter">{Encounters[encounter]}</Typography>
+					<Typography className="encounter">{encounter}</Typography>
 				</Grid>
 			</Grid>
 			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
