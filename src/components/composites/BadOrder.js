@@ -32,6 +32,7 @@ import Events from '../../generic/events';
  * @name BadOrder
  * @access private
  * @param Object props Attributes sent to the component
+ * @returns React.Component
  */
 export default function BadOrder(props) {
 
