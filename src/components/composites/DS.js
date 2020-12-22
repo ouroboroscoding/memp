@@ -103,7 +103,7 @@ export default function DS(props) {
 		transferSet(false);
 
 		Claimed.remove(props.customer.customerId, 'transferred').then(res => {
-			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
+			Events.trigger('claimedRemove', props.customer.customerId, true);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
 		});
@@ -385,7 +385,7 @@ export default function DS(props) {
 	}
 
 	// Grid size
-	let iGrid = (props.onRemove) ? 3 : 4
+	let lGrid = (props.onRemove) ? [3, 6] : [4, 12]
 
 	// Render
 	return (
@@ -427,14 +427,14 @@ export default function DS(props) {
 								</Box>
 							)}
 							<Grid container spacing={1}>
-								<Grid item xs={iGrid}>
+								<Grid item xs={lGrid[0]}>
 									<Button
 										onClick={() => ssoFetch()}
 										variant="contained"
 									>{props.mobile ? 'DS' : 'Open DoseSpot'}</Button>
 								</Grid>
 								{props.onRemove &&
-									<Grid item xs={iGrid}>
+									<Grid item xs={lGrid[0]}>
 										<Button
 											color="secondary"
 											onClick={props.onRemove}
@@ -442,13 +442,13 @@ export default function DS(props) {
 										>{props.mobile ? 'x' : 'Remove Claim'}</Button>
 									</Grid>
 								}
-								<Grid item xs={iGrid}>
+								<Grid item xs={lGrid[0]}>
 									<Button
 										onClick={() => transferSet(true)}
 										variant="contained"
 									>Transfer</Button>
 								</Grid>
-								<Grid item xs={iGrid}>
+								<Grid item xs={lGrid[0]}>
 									<GreenButton
 										onClick={rxConfirm}
 										variant="contained"
@@ -470,16 +470,16 @@ export default function DS(props) {
 						>Create</Button>
 					</Box>
 					<Grid container spacing={1} className="actions">
-						<Grid item xs={6}>
-							{props.onRemove &&
+						{props.onRemove &&
+							<Grid item xs={lGrid[1]}>
 								<Button
 									color="secondary"
 									onClick={props.onRemove}
 									variant="contained"
 								>Remove Claim</Button>
-							}
-						</Grid>
-						<Grid item xs={6}>
+							</Grid>
+						}
+						<Grid item xs={lGrid[1]}>
 							<Button
 								onClick={() => transferSet(true)}
 								variant="contained"
