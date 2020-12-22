@@ -18,6 +18,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 const VERSION = [
+	['1.3.0', 'December 22nd, 2020', [
+		'Added ED Expiring queue for handling CED MIPs.'
+	]],
 	['1.2.0', 'December 15th, 2020', [
 		'Added search page for looking up patients not awaiting approval and view all their info rather than just ED/HRT/etc.'
 	]],
