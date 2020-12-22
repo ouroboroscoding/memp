@@ -435,23 +435,23 @@ export default class Header extends React.Component {
 						<Link to="/queue/ed" onClick={this.menuClick}>
 							<ListItem button selected={this.state.path === "/queue/ed"}>
 								<ListItemIcon><AllInboxIcon /></ListItemIcon>
-								<ListItemText primary="ED Queue" />
+								<ListItemText primary="ED New Orders" />
 							</ListItem>
 						</Link>
 						<Divider />
 					</React.Fragment>
 				}
-				{/*this.state.user.eDFlag === 'Y' &&
+				{this.state.user.eDFlag === 'Y' &&
 					<React.Fragment>
 						<Link to="/queue/ed/cont" onClick={this.menuClick}>
 							<ListItem button selected={this.state.path === "/queue/ed/cont"}>
 								<ListItemIcon><AllInboxIcon /></ListItemIcon>
-								<ListItemText primary="ED Expiring Queue" />
+								<ListItemText primary="ED Expiring" />
 							</ListItem>
 						</Link>
 						<Divider />
 					</React.Fragment>
-				*/}
+				}
 				<Link to="/search" onClick={this.menuClick}>
 					<ListItem button selected={this.state.path === "/search"}>
 						<ListItemIcon><SearchIcon /></ListItemIcon>

@@ -64,41 +64,46 @@ export default function CED(props) {
 		return questions[name].answer;
 	}
 
+
 	// Render
-	return (
-		<Box className="mip">
-			<Box className="section header">
-				<Typography className="title">
-					{props.form} - {Utils.niceDate(props.date, props.mobile ? 'short' : 'long')}
-					<span> - <GreyButton variant="outlined" onClick={props.onChange}>{props.display ? 'Hide' : 'Display'}</GreyButton></span>
-				</Typography>
+	if(questions === null) {
+		return <span />
+	} else {
+		return (
+			<Box className="mip">
+				<Box className="section header">
+					<Typography className="title">
+						{props.form} - {Utils.niceDate(props.date, props.mobile ? 'short' : 'long')}
+						<span> - <GreyButton variant="outlined" onClick={props.onChange}>{props.display ? 'Hide' : 'Display'}</GreyButton></span>
+					</Typography>
+				</Box>
+				{props.display &&
+					<React.Fragment>
+						<Box className="section">
+							<Typography className="title">Did the prescribed medication work?</Typography>
+							<Typography>{q('medicationEffectiveness')}</Typography>
+						</Box>
+						<Box className="section">
+							<Typography className="title">Were there side-effects?</Typography>
+							<Typography>{q('sideEffectsCED') === 'Yes' ? q('sideEffectsTextCED') : 'No' }</Typography>
+						</Box>
+						<Box className="section">
+							<Typography className="title">Change in medical conditions</Typography>
+							<Typography>{q('medicalChangesCED') === 'Yes' ? q('medicalChangesTextCED') : 'No' }</Typography>
+						</Box>
+						<Box className="section">
+							<Typography className="title">Change in medications</Typography>
+							<Typography>{q('medicationChangesCED') === 'Yes' ? q('medicationChangesTextCED') : 'No' }</Typography>
+						</Box>
+						<Box className="section">
+							<Typography className="title">Chest pains or shortness of breath</Typography>
+							<Typography>{q('cpsobCED')}</Typography>
+						</Box>
+					</React.Fragment>
+				}
 			</Box>
-			{props.display &&
-				<React.Fragment>
-					<Box className="section">
-						<Typography className="title">Did the prescriber medication work?</Typography>
-						<Typography>{q('medicationEffectiveness')}</Typography>
-					</Box>
-					<Box className="section">
-						<Typography className="title">Were there side-effects?</Typography>
-						<Typography>{q('sideEffectsCED') === 'Yes' ? q('sideEffectsTextCED') : 'No' }</Typography>
-					</Box>
-					<Box className="section">
-						<Typography className="title">Change in medical conditions</Typography>
-						<Typography>{q('medicalChangesCED') === 'Yes' ? q('medicalChangesTextCED') : 'No' }</Typography>
-					</Box>
-					<Box className="section">
-						<Typography className="title">Change in medications</Typography>
-						<Typography>{q('medicationChangesCED') === 'Yes' ? q('medicationChangesTextCED') : 'No' }</Typography>
-					</Box>
-					<Box className="section">
-						<Typography className="title">Chest pains or shortness of breath</Typography>
-						<Typography>{q('cpsobCED')}</Typography>
-					</Box>
-				</React.Fragment>
-			}
-		</Box>
-	);
+		);
+	}
 }
 
 // Valid props
