@@ -195,7 +195,7 @@ export default function ED(props) {
 				</Grid>
 				<Grid item xs={5} sm={4} md={3} className="right">
 					<Typography className="status">{order.status}</Typography>
-					<Typography className="encounter">{encounter}</Typography>
+					<Typography className="encounter">{encounter} / <nobr>{Utils.nicePhone(order.phone)}</nobr></Typography>
 				</Grid>
 			</Grid>
 			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
