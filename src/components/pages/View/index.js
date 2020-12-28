@@ -212,7 +212,7 @@ export default function View(props) {
 					<Typography className="medication">{customer.items.map(o => o.description).join(', ')}</Typography>
 				</Grid>
 				<Grid item xs={5} sm={4} md={3} className="right">
-					<Typography className="encounter">{encounter}</Typography>
+					<Typography className="encounter">{encounter} / <nobr>{Utils.nicePhone(customer.phone)}</nobr></Typography>
 				</Grid>
 			</Grid>
 			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
