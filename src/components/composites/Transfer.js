@@ -23,13 +23,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
-// Generic modules
-import Events from '../../generic/events';
-import Rest from '../../generic/rest';
-import Tools from '../../generic/tools';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
 
-// Local modules
-import Utils from '../../utils';
+// Shared generic modules
+import Events from 'shared/generic/events';
+import { omap } from 'shared/generic/tools';
 
 // Transfer
 export default function Transfer(props) {
@@ -54,7 +53,7 @@ export default function Transfer(props) {
 		Rest.read('csr', 'agent/names', {}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
@@ -86,7 +85,7 @@ export default function Transfer(props) {
 		}).done(res => {
 
 			// If there's an error or a warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
@@ -132,7 +131,7 @@ export default function Transfer(props) {
 						value={agent.toString()}
 					>
 						<option value="0">Auto-Select Available Agent</option>
-						{Tools.omap(agents, (o,k) =>
+						{omap(agents, (o,k) =>
 							<option key={k} value={k}>{o.firstName + ' ' + o.lastName}</option>
 						)}
 					</Select>

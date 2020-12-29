@@ -8,12 +8,11 @@
  * @created 2020-10-14
  */
 
-// Generic modules
-import Events from '../generic/events';
-import Rest from '../generic/rest';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
 
-// Local modules
-import Utils from '../utils';
+// Shared generic modules
+import Events from 'shared/generic/events';
 
 /**
  * Add
@@ -40,7 +39,7 @@ export function add(customer_id, order_id, continuous=false) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				// If we're at max claims
 				if(res.error.code === 1505) {
 					Events.trigger('error', 'You\'ve reached the maximum number of claims. Please resolve or unclaim previous claims.');
@@ -78,7 +77,7 @@ export function fetch(customer_id) {
 		Rest.read('monolith', 'order/claimed', {}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				reject(res.error);
 			}
 			if(res.warning) {
@@ -116,7 +115,7 @@ export function remove(customer_id, reason) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				reject(res.error);
 			}
 			if(res.warning) {
@@ -131,9 +130,10 @@ export function remove(customer_id, reason) {
 	});
 }
 
-// Export all
-export default {
+// Default export
+const Claimed = {
 	add: add,
 	fetch: fetch,
 	remove: remove
-}
+};
+export default Claimed;

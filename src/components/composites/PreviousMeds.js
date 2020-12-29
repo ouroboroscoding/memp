@@ -19,13 +19,13 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 // Element components
-import Pharmacies from '../elements/Pharmacies';
+import Pharmacies from 'components/elements/Pharmacies';
 
-// Data modules
-import DoseSpot from '../../data/dosespot';
+// Shared data modules
+import DoseSpot from 'shared/data/dosespot';
 
 // Generic modules
-import Events from '../../generic/events';
+import Events from 'shared/generic/events';
 
 /**
  * PreviousMeds

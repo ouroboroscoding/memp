@@ -15,15 +15,15 @@ import React, { useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 
 // Generic modules
-import Hash from '../../generic/hash';
+import Hash from 'shared/generic/hash';
 
 // Child components
 import Change from './nouser/Change';
 import Forgot from './nouser/Forgot';
 import SignIn from './nouser/SignIn';
 
-// Hooks
-import useLocationHash from '../../hooks/hash.js';
+// Shared hooks
+import useLocationHash from 'shared/hooks/hash.js';
 
 // Key types
 const keyTypes = {

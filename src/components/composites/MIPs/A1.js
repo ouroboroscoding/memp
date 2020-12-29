@@ -17,10 +17,10 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 
 // Element components
-import { GreyButton } from '../../elements/Buttons';
+import { GreyButton } from 'components/elements/Buttons';
 
 // Local modules
-import Utils from '../../../utils';
+import Utils from 'utils';
 
 /**
  * A1

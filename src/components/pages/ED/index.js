@@ -23,24 +23,28 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
-import BadOrder from '../../composites/BadOrder';
-import DS from '../../composites/DS';
-import Notes from '../../composites/Notes';
+import BadOrder from 'components/composites/BadOrder';
+import DS from 'components/composites/DS';
+import Notes from 'components/composites/Notes';
 
 // Page components
 import MIP from './MIP';
 
 // Data modules
-import DoseSpot from '../../../data/dosespot';
-import Encounters from '../../../data/encounters';
+import Encounters from 'data/encounters';
 
-// Generic modules
-import Events from '../../../generic/events';
-import Rest from '../../../generic/rest';
-import { clone } from '../../../generic/tools';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
+
+// Shared data modules
+import DoseSpot from 'shared/data/dosespot';
+
+// Shared generic modules
+import Events from 'shared/generic/events';
+import { clone } from 'shared/generic/tools';
 
 // Local modules
-import Utils from '../../../utils';
+import Utils from 'utils';
 
 // Note types
 const _NOTES = {
@@ -104,7 +108,7 @@ export default function ED(props) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {

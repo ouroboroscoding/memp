@@ -19,10 +19,10 @@ import Hidden from '@material-ui/core/Hidden';
 import Typography from '@material-ui/core/Typography';
 
 // Element components
-import { GreyButton } from '../../elements/Buttons';
+import { GreyButton } from 'components/elements/Buttons';
 
 // Local modules
-import Utils from '../../../utils';
+import Utils from 'utils';
 
 // Mapping of full ED med names to variable names
 const _ED_MEDS = {

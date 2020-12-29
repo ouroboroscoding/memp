@@ -21,8 +21,8 @@ import A1 from './A1';
 import A2 from './A2';
 import CED from './CED';
 
-// Generic modules
-import { clone } from '../../../generic/tools';
+// Shared generic modules
+import { clone } from 'shared/generic/tools';
 
 /**
  * MIPs

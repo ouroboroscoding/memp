@@ -28,16 +28,20 @@ import { GreenButton } from '../elements/Buttons';
 import Pharmacies from '../elements/Pharmacies';
 
 // Data modules
-import Claimed from '../../data/claimed';
-import DoseSpot from '../../data/dosespot';
+import Claimed from 'data/claimed';
 
-// Generic modules
-import Events from '../../generic/events';
-import Rest from '../../generic/rest';
-import { afindi, clone, dateInc } from '../../generic/tools';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
+
+// Shared data modules
+import DoseSpot from 'shared/data/dosespot';
+
+// Shared generic modules
+import Events from 'shared/generic/events';
+import { afindi, clone, dateInc } from 'shared/generic/tools';
 
 // Site modules
-import Utils from '../../utils';
+import Utils from 'utils';
 
 /**
  * DS
@@ -116,7 +120,7 @@ export default function DS(props) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
@@ -261,7 +265,7 @@ export default function DS(props) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
