@@ -219,7 +219,7 @@ export default function View(props) {
 					<Typography className="encounter">{encounter} / <nobr>{Utils.nicePhone(customer.phone)}</nobr></Typography>
 				</Grid>
 			</Grid>
-			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
+			<Box className="tabSection" style={{display: tab === 0 ? 'block' : 'none'}}>
 				<DS
 					customer={customer}
 					mobile={props.mobile}
