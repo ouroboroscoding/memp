@@ -202,7 +202,7 @@ export default function ED(props) {
 					<Typography className="encounter">{encounter} / <nobr>{Utils.nicePhone(order.phone)}</nobr></Typography>
 				</Grid>
 			</Grid>
-			<Box className="tabSection" style={{display: tab === 0 ? 'flex' : 'none'}}>
+			<Box className="tabSection" style={{display: tab === 0 ? 'block' : 'none'}}>
 				{Child}
 			</Box>
 			<Box className="tabSection" style={{display: tab > 0 ? 'block' : 'none'}}>

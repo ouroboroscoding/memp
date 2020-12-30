@@ -1,62 +1,63 @@
-	#DoseSpot {
-		width: 100%;
+#DoseSpot {
+	height: 100%;
+	width: 100%;
 
-		.create {
-			padding: 0 20px;
+	.create {
+		padding: 0 20px;
 
-			.actions {
-				button {
-					width: 100%;
+		.actions {
+			button {
+				width: 100%;
+			}
+		}
+	}
+
+	.matchUp {
+		padding: 0 20px;
+
+		.product {
+
+			div {
+				display: table;
+				height: 56px;
+
+				div {
+					display: table-cell;
+					vertical-align: middle;
 				}
 			}
 		}
 
-		.matchUp {
-			padding: 0 20px;
+		.MuiOutlinedInput-root {
+			width: 100%;
+		}
 
-			.product {
+		button {
+			width: 100%;
+		}
+	}
 
-				div {
-					display: table;
-					height: 56px;
+	.sso {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		width: 100%;
 
-					div {
-						display: table-cell;
-						vertical-align: middle;
-					}
-				}
-			}
+		iframe {
+			flex-basis: 0;
+			flex-grow: 1;
+			flex-shrink: 1;
+		}
 
-			.MuiOutlinedInput-root {
-				width: 100%;
-			}
+		.close {
+			flex-basis: auto;
+			flex-grow: 0;
+			flex-shrink: 0;
+			padding: 5px 20px;
 
 			button {
 				width: 100%;
 			}
 		}
-
-		.sso {
-			display: flex;
-			flex-direction: column;
-			height: 100%;
-			width: 100%;
-
-			iframe {
-				flex-basis: 0;
-				flex-grow: 1;
-				flex-shrink: 1;
-			}
-
-			.close {
-				flex-basis: auto;
-				flex-grow: 0;
-				flex-shrink: 0;
-				padding: 5px 20px;
-
-				button {
-					width: 100%;
-				}
-			}
-		}
 	}
+}
