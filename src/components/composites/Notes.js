@@ -18,13 +18,15 @@ import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
-// Generic modules
-import Events from '../../generic/events';
-import Rest from '../../generic/rest';
-import { afindi, clone } from '../../generic/tools';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
+
+// Shared generic modules
+import Events from 'shared/generic/events';
+import { afindi, clone } from 'shared/generic/tools';
 
 // Local modules
-import Utils from '../../utils';
+import Utils from 'utils';
 
 // Regex
 const regTplVar = /{([^]+?)}/g
@@ -153,7 +155,7 @@ export default function Notes(props) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
@@ -176,7 +178,7 @@ export default function Notes(props) {
 		Rest.read('providers', 'templates', {}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
@@ -273,7 +275,7 @@ export default function Notes(props) {
 		Rest.create('monolith', 'customer/note', oData).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
@@ -338,7 +340,7 @@ export default function Notes(props) {
 		Rest.create('monolith', 'provider/sms', oData).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				if(res.error.code === 1500) {
 					Events.trigger('error', 'The customer has requested a STOP on all Provider SMS communications.');
 				} else if(res.error.code === 1510) {

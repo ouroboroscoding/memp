@@ -43,15 +43,17 @@ import Account from './dialogs/Account';
 // Data modules
 import Claimed from '../data/claimed';
 
-// Generic modules
-import Events from '../generic/events';
-import PageVisibility from '../generic/pageVisibility';
-import Rest from '../generic/rest';
-import Tools from '../generic/tools';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
+import TwoWay from 'shared/communication/twoway';
+
+// Shared generic modules
+import Events from 'shared/generic/events';
+import PageVisibility from 'shared/generic/pageVisibility';
+import { afindi, clone, empty, safeLocalStorageJSON } from 'shared/generic/tools';
 
 // Local modules
-import TwoWay from '../twoway';
-import Utils from '../utils';
+import Utils from 'utils';
 
 // Customer Item component
 function CustomerItem(props) {
@@ -97,7 +99,7 @@ export default class Header extends React.Component {
 			account: false,
 			claimed: [],
 			menu: false,
-			newNotes: Tools.safeLocalStorageJSON('newNotes', {}),
+			newNotes: safeLocalStorageJSON('newNotes', {}),
 			overwrite: props.user ? Utils.hasRight(props.user, 'prov_overwrite', 'create') : false,
 			path: window.location.pathname,
 			user: props.user || false,
@@ -160,7 +162,7 @@ export default class Header extends React.Component {
 	claimedAdd(order) {
 
 		// Clone the claimed state
-		let lClaimed = Tools.clone(this.state.claimed);
+		let lClaimed = clone(this.state.claimed);
 
 		// Add the record to the end
 		order.viewed = true;
@@ -194,7 +196,7 @@ export default class Header extends React.Component {
 			if(lPath[0] === 'customer') {
 
 				// If we can't find the customer we're on
-				if(Tools.afindi(data, 'customerId', parseInt(lPath[1])) === -1) {
+				if(afindi(data, 'customerId', parseInt(lPath[1])) === -1) {
 
 					// Switch page
 					this.props.history.push('/')
@@ -217,13 +219,13 @@ export default class Header extends React.Component {
 	claimedRemove(customerId, switch_path) {
 
 		// Find the index of the remove customer
-		let iClaimed = Tools.afindi(this.state.claimed, 'customerId', customerId);
+		let iClaimed = afindi(this.state.claimed, 'customerId', customerId);
 
 		// If we found one
 		if(iClaimed > -1) {
 
 			// Clone the claimed state
-			let lClaimed = Tools.clone(this.state.claimed);
+			let lClaimed = clone(this.state.claimed);
 
 			// Remove the element
 			let oClaim = lClaimed.splice(iClaimed, 1)[0];
@@ -241,7 +243,7 @@ export default class Header extends React.Component {
 
 			// If it's in the new notes
 			if(customerId.toString() in this.state.newNotes) {
-				let dNewNotes = Tools.clone(this.state.newNotes);
+				let dNewNotes = clone(this.state.newNotes);
 				delete dNewNotes[customerId];
 				localStorage.setItem('newNotes', JSON.stringify(dNewNotes))
 				oState.newNotes = dNewNotes;
@@ -281,7 +283,7 @@ export default class Header extends React.Component {
 			if(customer.customerId in this.state.newNotes) {
 
 				// Clone the new notes
-				let dNewNotes = Tools.clone(this.state.newNotes);
+				let dNewNotes = clone(this.state.newNotes);
 
 				// Remove the corresponding key
 				delete dNewNotes[customer.customerId];
@@ -294,13 +296,13 @@ export default class Header extends React.Component {
 			}
 
 			// Look for it in claimed
-			let iIndex = Tools.afindi(this.state.claimed, 'customerId', customer.customerId);
+			let iIndex = afindi(this.state.claimed, 'customerId', customer.customerId);
 
 			// If we have it, and it's a transfer
 			if(iIndex > -1 && !this.state.claimed[iIndex].viewed) {
 
 				// Clone the claims
-				let lClaimed = Tools.clone(this.state.claimed);
+				let lClaimed = clone(this.state.claimed);
 
 				// Set the viewed flag
 				lClaimed[iIndex].viewed = true;
@@ -313,7 +315,7 @@ export default class Header extends React.Component {
 					customerId: customer.customerId
 				}).done(res => {
 					// If there's an error or warning
-					if(res.error && !Utils.restError(res.error)) {
+					if(res.error && !res._handled) {
 						Events.trigger('error', JSON.stringify(res.error));
 					}
 					if(res.warning) {
@@ -352,7 +354,7 @@ export default class Header extends React.Component {
 		}, {"background": true}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
@@ -363,13 +365,13 @@ export default class Header extends React.Component {
 			if('data' in res) {
 
 				// If there's any
-				if(!Tools.empty(res.data)) {
+				if(!empty(res.data)) {
 
 					// Do we set the state?
 					let bSetState = false;
 
 					// Clone the current messages
-					let dNewNotes = Tools.clone(this.state.newNotes);
+					let dNewNotes = clone(this.state.newNotes);
 
 					// Go through each one sent
 					for(let sCustomerId in res.data) {
@@ -557,7 +559,7 @@ export default class Header extends React.Component {
 		Rest.create('providers', 'signout', {}).done(res => {
 
 			// If there's an error
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 
@@ -642,7 +644,7 @@ export default class Header extends React.Component {
 			case 'claim_transfered':
 
 				// Clone the claims
-				let lClaimed = Tools.clone(this.state.claimed);
+				let lClaimed = clone(this.state.claimed);
 
 				// Push the transfer to the top
 				lClaimed.unshift(data.claim);
@@ -661,13 +663,13 @@ export default class Header extends React.Component {
 			case 'claim_removed':
 
 				// Look for the claim
-				let iIndex = Tools.afindi(this.state.claimed, 'customerId', data.customerId);
+				let iIndex = afindi(this.state.claimed, 'customerId', data.customerId);
 
 				// If we found one
 				if(iIndex > -1) {
 
 					// Clone the claims
-					let lClaimed = Tools.clone(this.state.claimed);
+					let lClaimed = clone(this.state.claimed);
 
 					// Delete the claim
 					lClaimed.splice(iIndex, 1);

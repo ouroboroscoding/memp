@@ -20,14 +20,13 @@ import Typography from '@material-ui/core/Typography';
 import CustomerSummary from '../composites/CustomerSummary';
 
 // Data modules
-import claimed from '../../data/claimed';
+import Claimed from 'data/claimed';
 
-// Generic modules
-import Events from '../../generic/events';
-import Rest from '../../generic/rest';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
 
-// Local modules
-import Utils from '../../utils';
+// Shared generic modules
+import Events from 'shared/generic/events';
 
 // Queue component
 export default function Queue(props) {
@@ -57,7 +56,7 @@ export default function Queue(props) {
 	function claim(order) {
 
 		// Get the claimed add promise
-		claimed.add(order.customerId, order.orderId).then(res => {
+		Claimed.add(order.customerId, order.orderId).then(res => {
 			Events.trigger('claimedAdd', order);
 		}, error => {
 			// If we got a duplicate
@@ -76,7 +75,7 @@ export default function Queue(props) {
 		Rest.read('monolith', 'orders/pending/provider/' + props.type, {}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {

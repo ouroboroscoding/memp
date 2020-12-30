@@ -13,7 +13,7 @@ import React from 'react';
 import { withSnackbar } from 'notistack';
 
 // Generic modules
-import Events from '../generic/events';
+import Events from 'shared/generic/events';
 
 class LibraryWritersAreOftenIdiots extends React.Component {
 

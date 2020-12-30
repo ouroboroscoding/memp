@@ -23,23 +23,27 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
-import DS from '../../composites/DS';
-import Notes from '../../composites/Notes';
+import DS from 'components/composites/DS';
+import Notes from 'components/composites/Notes';
 
 // Page components
 import MIP from './MIP';
 
 // Data modules
-import Claimed from '../../../data/claimed';
-import DoseSpot from '../../../data/dosespot';
-import Encounters from '../../../data/encounters';
+import Claimed from 'data/claimed';
+import Encounters from 'data/encounters';
 
-// Generic modules
-import Events from '../../../generic/events';
-import Rest from '../../../generic/rest';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
+
+// Shared data modules
+import DoseSpot from 'shared/data/dosespot';
+
+// Shared generic modules
+import Events from 'shared/generic/events';
 
 // Local modules
-import Utils from '../../../utils';
+import Utils from 'utils';
 
 // Note types
 const _NOTES = {
@@ -97,7 +101,7 @@ export default function View(props) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {

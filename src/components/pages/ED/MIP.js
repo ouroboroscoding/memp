@@ -18,26 +18,25 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
 // Composite components
-import MIPs from '../../composites/MIPs';
-import PreviousMeds from '../../composites/PreviousMeds';
-import Transfer from '../../composites/Transfer';
+import MIPs from 'components/composites/MIPs';
+import PreviousMeds from 'components/composites/PreviousMeds';
+import Transfer from 'components/composites/Transfer';
 
 // Element components
-import { GreenButton } from '../../elements/Buttons';
+import { GreenButton } from 'components/elements/Buttons';
 
 // Sibling components
 import SOAP from './SOAP';
 
 // Data modules
-import Claimed from '../../../data/claimed';
+import Claimed from 'data/claimed';
 
-// Generic modules
-import Events from '../../../generic/events';
-import Rest from '../../../generic/rest';
-import { afindo } from '../../../generic/tools';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
 
-// Local modules
-import Utils from '../../../utils';
+// Shared generic modules
+import Events from 'shared/generic/events';
+import { afindo } from 'shared/generic/tools';
 
 /**
  * MIP
@@ -78,7 +77,7 @@ export default function MIP(props) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {
@@ -98,7 +97,7 @@ export default function MIP(props) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				if(res.error.code === 1103) {
 					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
 				} else {
@@ -124,7 +123,7 @@ export default function MIP(props) {
 		}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				if(res.error.code === 1103) {
 					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
 				} else {

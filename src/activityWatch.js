@@ -9,8 +9,8 @@
  * @created 2020-12-08
  */
 
-// Generic modules
-import { isInteger, isObject } from './generic/tools';
+// Shared generic modules
+import { isInteger, isObject } from 'shared/generic/tools';
 
 // Init module vars
 let miMinutes = null;
@@ -176,10 +176,11 @@ function stop() {
 	}
 }
 
-// Export module
-export default {
+// Default export
+const ActivityWatch = {
 	init: init,
 	reset: reset,
 	start: start,
 	stop: stop
-}
+};
+export default ActivityWatch;

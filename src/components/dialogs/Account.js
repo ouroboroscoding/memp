@@ -19,15 +19,17 @@ import Dialog from '@material-ui/core/Dialog';
 import Divider from '@material-ui/core/Divider';
 
 // Format Components
-import FormComponent from '../format/Form';
+import FormComponent from 'shared/components/format/Form';
 
-// Generic modules
-import Events from '../../generic/events';
-import Rest from '../../generic/rest';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
+
+// Shared generic modules
+import Events from 'shared/generic/events';
 
 // Definitions
-import PassDef from '../../definitions/monolith/password';
-import UserDef from '../../definitions/monolith/user';
+import PassDef from 'definitions/monolith/password';
+import UserDef from 'definitions/monolith/user';
 
 // Generate the Trees
 const PassTree = new Tree(PassDef);

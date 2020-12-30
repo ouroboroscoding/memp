@@ -16,11 +16,11 @@ import React from 'react';
 // Material-UI
 import Select from '@material-ui/core/Select';
 
-// Data modules
-import DoseSpot from '../../data/dosespot';
+// Shared data modules
+import DoseSpot from 'shared/data/dosespot';
 
 // Generic modules
-import Events from '../../generic/events';
+import Events from 'shared/generic/events';
 
 /**
  * Pharmacies

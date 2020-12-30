@@ -17,13 +17,15 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
-// Generic modules
-import Events from '../../generic/events';
-import Rest from '../../generic/rest';
-import { isToday } from '../../generic/tools';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
+
+// Shared generic modules
+import Events from 'shared/generic/events';
+import { isToday } from 'shared/generic/tools';
 
 // Local modules
-import Utils from '../../utils';
+import Utils from 'utils';
 
 /**
  * Appointments
@@ -59,7 +61,7 @@ export default function Appointments(props) {
 		Rest.read('monolith', 'provider/calendly', {}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				Events.trigger('error', JSON.stringify(res.error));
 			}
 			if(res.warning) {

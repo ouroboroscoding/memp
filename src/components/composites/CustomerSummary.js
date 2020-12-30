@@ -18,14 +18,14 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
-// Generic modules
-import { clone } from '../../generic/tools';
+// Shared generic modules
+import { clone } from 'shared/generic/tools';
 
 // Site modules
-import Utils from '../../utils';
+import Utils from 'utils';
 
 // Data
-import Encounters from '../../data/encounters';
+import Encounters from 'data/encounters';
 
 // CustomerSummary component
 export default function CustomerSummary(props) {

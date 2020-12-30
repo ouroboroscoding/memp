@@ -19,10 +19,10 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 // Data modules
-import Claimed from '../../data/claimed';
+import Claimed from 'data/claimed';
 
-// Generic modules
-import Events from '../../generic/events';
+// Shared generic modules
+import Events from 'shared/generic/events';
 
 /**
  * Bad Order

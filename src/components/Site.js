@@ -13,17 +13,19 @@ import React, { useState } from 'react';
 import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 
-// Data modules
-import DoseSpot from '../data/dosespot';
+// Shared data modules
+import DoseSpot from 'shared/data/dosespot';
 
-// Generic modules
-import Events from '../generic/events';
-import Hash from '../generic/hash';
-import Rest from '../generic/rest';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
 
-// Hooks
-import { useEvent } from '../hooks/event';
-import { useResize } from '../hooks/resize';
+// Shared generic modules
+import Events from 'shared/generic/events';
+import Hash from 'shared/generic/hash';
+
+// Shared hooks
+import { useEvent } from 'shared/hooks/event';
+import { useResize } from 'shared/hooks/resize';
 
 // Composite component modules
 import Alerts from './Alerts';
@@ -48,8 +50,8 @@ import View from './pages/View';
 import ActivityWatch from '../activityWatch';
 import { LoaderHide, LoaderShow } from './Loader';
 
-// css
-import '../sass/site.scss';
+// SASS CSS
+import 'sass/site.scss';
 
 // Init the activity watch with a 15 minute timer
 ActivityWatch.init(15, {

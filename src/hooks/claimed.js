@@ -11,8 +11,8 @@
 // NPM modules
 import { useEffect } from 'react';
 
-// Generic modules
-import Events from '../generic/events';
+// Shared generic modules
+import Events from 'shared/generic/events';
 
 // Claimed Add Hook
 export const useClaimedAdd = callback => {

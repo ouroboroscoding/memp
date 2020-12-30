@@ -8,12 +8,11 @@
  * @created 2020-12-11
  */
 
-// Generic modules
-import Events from '../generic/events';
-import Rest from '../generic/rest';
+// Shared communication modules
+import Rest from 'shared/communication/rest';
 
-// Local modules
-import Utils from '../utils';
+// Shared generic modules
+import Events from 'shared/generic/events';
 
 // Encounter types
 const _ENCOUNTER = {
@@ -43,7 +42,7 @@ export function fetch(state) {
 		}, {background: true, session: false}).done(res => {
 
 			// If there's an error or warning
-			if(res.error && !Utils.restError(res.error)) {
+			if(res.error && !res._handled) {
 				reject(res.error);
 			}
 			if(res.warning) {
@@ -58,7 +57,8 @@ export function fetch(state) {
 	});
 }
 
-// Export all
-export default {
+// Default export
+const Encounters = {
 	fetch: fetch
 }
+export default Encounters;

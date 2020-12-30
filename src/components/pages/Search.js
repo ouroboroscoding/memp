@@ -20,17 +20,17 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 // Format components
-import SearchComponent from '../format/Search';
+import SearchComponent from 'shared/components/format/Search';
 
 // Data modules
-import Claimed from '../../data/claimed';
+import Claimed from 'data/claimed';
 
-// Generic modules
-import Events from '../../generic/events';
-import { clone } from '../../generic/tools';
+// Shared generic modules
+import Events from 'shared/generic/events';
+import { clone } from 'shared/generic/tools';
 
 // Definitions
-import KtCustomerDef from '../../definitions/monolith/kt_customer';
+import KtCustomerDef from 'definitions/monolith/kt_customer';
 KtCustomerDef['__react__'] = {
 	search: ["customerId", "firstName", "lastName", "phoneNumber", "emailAddress"]
 }
