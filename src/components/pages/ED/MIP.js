@@ -19,14 +19,13 @@ import Grid from '@material-ui/core/Grid';
 
 // Composite components
 import MIPs from 'components/composites/MIPs';
+import Prescription from 'components/composites/ED-Prescription';
 import PreviousMeds from 'components/composites/PreviousMeds';
+import SOAP from 'components/composites/ED-SOAP';
 import Transfer from 'components/composites/Transfer';
 
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
-
-// Sibling components
-import SOAP from './SOAP';
 
 // Data modules
 import Claimed from 'data/claimed';
@@ -56,6 +55,7 @@ export default function MIP(props) {
 
 	// Refs
 	let refSOAP = useRef();
+	let refPrescription = useRef();
 
 	// Effects
 	useEffect(() => {
@@ -201,6 +201,10 @@ export default function MIP(props) {
 				order={props.order}
 				ref={refSOAP}
 				treated={bTreatedForEd}
+			/>
+			<Prescription
+				order={props.order}
+				ref={refPrescription}
 			/>
 			<Grid container spacing={1} className="rta">
 				<Grid item xs={4}>

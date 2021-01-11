@@ -20,13 +20,11 @@ import Grid from '@material-ui/core/Grid';
 // Composite components
 import MIPs from 'components/composites/MIPs';
 import PreviousMeds from 'components/composites/PreviousMeds';
+import SOAP from 'components/composites/ED-SOAP';
 import Transfer from 'components/composites/Transfer';
 
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
-
-// Sibling components
-import SOAP from './SOAP';
 
 // Data modules
 import Claimed from 'data/claimed';

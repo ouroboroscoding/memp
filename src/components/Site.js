@@ -74,7 +74,9 @@ Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xh
 	}
 }, (method, url, data, opts) => {
 	if(!opts.background) {
-		ActivityWatch.reset();
+		if(process.env.REACT_APP_DISABLE_TIMEOUT !== 'true') {
+			ActivityWatch.reset();
+		}
 		LoaderShow();
 	}
 }, (method, url, data, opts) => {
@@ -122,13 +124,17 @@ export default function Site(props) {
 	// Event hooks
 	useEvent('signedIn', user => {
 		userSet(user);
-		ActivityWatch.start();
+		if(process.env.REACT_APP_DISABLE_TIMEOUT !== 'true') {
+			ActivityWatch.start();
+		}
 		DoseSpot.init(user.dsClinicianId);
 	});
 	useEvent('signedOut', () => {
 		userSet(false);
 		signoutWarningSet(false);
-		ActivityWatch.stop();
+		if(process.env.REACT_APP_DISABLE_TIMEOUT !== 'true') {
+			ActivityWatch.stop();
+		}
 		DoseSpot.init(0);
 	});
 	useEvent('activityWarning', () => signoutWarningSet(true));
