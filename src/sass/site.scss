@@ -11,6 +11,7 @@ $menu-width: 250px;
 @import 'loader';
 
 /* composites */
+@import 'composites/auto_prescription';
 @import 'composites/customer_summary';
 @import 'composites/ds.scss';
 @import 'composites/mips.scss';

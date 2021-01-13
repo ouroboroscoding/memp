@@ -142,7 +142,7 @@ export default function Templates(props) {
 			<Box className="templates">
 				<Box className="pageHeader">
 					<Box className="title">Templates</Box>
-					{Utils.hasRight(props.user, 'prov_templates', 'create') &&
+					{Rights.has('prov_templates', 'create') &&
 						<Tooltip title="Create new template">
 							<IconButton onClick={createToggle}>
 								<AddCircleIcon />
@@ -170,10 +170,10 @@ export default function Templates(props) {
 						data={templates}
 						noun="template"
 						orderBy="title"
-						remove={Utils.hasRight(props.user, 'prov_templates', 'delete') ? removeTemplate : false}
+						remove={Rights.has('prov_templates', 'delete') ? removeTemplate : false}
 						service="providers"
 						tree={TemplateTree}
-						update={Utils.hasRight(props.user, 'prov_templates', 'update')}
+						update={Rights.has('prov_templates', 'update')}
 					/>
 				}
 			</Box>

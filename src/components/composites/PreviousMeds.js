@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import Pharmacies from 'components/elements/Pharmacies';
 
 // Shared data modules
-import DoseSpot from 'shared/data/dosespot';
+import DS from 'shared/data/dosespot';
 
 // Generic modules
 import Events from 'shared/generic/events';
@@ -57,7 +57,7 @@ export default function PreviousMeds(props) {
 
 	// Fetch the meds
 	function fetch() {
-		DoseSpot.medications(props.patientId).then(res => {
+		DS.medications(props.patientId).then(res => {
 			medsSet(res);
 		}, error => {
 			if(error.code === 1602) {
@@ -83,7 +83,7 @@ export default function PreviousMeds(props) {
 		}
 
 		// Create the patient
-		DoseSpot.create(props.customerId, iPharmacy).then(res => {
+		DS.create(props.customerId, iPharmacy).then(res => {
 			Events.trigger('patientCreate', res);
 		}, error => {
 			if(error.code === 1602) {
@@ -97,8 +97,13 @@ export default function PreviousMeds(props) {
 	// Inner HTML
 	let inner = null;
 
-	// If we have no patient ID
-	if(!props.patientId) {
+	// If we are still fetching the customer's DoseSpot patient ID
+	if(props.patientId === -1) {
+		inner = <Typography>Loading...</Typography>
+	}
+
+	// Else, if the customer has no DoseSpot patient ID yet
+	else if(!props.patientId) {
 		inner = (
 			<React.Fragment>
 				<Typography>No DoseSpot patient account found. Create one and fetch previous medication?</Typography>
@@ -108,7 +113,7 @@ export default function PreviousMeds(props) {
 		);
 	}
 
-	// Else, if we have a patient
+	// Else, the customer has a DoseSpot patient ID
 	else {
 
 		// Get the type of meds

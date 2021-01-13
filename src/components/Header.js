@@ -45,6 +45,7 @@ import Claimed from '../data/claimed';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
+import Rights from 'shared/communication/rights';
 import TwoWay from 'shared/communication/twoway';
 
 // Shared generic modules
@@ -100,7 +101,7 @@ export default class Header extends React.Component {
 			claimed: [],
 			menu: false,
 			newNotes: safeLocalStorageJSON('newNotes', {}),
-			overwrite: props.user ? Utils.hasRight(props.user, 'prov_overwrite', 'create') : false,
+			overwrite: Rights.has('prov_overwrite', 'create'),
 			path: window.location.pathname,
 			user: props.user || false,
 		}
@@ -410,7 +411,7 @@ export default class Header extends React.Component {
 		// Create the drawer items
 		let drawer = (
 			<List style={{padding: 0}}>
-				{Utils.hasRight(this.state.user, 'prov_templates', 'read') &&
+				{Rights.has('prov_templates', 'read') &&
 					<React.Fragment>
 						<Link to="/templates" onClick={this.menuClick}>
 							<ListItem button selected={this.state.path === "/templates"}>
@@ -421,7 +422,7 @@ export default class Header extends React.Component {
 						<Divider />
 					</React.Fragment>
 				}
-				{Utils.hasRight(this.state.user, 'calendly', 'read') &&
+				{Rights.has('calendly', 'read') &&
 					<React.Fragment>
 						<Link to="/appointments" onClick={this.menuClick}>
 							<ListItem button selected={this.state.path === "/appointments"}>
@@ -538,7 +539,7 @@ export default class Header extends React.Component {
 
 		// Hide any modals and set the user
 		this.setState({
-			"overwrite": Utils.hasRight(user, 'prov_overwrite', 'create'),
+			"overwrite": Rights.has('prov_overwrite', 'create'),
 			"user": user
 		}, () => {
 

@@ -51,37 +51,51 @@
 	}
 
 	.mips {
-		padding: 0 20px;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
 
-		#prescription, #soap {
+		.scroll {
+			flex-basis: 0;
+			flex-grow: 1;
+			flex-shrink: 1;
+			padding: 0 20px;
+			overflow: auto;
 
-			select, .select {
-				height: 45px;
-				padding-bottom: 0;
-				padding-top: 0;
-				width: 100%;
+			#prescription, #soap {
+
+				select, .select {
+					height: 45px;
+					padding-bottom: 0;
+					padding-top: 0;
+					width: 100%;
+				}
+
+				textarea {
+					width: 98%;
+				}
 			}
 
-			textarea {
-				width: 98%;
+			.section {
+
+				.no {
+					color: red;
+				}
+
+				.mipEdDetails {
+					text-align: center;
+				}
 			}
 		}
 
 		.rta {
+			flex-basis: auto;
+			flex-grow: 0;
+			flex-shrink: 0;
+			padding: 10px;
 
 			button {
 				width: 100%;
-			}
-		}
-
-		.section {
-
-			.no {
-				color: red;
-			}
-
-			.mipEdDetails {
-				text-align: center;
 			}
 		}
 	}

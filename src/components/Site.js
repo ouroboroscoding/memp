@@ -14,7 +14,7 @@ import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 
 // Shared data modules
-import DoseSpot from 'shared/data/dosespot';
+import DS from 'shared/data/dosespot';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
@@ -127,7 +127,7 @@ export default function Site(props) {
 		if(process.env.REACT_APP_DISABLE_TIMEOUT !== 'true') {
 			ActivityWatch.start();
 		}
-		DoseSpot.init(user.dsClinicianId);
+		DS.init(user.dsClinicianId);
 	});
 	useEvent('signedOut', () => {
 		userSet(false);
@@ -135,7 +135,7 @@ export default function Site(props) {
 		if(process.env.REACT_APP_DISABLE_TIMEOUT !== 'true') {
 			ActivityWatch.stop();
 		}
-		DoseSpot.init(0);
+		DS.init(0);
 	});
 	useEvent('activityWarning', () => signoutWarningSet(true));
 
