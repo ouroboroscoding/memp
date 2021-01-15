@@ -18,17 +18,21 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
+
+// Shared communication modules
+import Rest from 'shared/communication/rest';
 
 // Shared data modules
 import DS from 'shared/data/dosespot';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
-import { afindo, clone } from 'shared/generic/tools';
+import { afindo, clone, date } from 'shared/generic/tools';
 
 /**
  * Prescriptions
@@ -43,33 +47,85 @@ import { afindo, clone } from 'shared/generic/tools';
 export default function Prescriptions(props) {
 
 	// State
-	let [rx, rxSet] = useState(props.items.reduce((r,o) => ({...r, [o.productId]: {_id: '0'}}), {}));
+	let [items, itemsSet] = useState(props.customer.items.reduce((r,o) => ({...r, [o.productId]: {
+		product: {_id: '0'},
+		effective: date(new Date(), '-'),
+		refills: 11
+	}}), {}));
 	let [products, productsSet] = useState([]);
-	let [refills, refillsSet] = useState(props.items.reduce((r,o) => ({...r, [o.productId]: '11'}), {}))
 
 	// Component mounted effect
 	useEffect(() => {
-		DS.products(this.props.type).then(products => {
+		DS.products(props.type).then(products => {
 			productsSet(products);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
 		})
-	}, []);
+	}, [props.type]);
 
+	// Called to create the prescriptions
 	function create() {
 
+		// Generate the product data for the request
+		let lProducts = []
+		for(let productId in items) {
+			if(items[productId].product._id !== '0') {
+				lProducts.push({
+					item_id: productId,
+					effective: items[productId].effective,
+					product_id: items[productId].product._id,
+					refills: items[productId].refills
+				});
+			}
+		}
+
+		// If we have no products, do nothing and just notify the parent we're
+		//	done
+		if(lProducts.length === 0) {
+			props.onCreated();
+			return;
+		}
+
+		// Send the request to the server
+		Rest.create('providers', 'prescriptions', {
+			clinician_id: DS.clinicianId(),
+			customer_id: props.customer.customerId,
+			patient_id: props.patientId,
+			products: lProducts
+		}).done(res => {
+
+			// If there's an error or warning
+			if(res.error && !res._handled) {
+				Events.trigger('error', JSON.stringify(res.error));
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if(res.data) {
+
+				// Notify the provider
+				Events.trigger('success', 'Prescriptions created, please approve each one in DoseSpot.');
+
+				// Notify the parent we're done
+				props.onCreated();
+			}
+		});
 	}
 
-	function refillsChanged(item_id, ev) {
-		let oRefills = clone(refills);
-		oRefills[item_id] = ev.currentTarget.value;
-		refillsSet(oRefills);
+	// Called when any of the refill selects is changed
+	function itemChanged(item_id, type, ev) {
+		let oItems = clone(items);
+		oItems[item_id][type] = ev.currentTarget.value;
+		itemsSet(oItems);
 	}
 
-	function rxChanged(item_id, ev) {
+	// Called when any of the products is changed
+	function productChanged(item_id, ev) {
 
 		// Clone the current product IDs
-		let oRx = clone(rx);
+		let oItems = clone(items);
 
 		// Find the product
 		let o = afindo(products, '_id', ev.currentTarget.value);
@@ -80,8 +136,8 @@ export default function Prescriptions(props) {
 		}
 
 		// Update the list and set the state
-		oRx[item_id] = o;
-		rxSet(oRx);
+		oItems[item_id].product = o;
+		itemsSet(oItems);
 	}
 
 	// If we can remove
@@ -93,7 +149,7 @@ export default function Prescriptions(props) {
 			<Box className="section">
 				<Typography className="title">Prescription</Typography>
 				<Grid container spacing={2}>
-					{props.items.map(o =>
+					{props.customer.items.map(o =>
 						<React.Fragment key={o.productId}>
 							<Grid item xs={12} sm={5} className="product">
 								<Box><Box><Typography>{o.description}</Typography></Box></Box>
@@ -102,38 +158,38 @@ export default function Prescriptions(props) {
 								<Select
 									className='select'
 									native
-									onChange={ev => rxChanged(o.productId, ev)}
+									onChange={ev => productChanged(o.productId, ev)}
 									variant="outlined"
-									value={this.state.product[o.productId]._id}
+									value={items[o.productId].product._id}
 								>
 									<option value="0">Manual Prescription</option>
-									{this.state.products.map(o =>
+									{products.map(o =>
 										<option key={o._id} value={o._id}>{o.title}</option>
 									)}
 								</Select>
 							</Grid>
-							{rx[o.productId]._id === '0' ?
+							{items[o.productId].product._id === '0' ?
 								<Grid item xs={12}>
 									<Typography>You will be asked to manually create the prescription in DoseSpot after you approve. Used for non-standard prescriptions.</Typography>
 								</Grid>
 							:
 								<React.Fragment>
 									<Grid item xs={4} md={2} lg={1}><Typography><strong>Display</strong></Typography></Grid>
-									<Grid item xs={8} md={4} lg={2}><Typography>{this.state.product[o.productId].display}</Typography></Grid>
+									<Grid item xs={8} md={4} lg={2}><Typography>{items[o.productId].product.display}</Typography></Grid>
 									<Grid item xs={4} md={2} lg={2}><Typography><strong>Quanity</strong></Typography></Grid>
-									<Grid item xs={8} md={4} lg={1}><Typography>{this.state.product[o.productId].quantity}</Typography></Grid>
+									<Grid item xs={8} md={4} lg={1}><Typography>{items[o.productId].product.quantity}</Typography></Grid>
 									<Grid item xs={4} md={2} lg={2}><Typography><strong>Days Supply</strong></Typography></Grid>
-									<Grid item xs={8} md={4} lg={1}><Typography>{this.state.product[o.productId].supply}</Typography></Grid>
+									<Grid item xs={8} md={4} lg={1}><Typography>{items[o.productId].product.supply}</Typography></Grid>
 									<Grid item xs={4} md={2} lg={1}><Typography><strong>Directions</strong></Typography></Grid>
-									<Grid item xs={8} md={4} lg={2}><Typography>{this.state.product[o.productId].directions}</Typography></Grid>
+									<Grid item xs={8} md={4} lg={2}><Typography>{items[o.productId].product.directions}</Typography></Grid>
 									<Grid item xs={12} sm={4} md={2} lg={1}><Typography><strong>Refills</strong></Typography></Grid>
 									<Grid item xs={12} sm={8} md={4} lg={2}>
 										<Select
 											className="select"
 											native
-											onChange={ev => refillsChanged(o.productId, ev)}
+											onChange={ev => itemChanged(o.productId, 'refills', ev)}
 											variant="outlined"
-											value={refills[o.productId]}
+											value={items[o.productId].refills}
 										>
 											<option value="0">0</option><option value="1">1</option><option value="2">2</option>
 											<option value="3">3</option><option value="4">4</option><option value="5">5</option>
@@ -141,13 +197,22 @@ export default function Prescriptions(props) {
 											<option value="9">9</option><option value="10">10</option><option value="11">11</option>
 										</Select>
 									</Grid>
+									<Grid item xs={12} sm={4} md={2} lg={1}><Typography><strong>Effective</strong></Typography></Grid>
+									<Grid item xs={12} sm={8} md={4} lg={2}>
+										<TextField
+											onChange={ev => itemChanged(o.productId, 'effective', ev)}
+											type="date"
+											value={items[o.productId].effective}
+											variant="outlined"
+										/>
+									</Grid>
 								</React.Fragment>
 							}
 						</React.Fragment>
 					)}
 				</Grid>
 			</Box>
-			<Grid container spacing={1}>
+			<Grid container spacing={1} className="rta">
 				{props.onRemove &&
 					<Grid item xs={iGrid}>
 						<Button
@@ -176,8 +241,9 @@ export default function Prescriptions(props) {
 
 // Valid props
 Prescriptions.propTypes = {
-	items: PropTypes.arrayOf(PropTypes.object).isRequired,
+	customer: PropTypes.object.isRequired,
 	onRemove: PropTypes.func,
+	onCreated: PropTypes.func.isRequired,
 	onTransfer: PropTypes.func.isRequired,
 	patientId: PropTypes.number.isRequired,
 	type: PropTypes.oneOf(['ed', 'hrt']).isRequired

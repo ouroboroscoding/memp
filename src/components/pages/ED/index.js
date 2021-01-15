@@ -24,7 +24,7 @@ import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
 import BadOrder from 'components/composites/BadOrder';
-import DS from 'components/composites/DS';
+import DoseSpot from 'components/composites/DoseSpot';
 import Notes from 'components/composites/Notes';
 
 // Page components
@@ -37,14 +37,11 @@ import Encounters from 'data/encounters';
 import Rest from 'shared/communication/rest';
 
 // Shared data modules
-import DoseSpot from 'shared/data/dosespot';
+import DS from 'shared/data/dosespot';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
-import { clone } from 'shared/generic/tools';
-
-// Local modules
-import Utils from 'utils';
+import { clone, nicePhone } from 'shared/generic/tools';
 
 // Note types
 const _NOTES = {
@@ -68,7 +65,7 @@ export default function ED(props) {
 	// State
 	let [encounter, encounterSet] = useState('');
 	let [order, orderSet] = useState(null);
-	let [patientId, patientSet] = useState(0);
+	let [patientId, patientSet] = useState(-1);
 	let [tab, tabSet] = useState(0);
 
 	// Hooks
@@ -87,7 +84,7 @@ export default function ED(props) {
 			patientFetch();
 		} else {
 			orderSet(null);
-			patientSet(0);
+			patientSet(-1);
 		}
 	// eslint-disable-next-line
 	}, [props.user, customerId, orderId]);
@@ -131,7 +128,7 @@ export default function ED(props) {
 
 	// Fetch the customer's DoseSpot patient ID
 	function patientFetch() {
-		DoseSpot.fetch(customerId).then(res => {
+		DS.fetch(customerId).then(res => {
 			patientSet(res);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
@@ -162,11 +159,11 @@ export default function ED(props) {
 		sTab = 'MIPs';
 	}
 	else if(order.status === 'COMPLETE') {
-		Child = <DS
-			mobile={props.mobile}
+		Child = <DoseSpot
 			customer={order}
+			initialMode="create"
+			mobile={props.mobile}
 			patientId={patientId}
-			start="sso"
 			user={props.user}
 		/>
 		sTab = 'DoseSpot';
@@ -198,7 +195,7 @@ export default function ED(props) {
 				</Grid>
 				<Grid item xs={5} sm={4} md={3} className="right">
 					<Typography className="status">{order.status}</Typography>
-					<Typography className="encounter">{encounter} / <nobr>{Utils.nicePhone(order.phone)}</nobr></Typography>
+					<Typography className="encounter">{encounter} / <nobr>{nicePhone(order.phone)}</nobr></Typography>
 				</Grid>
 			</Grid>
 			<Box className="tabSection" style={{display: tab === 0 ? 'block' : 'none'}}>

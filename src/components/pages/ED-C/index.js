@@ -161,10 +161,10 @@ export default function ED(props) {
 	}
 	else if(order.status === 'COMPLETE') {
 		Child = <DoseSpot
-			mobile={props.mobile}
 			customer={order}
+			initialMode="create"
+			mobile={props.mobile}
 			patientId={patientId}
-			start="sso"
 			user={props.user}
 		/>
 		sTab = 'DoseSpot';

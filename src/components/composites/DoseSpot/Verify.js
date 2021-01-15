@@ -48,15 +48,17 @@ import Utils from 'utils';
 export default function Verify(props) {
 
 	// State
+	let [itemToRx, itemToRxSet] = useState([]);
 	let [rx, rxSet] = useState([]);
 	let [selects, selectsSet] = useState({});
 
 	// Refs
-	let refItems = useRef(props.items.reduce((r,o) => ({...r, [o.productId]: React.createRef()}), {}));
+	let refItems = useRef(props.customer.items.reduce((r,o) => ({...r, [o.productId]: React.createRef()}), {}));
 
 	// Component Mounted Effect
 	useEffect(() => {
-		fetch();
+		rxFetch();
+		itemToRxFetch();
 	// eslint-disable-next-line
 	}, [])
 
@@ -64,7 +66,7 @@ export default function Verify(props) {
 	useEffect(() => {
 		selectsUpdate();
 	// eslint-disable-next-line
-	}, [rx]);
+	}, [itemToRx, rx]);
 
 	// Confirm the rx associated with each item
 	function confirm() {
@@ -76,7 +78,7 @@ export default function Verify(props) {
 		let lUsed = [];
 
 		// Go through each item and get the value of the select
-		for(let o of props.items) {
+		for(let o of props.customer.items) {
 
 			// Get the rx ID
 			let iDsID = parseInt(refItems.current[o.productId].current.value, 10);
@@ -102,7 +104,7 @@ export default function Verify(props) {
 
 		// No issues? Send it to the server
 		Rest.update('providers', 'customer/to/rx', {
-			customer_id: props.customerId,
+			customer_id: props.customer.customerId,
 			products: lProducts
 		}).done(res => {
 
@@ -121,8 +123,31 @@ export default function Verify(props) {
 		});
 	}
 
+	// Fetch any existing item -> rx records
+	function itemToRxFetch() {
+
+		// Request the records from the server
+		Rest.read('providers', 'customer/to/rx', {
+			customer_id: props.customer.customerId
+		}).done(res => {
+
+			// If there's an error or warning
+			if(res.error && !res._handled) {
+				Events.trigger('error', JSON.stringify(res.error));
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if(res.data) {
+				itemToRxSet(res.data);
+			}
+		})
+	}
+
 	// Filter out expired and inactive prescriptions
-	function filter(items) {
+	function rxFilter(items) {
 		return items.filter(o => {
 
 			// If the status is invalid
@@ -150,11 +175,11 @@ export default function Verify(props) {
 	}
 
 	// Get all prescriptions
-	function fetch(fromClose = false) {
+	function rxFetch(fromClose = false) {
 		DS.prescriptions(props.patientId).then(res => {
 
 			// Filter the data
-			let lRX = filter(res);
+			let lRX = rxFilter(res);
 
 			// If there's none
 			if(lRX.length === 0) {
@@ -184,22 +209,31 @@ export default function Verify(props) {
 	// Called when the list of prescriptions changes
 	function selectsUpdate() {
 
+		console.log('Items:', props.customer.items);
+		console.log('ItemsToRx:', itemToRx);
+		console.log('Rx:', rx);
+
 		// Clone the current hash of select values
 		let oSelects = clone(selects);
 
-		for(let oItem of props.items) {
+		for(let oItem of props.customer.items) {
+
+			console.log('oItem:', oItem);
 
 			// Does item exist in the existing items to rx?
-			let i = afindi(props.existing, 'product_id', props.items.productId);
+			let i = afindi(itemToRx, 'product_id', parseInt(oItem.productId, 10));
 			if(i > -1) {
 
+				console.log('oItemToRx:', itemToRx[i]);
+
 				// Did the prescription come back?
-				i = afindi(rx, 'PrescriptionId', props.existing[i].ds_id);
-				if(i > -1) {
-					oSelects[oItem.productId] = props.existing[i].ds_id;
+				if(afindi(rx, 'PrescriptionId', itemToRx[i].ds_id) > -1) {
+					oSelects[oItem.productId] = itemToRx[i].ds_id;
 				}
 			}
 		}
+
+		console.log(oSelects);
 
 		// Set the state
 		selectsSet(oSelects);
@@ -207,7 +241,7 @@ export default function Verify(props) {
 
 	// Prescription options
 	let lRxOptions = [
-		<option key={0} value={0}>Select Prescription...</option>
+		<option key={0} value="0">Select Prescription...</option>
 	];
 	for(let o of rx) {
 		lRxOptions.push(
@@ -221,7 +255,7 @@ export default function Verify(props) {
 	// Render
 	return (
 		<Box className="verify">
-			{props.items.map(o =>
+			{props.customer.items.map(o =>
 				<Box key={o.productId} className="section">
 					<Grid container spacing={1}>
 						<Grid item xs={12} sm={5} className="product">
@@ -235,14 +269,14 @@ export default function Verify(props) {
 								}}
 								native
 								onChange={ev => selectChange(o.productId, ev.currentTarget.value)}
-								value={selects[o.productId]}
+								value={selects[o.productId] ? selects[o.productId].toString() : '0'}
 								variant="outlined"
 							>{lRxOptions}</Select>
 						</Grid>
 					</Grid>
 				</Box>
 			)}
-			<Grid container spacing={1}>
+			<Grid container spacing={1} className="rta">
 				<Grid item xs={iGrid}>
 					<Button
 						onClick={props.onSSO}
@@ -277,9 +311,7 @@ export default function Verify(props) {
 
 // Valid props
 Verify.propTypes = {
-	customerId: PropTypes.number.isRequired,
-	existing: PropTypes.arrayOf(PropTypes.object).isRequired,
-	items: PropTypes.arrayOf(PropTypes.object).isRequired,
+	customer: PropTypes.object.isRequired,
 	onRemove: PropTypes.func,
 	onSSO: PropTypes.func.isRequired,
 	onTransfer: PropTypes.func.isRequired,

@@ -50,7 +50,7 @@ export default function PreviousMeds(props) {
 		if(props.patientId) {
 			fetch();
 		} else {
-			medsSet([]);
+			medsSet(0);
 		}
 	// eslint-disable-next-line
 	}, [props.patientId]);

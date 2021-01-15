@@ -123,6 +123,10 @@ td {
 	.MuiInputBase-root {
 		background-color: #ffffff;
 	}
+
+	select, .select {
+		width: 100%;
+	}
 }
 
 .MuiPaper-root.padded {

@@ -224,7 +224,6 @@ export default function View(props) {
 					mobile={props.mobile}
 					onRemove={unclaim}
 					patientId={patientId}
-					start="matches"
 					user={props.user}
 				/>
 			</Box>

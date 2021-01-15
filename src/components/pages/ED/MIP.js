@@ -108,6 +108,11 @@ export default function MIP(props) {
 
 			// If there's data
 			if(res.data) {
+
+				// Notify provider
+				Events.trigger('success', 'Order approved, please create prescriptions.');
+
+				// Notify parent
 				props.onApprove();
 			}
 		});

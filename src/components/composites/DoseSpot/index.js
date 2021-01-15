@@ -57,7 +57,7 @@ export default function DoseSpot(props) {
 
 		// If we have an ID
 		if(props.patientId) {
-			if(props.mode === 'sso') {
+			if(mode === 'sso') {
 				ssoFetch();
 			}
 		} else {
@@ -109,7 +109,7 @@ export default function DoseSpot(props) {
 		// We can successfully close this claim
 		Claimed.remove(iCustID, 'approved').then(res => {
 			Events.trigger('claimedRemove', iCustID, true);
-			Events.trigger('success', 'Customer approved!');
+			Events.trigger('success', 'Prescriptions verified and confirmed. Thank you!');
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
 		});
@@ -158,9 +158,9 @@ export default function DoseSpot(props) {
 
 		// Else, if we're verifying
 		else if(mode === 'verify') {
-			<Verify
-				customerId={props.customer.customerId}
-				items={props.order.items}
+			Content = <Verify
+				customer={props.customer}
+				existing={props.existing}
 				onSSO={() => modeSet('sso')}
 				onRemove={props.onRemove}
 				onTransfer={() => transferSet(true)}
@@ -171,8 +171,8 @@ export default function DoseSpot(props) {
 
 		// Else, if we're in create mode
 		else if(mode === 'create') {
-			<Prescriptions
-				items={props.order.items}
+			Content = <Prescriptions
+				customer={props.customer}
 				patientId={props.patientId}
 				onRemove={props.onRemove}
 				onTransfer={() => transferSet(true)}
@@ -193,15 +193,6 @@ export default function DoseSpot(props) {
 					onTransfer={customerTransfer}
 				/>
 			}
-
-			{/*props.patientId ?
-
-					}
-				</React.Fragment>
-			:
-
-			*/}
-
 		</Box>
 	)
 }
@@ -213,7 +204,6 @@ DS.propTypes = {
 	mobile: PropTypes.bool.isRequired,
 	onRemove: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
 	patientId: PropTypes.number.isRequired,
-	start: PropTypes.oneOf(['sso', 'matches']).isRequired,
 	type: PropTypes.oneOf(['ed', 'hrt']).isRequired,
 	user: PropTypes.object.isRequired
 }
