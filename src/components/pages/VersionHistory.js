@@ -18,6 +18,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 const VERSION = [
+	['1.5.0', 'January 16th, 2021', [
+		'Huge change in prescription creation process. Prescriptions are now created by the portal and then only approved by providers.'
+	]],
 	['1.4.0', 'December 30th, 2020', [
 		'Underlining codebase updated. No functionality should change, but any issues should be reported immediately.'
 	]],
