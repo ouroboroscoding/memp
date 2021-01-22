@@ -59,6 +59,7 @@ export function fetch(state) {
 
 // Default export
 const Encounters = {
-	fetch: fetch
+	fetch: fetch,
+	map: _ENCOUNTER
 }
 export default Encounters;
