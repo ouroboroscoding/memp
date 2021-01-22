@@ -44,20 +44,20 @@ export default function CustomerSummary(props) {
 		<Paper className="summary">
 			<Grid container spacing={3}>
 				<Grid item xs={12} sm={2}>
-					<p><Button variant="contained" color="primary" size="large" onClick={claim}>Claim</Button></p>
+					<Typography><Button variant="contained" color="primary" size="large" onClick={claim}>Claim</Button></Typography>
 				</Grid>
 				<Grid item xs={12} sm={5}>
 					<Typography variant="h6">Customer</Typography>
-					<p><strong>ID:</strong> {props.customerId}</p>
-					<p><strong>Name:</strong> {props.customerName}</p>
-					<p><strong>Location:</strong> {props.shipCity + ', ' + props.shipState}</p>
-					<p><strong>Encounter:</strong> {props.encounter !== '' && Encounters[props.encounter]}</p>
+					<Typography><strong>ID:</strong> {props.customerId}</Typography>
+					<Typography><strong>Name:</strong> {props.customerName}</Typography>
+					<Typography><strong>Location:</strong> {props.shipCity + ', ' + props.shipState}</Typography>
+					<Typography><strong>Encounter:</strong> {props.encounter !== '' && Encounters.map[props.encounter]}</Typography>
 				</Grid>
 				<Grid item xs={12} sm={5} className="messages">
 					<Typography variant="h6">Order</Typography>
-					<p><strong>ID:</strong> {props.orderId}</p>
-					<p><strong>Label:</strong> {sLabel}</p>
-					<p><strong>Created:</strong> {Utils.niceDate(props.dateCreated)}</p>
+					<Typography><strong>ID:</strong> {props.orderId}</Typography>
+					<Typography><strong>Label:</strong> {sLabel}</Typography>
+					<Typography><strong>Created:</strong> {Utils.niceDate(props.dateCreated)}</Typography>
 				</Grid>
 			</Grid>
 		</Paper>
