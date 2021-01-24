@@ -35,13 +35,11 @@ import FormComponent from 'shared/components/format/Form';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
+import Rights from 'shared/communication/rights';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
 import { afindi, clone } from 'shared/generic/tools';
-
-// Local modules
-import Utils from 'utils';
 
 // Definitions
 import TemplateDef from 'definitions/providers/template';
