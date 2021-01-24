@@ -17,7 +17,7 @@ import React from 'react';
 import Select from '@material-ui/core/Select';
 
 // Shared data modules
-import DoseSpot from 'shared/data/dosespot';
+import DS from 'shared/data/dosespot';
 
 // Generic modules
 import Events from 'shared/generic/events';
@@ -49,7 +49,7 @@ export default class Pharmacies extends React.Component {
 	}
 
 	componentDidMount() {
-		DoseSpot.pharmacies().then(data => {
+		DS.pharmacies().then(data => {
 			this.setState({list: data});
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));

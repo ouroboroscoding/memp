@@ -23,7 +23,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
 // Composite/Shared components
-import DS from 'components/composites/DS';
+import DoseSpot from 'components/composites/DoseSpot';
 import Notes from 'components/composites/Notes';
 
 // Page components
@@ -37,13 +37,11 @@ import Encounters from 'data/encounters';
 import Rest from 'shared/communication/rest';
 
 // Shared data modules
-import DoseSpot from 'shared/data/dosespot';
+import DS from 'shared/data/dosespot';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
-
-// Local modules
-import Utils from 'utils';
+import { nicePhone } from 'shared/generic/tools';
 
 // Note types
 const _NOTES = {
@@ -162,7 +160,7 @@ export default function View(props) {
 
 	// Fetch the customer's DoseSpot patient ID
 	function patientFetch() {
-		DoseSpot.fetch(customerId).then(res => {
+		DS.fetch(customerId).then(res => {
 			patientSet(res);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
@@ -216,16 +214,16 @@ export default function View(props) {
 					<Typography className="medication">{customer.items.map(o => o.description).join(', ')}</Typography>
 				</Grid>
 				<Grid item xs={5} sm={4} md={3} className="right">
-					<Typography className="encounter">{encounter} / <nobr>{Utils.nicePhone(customer.phone)}</nobr></Typography>
+					<Typography className="encounter">{encounter} / <nobr>{nicePhone(customer.phone)}</nobr></Typography>
 				</Grid>
 			</Grid>
 			<Box className="tabSection" style={{display: tab === 0 ? 'block' : 'none'}}>
-				<DS
+				<DoseSpot
 					customer={customer}
+					initialMode="verify"
 					mobile={props.mobile}
 					onRemove={unclaim}
 					patientId={patientId}
-					start="matches"
 					user={props.user}
 				/>
 			</Box>

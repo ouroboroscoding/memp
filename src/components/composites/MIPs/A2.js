@@ -102,7 +102,7 @@ export default function A2(props) {
 						<Box className="section">
 							<Grid container spacing={1}>
 								<Grid item xs={6} md={3}><Typography><strong>Gender: </strong>{q('gender')}</Typography></Grid>
-								<Grid item xs={6} md={3}><Typography><strong>Age: </strong>{Utils.age(new Date(q('birthdate') + 'T00:00:00'))}</Typography></Grid>
+								<Grid item xs={6} md={3}><Typography><strong>DOB: </strong>{q('birthdate')} ({Utils.age(new Date(q('birthdate') + 'T00:00:00'))})</Typography></Grid>
 								<Grid item xs={6} md={3}><Typography><strong>Height: </strong>{q('height').replace(' ft', "'").replace(' in', '"')}</Typography></Grid>
 								<Grid item xs={6} md={3}><Typography><strong>Weight: </strong>{q('weight')} lbs</Typography></Grid>
 							</Grid>

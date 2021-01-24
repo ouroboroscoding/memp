@@ -23,7 +23,7 @@ import Rest from 'shared/communication/rest';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
-import { afindi, clone } from 'shared/generic/tools';
+import { afindi, clone, datetime } from 'shared/generic/tools';
 
 // Local modules
 import Utils from 'utils';
@@ -297,7 +297,7 @@ export default function Notes(props) {
 					action: oData.action,
 					note: oData.action === 'Send Communication' ? '[Content] ' + oData.content : oData.content,
 					createdBy: 'You',
-					createdAt: Utils.datetime(new Date()),
+					createdAt: datetime(new Date()),
 					userRole: 'Doctor'
 				});
 
@@ -368,7 +368,7 @@ export default function Notes(props) {
 					action: 'Send Communication',
 					note: '[Content] ' + oData.content,
 					createdBy: 'You',
-					createdAt: Utils.datetime(new Date()),
+					createdAt: datetime(new Date()),
 					userRole: 'Doctor'
 				});
 

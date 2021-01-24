@@ -1,0 +1,15 @@
+#prescription {
+
+	.product {
+
+		div {
+			display: table;
+			height: 56px;
+
+			div {
+				display: table-cell;
+				vertical-align: middle;
+			}
+		}
+	}
+}

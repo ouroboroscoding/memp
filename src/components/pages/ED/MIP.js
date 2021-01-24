@@ -20,13 +20,11 @@ import Grid from '@material-ui/core/Grid';
 // Composite components
 import MIPs from 'components/composites/MIPs';
 import PreviousMeds from 'components/composites/PreviousMeds';
+import SOAP from 'components/composites/ED-SOAP';
 import Transfer from 'components/composites/Transfer';
 
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
-
-// Sibling components
-import SOAP from './SOAP';
 
 // Data modules
 import Claimed from 'data/claimed';
@@ -110,6 +108,11 @@ export default function MIP(props) {
 
 			// If there's data
 			if(res.data) {
+
+				// Notify provider
+				Events.trigger('success', 'Order approved, please create prescriptions.');
+
+				// Notify parent
 				props.onApprove();
 			}
 		});
@@ -187,32 +190,36 @@ export default function MIP(props) {
 	// Render
 	return (
 		<Box className="mips">
-			<MIPs
-				forms={mips === 0 ? [] : mips}
-				mobile={props.mobile}
-				oxytocin={bOxytocin}
-			/>
-			<PreviousMeds
-				customerId={props.customerId}
-				patientId={props.patientId}
-				pharmacyId={56387}
-			/>
-			<SOAP
-				order={props.order}
-				ref={refSOAP}
-				treated={bTreatedForEd}
-			/>
-			<Grid container spacing={1} className="rta">
-				<Grid item xs={4}>
-					<Button color="secondary" onClick={orderDecline} variant="contained">Decline</Button>
+			<Box className="scroll">
+				<MIPs
+					forms={mips === 0 ? [] : mips}
+					mobile={props.mobile}
+					oxytocin={bOxytocin}
+				/>
+				<PreviousMeds
+					customerId={props.customerId}
+					patientId={props.patientId}
+					pharmacyId={56387}
+				/>
+				<SOAP
+					order={props.order}
+					ref={refSOAP}
+					treated={bTreatedForEd}
+				/>
+			</Box>
+			<Box className="rta">
+				<Grid container spacing={1}>
+					<Grid item xs={4}>
+						<Button color="secondary" onClick={orderDecline} variant="contained">Decline</Button>
+					</Grid>
+					<Grid item xs={4}>
+						<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
+					</Grid>
+					<Grid item xs={4}>
+						<GreenButton onClick={orderApprove} variant="contained">Approve</GreenButton>
+					</Grid>
 				</Grid>
-				<Grid item xs={4}>
-					<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
-				</Grid>
-				<Grid item xs={4}>
-					<GreenButton onClick={orderApprove} variant="contained">Approve</GreenButton>
-				</Grid>
-			</Grid>
+			</Box>
 			{transfer &&
 				<Transfer
 					agent={props.user.agent}
