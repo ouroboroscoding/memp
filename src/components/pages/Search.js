@@ -59,6 +59,7 @@ function Order(props) {
 	// Claim Order
 	function claim() {
 		props.onClaim({
+			continuous: props.continuous,
 			orderId: props.orderId,
 			type: props.type
 		});
@@ -95,6 +96,7 @@ function Order(props) {
 
 // Valid props
 Order.propTypes = {
+	continuous: PropTypes.bool.isRequired,
 	dateCreated: PropTypes.string.isRequired,
 	encounter: PropTypes.string.isRequired,
 	onClaim: PropTypes.func.isRequired,
@@ -130,7 +132,6 @@ function Customer(props) {
 	function orderClaim(claim) {
 		claim.customerId = parseInt(props.customerId, 10);
 		claim.customerName = props.firstName + ' ' + props.lastName;
-		claim.continuous = false;
 		props.onClaim(claim);
 	}
 
@@ -145,19 +146,24 @@ function Customer(props) {
 					<Typography variant="h6"><strong>{props.firstName} {props.lastName}</strong> ({props.customerId})</Typography>
 					<Typography>{props.shipCity + ', ' + props.shipState}</Typography>
 				</Grid>
-				{props.orders && props.orders.map(o =>
+				{props.orders !== false && props.orders.map(o =>
 					<Order
+						continuous={false}
 						key={o.orderId}
 						onClaim={orderClaim}
 						user={props.user}
 						{...o}
 					/>
 				)}
-				{props.orders === false &&
-					<Grid item xs={12}>
-						<Typography>No PENDING orders associated with this customer.</Typography>
-					</Grid>
-				}
+				{props.continuous !== false && props.continuous.map(o =>
+					<Order
+						continuous={true}
+						key={o.orderId}
+						onClaim={orderClaim}
+						user={props.user}
+						{...o}
+					/>
+				)}
 			</Grid>
 		</Paper>
 	);

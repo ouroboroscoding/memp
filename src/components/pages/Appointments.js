@@ -9,15 +9,21 @@
  */
 
 // NPM modules
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
 // Material UI
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+
+// Data modules
+import Claimed from 'data/claimed';
+import Encounters from 'data/encounters';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
@@ -28,6 +34,123 @@ import { isToday } from 'shared/generic/tools';
 
 // Local modules
 import Utils from 'utils';
+
+/**
+ * Order
+ *
+ * Displays a single order
+ *
+ * @name Order
+ * @access private
+ * @param Object props Attributes passed to the component
+ * @returns React.Component
+ */
+function Order(props) {
+
+	// Claim Order
+	function claim() {
+		props.onClaim({
+			orderId: props.orderId,
+			type: props.type,
+			continuous: props.continuous
+		});
+	}
+
+	// If we're the one who claimed it
+	let sClaimedBy = (props.claimedUser === props.user.id) ? 'You' : props.claimedName;
+
+	// Order label
+	let lLabel = props.orderLabel.split(' - ');
+	let sLabel = (props.attentionRole === 'Doctor' ? 'Provider' : props.attentionRole) +
+				(lLabel.length === 2 ? ' - ' + lLabel[1] : '')
+
+	// Render
+	return (
+		<React.Fragment>
+			<Grid item xs={1}>&nbsp;</Grid>
+			<Grid item xs={2}>
+				{props.claimedUser !== null ?
+					<Typography>Order already claimed by {sClaimedBy}</Typography>
+				:
+					<Button variant="contained" color="primary" size="large" onClick={claim}>Claim</Button>
+				}
+			</Grid>
+			<Grid item xs={9}>
+				<Typography><strong>Order:</strong> {props.orderId}</Typography>
+				<Typography><strong>Type:</strong> {props.type.toUpperCase()} - {props.encounter !== '' && Encounters.map[props.encounter]}</Typography>
+				<Typography><strong>Label:</strong> {sLabel}</Typography>
+				<Typography><strong>Created:</strong> {Utils.niceDate(props.dateCreated)}</Typography>
+			</Grid>
+		</React.Fragment>
+	)
+}
+
+// Valid props
+Order.propTypes = {
+	continuous: PropTypes.bool.isRequired,
+	dateCreated: PropTypes.string.isRequired,
+	encounter: PropTypes.string.isRequired,
+	onClaim: PropTypes.func.isRequired,
+	orderId: PropTypes.string.isRequired,
+	type: PropTypes.string.isRequired,
+	user: PropTypes.object.isRequired
+}
+
+/**
+ * Appointment
+ *
+ * Displays a single appointment
+ *
+ * @name Appointment
+ * @access private
+ * @param Object props Attributes passed to the component
+ * @returns React.Component
+ */
+function Appointment(props) {
+
+	// Claim Order
+	function orderClaim(claim) {
+		claim.customerId = parseInt(props.customerId, 10);
+		claim.customerName = props.name;
+		props.onClaim(claim);
+	}
+
+	// Render
+	return (
+		<Grid container spacing={2}>
+			<Grid item xs={4}>{props.type.toUpperCase()} - {props.event}</Grid>
+			<Grid item xs={4}>{props.name}</Grid>
+			<Grid item xs={2}>{props.start.split(' ')[1]}</Grid>
+			<Grid item xs={2}>{props.end.split(' ')[1]}</Grid>
+			{props.orders !== false && props.orders.map(o =>
+				<Order
+					continuous={false}
+					key={o.orderId}
+					onClaim={orderClaim}
+					user={props.user}
+					{...o}
+				/>
+			)}
+			{props.continuous !== false && props.continuous.map(o =>
+				<Order
+					continuous={true}
+					key={o.orderId}
+					onClaim={orderClaim}
+					user={props.user}
+					{...o}
+				/>
+			)}
+		</Grid>
+	);
+}
+
+// Valid props
+Appointment.propTypes = {
+	customerId: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	onClaim: PropTypes.func.isRequired,
+	user: PropTypes.object.isRequired
+}
 
 /**
  * Appointments
@@ -106,6 +229,22 @@ export default function Appointments(props) {
 		return lReturn;
 	}
 
+	// Claim
+	function claim(customer) {
+
+		// Get the claimed add promise
+		Claimed.add(customer.customerId, customer.orderId).then(res => {
+			Events.trigger('claimedAdd', customer);
+		}, error => {
+			// If we got a duplicate
+			if(error.code === 1101) {
+				Events.trigger('error', 'Patient has already been claimed.');
+			} else {
+				Events.trigger('error', JSON.stringify(error));
+			}
+		});
+	}
+
 	// Fetch
 	function fetch() {
 
@@ -147,16 +286,15 @@ export default function Appointments(props) {
 				<Paper className="padded">
 					<Typography variant="h4">{isToday(l[0]) ? 'Today' : Utils.niceDate(l[0])}</Typography>
 					{l[1].map((o,i) =>
-						<React.Fragment>
+						<React.Fragment key={i}>
 							{i !== 0 &&
 								<hr />
 							}
-							<Grid container>
-								<Grid item xs={3}>{o.pat_name}</Grid>
-								<Grid item xs={3}>{o.event}</Grid>
-								<Grid item xs={3}>{o.start.split(' ')[1]}</Grid>
-								<Grid item xs={3}>{o.end.split(' ')[1]}</Grid>
-							</Grid>
+							<Appointment
+								onClaim={claim}
+								user={props.user}
+								{...o}
+							/>
 						</React.Fragment>
 					)}
 				</Paper>
