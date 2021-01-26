@@ -37,7 +37,7 @@ const UserTree = new Tree(UserDef);
 
 // Override the react values
 UserTree.special('react', {
-	update: ['firstName', 'lastName', 'email', 'cellNumber', 'notificationPref']
+	update: ['firstName', 'lastName', 'email', 'cellNumber', 'notificationPref', 'calendlyEmail']
 })
 
 // Account component
@@ -76,6 +76,7 @@ export default function Account(props) {
 			<DialogContent dividers>
 				<FormComponent
 					noun={"user"}
+					sendPrimary={false}
 					service="monolith"
 					success={updateSuccess}
 					tree={UserTree}

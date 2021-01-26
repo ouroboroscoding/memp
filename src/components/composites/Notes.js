@@ -25,9 +25,6 @@ import Rest from 'shared/communication/rest';
 import Events from 'shared/generic/events';
 import { afindi, clone, datetime } from 'shared/generic/tools';
 
-// Local modules
-import Utils from 'utils';
-
 // Regex
 const regTplVar = /{([^]+?)}/g
 

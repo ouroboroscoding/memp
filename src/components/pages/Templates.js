@@ -138,7 +138,7 @@ export default function Templates(props) {
 	return (
 		<Box id="templates" className="page">
 			<Box className="templates">
-				<Box className="pageHeader">
+				<Box className="page_header">
 					<Box className="title">Templates</Box>
 					{Rights.has('prov_templates', 'create') &&
 						<Tooltip title="Create new template">

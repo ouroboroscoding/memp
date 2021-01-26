@@ -13,6 +13,8 @@ import React, { useEffect, useState } from 'react';
 
 // Material UI
 import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -40,9 +42,10 @@ import Utils from 'utils';
 export default function Appointments(props) {
 
 	// State
+	let [past, pastSet] = useState(false);
 	let [records, recordsSet] = useState([]);
 
-	// Effects
+	// User Effect
 	useEffect(() => {
 
 		// If we have a user
@@ -54,28 +57,10 @@ export default function Appointments(props) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [props.user]); // React to user changes
 
-	// Fetch
-	function fetch() {
-
-		// Get the appointments from the server
-		Rest.read('monolith', 'provider/calendly', {}).done(res => {
-
-			// If there's an error or warning
-			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If there's data
-			if(res.data) {
-
-				// Sort into days, then store the appointments
-				recordsSet(byDay(res.data));
-			}
-		});
-	}
+	// Past effect
+	useEffect(() => {
+		fetch();
+	}, [past]);
 
 	// Store by day
 	function byDay(l) {
@@ -121,9 +106,43 @@ export default function Appointments(props) {
 		return lReturn;
 	}
 
+	// Fetch
+	function fetch() {
+
+		// Get the appointments from the server
+		Rest.read('monolith', 'provider/calendly', {
+			new_only: !past
+		}).done(res => {
+
+			// If there's an error or warning
+			if(res.error && !res._handled) {
+				Events.trigger('error', JSON.stringify(res.error));
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if(res.data) {
+
+				// Sort into days, then store the appointments
+				recordsSet(byDay(res.data));
+			}
+		});
+	}
+
 	// Render
 	return (
 		<Box id="appointments" className="page">
+			<Box className="page_header">
+				<Typography className="title">Calendly Appointments</Typography>
+				<Box>
+					<FormControlLabel
+						control={<Checkbox checked={past} color="primary" onChange={ev => pastSet(ev.target.checked)} />}
+						label="Show Historical"
+					/>
+				</Box>
+			</Box>
 			{records.map(l =>
 				<Paper className="padded">
 					<Typography variant="h4">{isToday(l[0]) ? 'Today' : Utils.niceDate(l[0])}</Typography>
