@@ -283,7 +283,7 @@ export default function Appointments(props) {
 					/>
 				</Box>
 			</Box>
-			{records.map(l =>
+			{records.length > 0 && records.map(l =>
 				<Paper className="padded">
 					<Typography variant="h4">{isToday(l[0]) ? 'Today' : Utils.niceDate(l[0])}</Typography>
 					{l[1].map((o,i) =>
@@ -300,6 +300,9 @@ export default function Appointments(props) {
 					)}
 				</Paper>
 			)}
+			{records.length === 0 &&
+				<Typography>No Appointments found</Typography>
+			}
 		</Box>
 	);
 }
