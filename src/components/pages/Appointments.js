@@ -77,7 +77,7 @@ function Order(props) {
 			</Grid>
 			<Grid item xs={9}>
 				<Typography><strong>Order:</strong> {props.orderId}</Typography>
-				<Typography><strong>Type:</strong> {props.type.toUpperCase()} - {props.encounter !== '' && Encounters.map[props.encounter]}</Typography>
+				<Typography><strong>Type:</strong> {props.continuous ? 'C-' : ''}{props.type.toUpperCase()} - {props.encounter !== '' && Encounters.map[props.encounter]}</Typography>
 				<Typography><strong>Label:</strong> {sLabel}</Typography>
 				<Typography><strong>Created:</strong> {Utils.niceDate(props.dateCreated)}</Typography>
 			</Grid>
