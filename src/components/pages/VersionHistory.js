@@ -18,6 +18,9 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 const VERSION = [
+	['1.6.0', 'January 27th, 2021', [
+		'Pending New Orders and Expiring are visible from both the appointments and search pages for easier claiming.'
+	]],
 	['1.5.1', 'January 25th, 2021', [
 		'Removed prescription auto-create step for the time being.'
 	]],

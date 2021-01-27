@@ -147,17 +147,23 @@ td {
 	}
 }
 
-.pageHeader {
+.page_header {
 	display: flex;
 
 	.title {
-		flex-basis: 0;
 		flex-grow: 1;
-		flex-shrink: 1;
+		font-size: 2rem;
+		font-weight: 400;
+		margin: 0 0 10px 0;
 	}
 
-	.icon {
-		font-size: 3.5rem;
+	button {
+		position: relative;
+		top: -15px;
+
+		.MuiSvgIcon-root {
+			font-size: 2.5rem;
+		}
 	}
 }
 

@@ -2,7 +2,14 @@
 	overflow: auto;
 	padding: 10px;
 
-	.MuiTypography-root {
-		padding-bottom: 10px;
+	.padded {
+
+		.MuiTypography-root {
+			padding-bottom: 10px;
+		}
+
+		button {
+			width: 90%;
+		}
 	}
 }
