@@ -177,12 +177,13 @@ export default function Appointments(props) {
 		} else {
 			recordsSet([]);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// eslint-disable-next-line
 	}, [props.user]); // React to user changes
 
 	// Past effect
 	useEffect(() => {
 		fetch();
+	// eslint-disable-next-line
 	}, [past]);
 
 	// Store by day
