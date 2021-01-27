@@ -77,7 +77,7 @@ function Order(props) {
 			</Grid>
 			<Grid item xs={9}>
 				<Typography><strong>Order:</strong> {props.orderId}</Typography>
-				<Typography><strong>Type:</strong> {props.type.toUpperCase()} - {props.encounter !== '' && Encounters.map[props.encounter]}</Typography>
+				<Typography><strong>Type:</strong> {props.continuous ? 'C-' : ''}{props.type.toUpperCase()} - {props.encounter !== '' && Encounters.map[props.encounter]}</Typography>
 				<Typography><strong>Label:</strong> {sLabel}</Typography>
 				<Typography><strong>Created:</strong> {Utils.niceDate(props.dateCreated)}</Typography>
 			</Grid>
@@ -177,12 +177,13 @@ export default function Appointments(props) {
 		} else {
 			recordsSet([]);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+	// eslint-disable-next-line
 	}, [props.user]); // React to user changes
 
 	// Past effect
 	useEffect(() => {
 		fetch();
+	// eslint-disable-next-line
 	}, [past]);
 
 	// Store by day
@@ -282,7 +283,7 @@ export default function Appointments(props) {
 					/>
 				</Box>
 			</Box>
-			{records.map(l =>
+			{records.length > 0 && records.map(l =>
 				<Paper className="padded">
 					<Typography variant="h4">{isToday(l[0]) ? 'Today' : Utils.niceDate(l[0])}</Typography>
 					{l[1].map((o,i) =>
@@ -299,6 +300,9 @@ export default function Appointments(props) {
 					)}
 				</Paper>
 			)}
+			{records.length === 0 &&
+				<Typography>No Appointments found</Typography>
+			}
 		</Box>
 	);
 }
