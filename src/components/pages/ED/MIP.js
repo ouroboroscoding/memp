@@ -90,6 +90,7 @@ export default function MIP(props) {
 	// Approve the order we're on
 	function orderApprove() {
 		Rest.update('monolith', 'order/approve', {
+			customerId: props.order.customerId,
 			orderId: props.order.orderId,
 			soap: refSOAP.current.value
 		}).done(res => {
