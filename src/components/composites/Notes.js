@@ -294,7 +294,7 @@ export default function Notes(props) {
 					action: oData.action,
 					note: oData.action === 'Send Communication' ? '[Content] ' + oData.content : oData.content,
 					createdBy: 'You',
-					createdAt: datetime(new Date()),
+					createdAt: datetime(new Date(), '-'),
 					userRole: 'Doctor'
 				});
 
@@ -365,7 +365,7 @@ export default function Notes(props) {
 					action: 'Send Communication',
 					note: '[Content] ' + oData.content,
 					createdBy: 'You',
-					createdAt: datetime(new Date()),
+					createdAt: datetime(new Date(), '-'),
 					userRole: 'Doctor'
 				});
 
