@@ -381,7 +381,11 @@ export default function Notes(props) {
 	// Track any text enterered into an input box
 	function textPress(ev) {
 		if(ev.key === 'Enter') {
-			noteAdd();
+			if(props.type === 'notes') {
+				noteAdd();
+			} else if(props.type === 'sms') {
+				smsSend();
+			}
 		}
 	}
 
