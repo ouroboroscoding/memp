@@ -294,7 +294,7 @@ export default function Notes(props) {
 					action: oData.action,
 					note: oData.action === 'Send Communication' ? '[Content] ' + oData.content : oData.content,
 					createdBy: 'You',
-					createdAt: datetime(new Date()),
+					createdAt: datetime(new Date(), '-'),
 					userRole: 'Doctor'
 				});
 
@@ -365,7 +365,7 @@ export default function Notes(props) {
 					action: 'Send Communication',
 					note: '[Content] ' + oData.content,
 					createdBy: 'You',
-					createdAt: datetime(new Date()),
+					createdAt: datetime(new Date(), '-'),
 					userRole: 'Doctor'
 				});
 
@@ -381,7 +381,11 @@ export default function Notes(props) {
 	// Track any text enterered into an input box
 	function textPress(ev) {
 		if(ev.key === 'Enter') {
-			noteAdd();
+			if(props.type === 'notes') {
+				noteAdd();
+			} else if(props.type === 'sms') {
+				smsSend();
+			}
 		}
 	}
 
