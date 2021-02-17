@@ -30,7 +30,7 @@ import Rest from 'shared/communication/rest';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
-import { isToday } from 'shared/generic/tools';
+import { date, datetime, isToday } from 'shared/generic/tools';
 
 // Local modules
 import Utils from 'utils';
@@ -120,8 +120,8 @@ function Appointment(props) {
 		<Grid container spacing={2}>
 			<Grid item xs={4}>{props.type.toUpperCase()} - {props.event}</Grid>
 			<Grid item xs={4}>{props.name}</Grid>
-			<Grid item xs={2}>{props.start.split(' ')[1]}</Grid>
-			<Grid item xs={2}>{props.end.split(' ')[1]}</Grid>
+			<Grid item xs={2}>{datetime(props.start, '-').split(' ')[1]}</Grid>
+			<Grid item xs={2}>{datetime(props.end, '-').split(' ')[1]}</Grid>
 			{props.orders !== false && props.orders.map(o =>
 				<Order
 					continuous={false}
@@ -199,11 +199,11 @@ export default function Appointments(props) {
 		// Go through each appointment found
 		for(let o of l) {
 
-			// Split the date/time into date and time
-			let lDate = o.start.split(' ');
+			// Convert the start time to a date
+			let sStart = date(o.start, '-');
 
 			// If the date doesn't match the previous one
-			if((lDate[0] + 'T00:00:00') !== sDate) {
+			if(sStart !== sDate) {
 
 				// If we have a list
 				if(lDates) {
@@ -214,7 +214,7 @@ export default function Appointments(props) {
 				lDates = [];
 
 				// Store the new date
-				sDate = lDate[0] + 'T00:00:00';
+				sDate = sStart;
 			}
 
 			// Add the item to the current list
@@ -285,7 +285,7 @@ export default function Appointments(props) {
 			</Box>
 			{records.length > 0 && records.map(l =>
 				<Paper className="padded">
-					<Typography variant="h4">{isToday(l[0]) ? 'Today' : Utils.niceDate(l[0])}</Typography>
+					<Typography variant="h4">{isToday(l[0]) ? 'Today' : Utils.niceDate(l[0] + 'T00:00:00')}</Typography>
 					{l[1].map((o,i) =>
 						<React.Fragment key={i}>
 							{i !== 0 &&
