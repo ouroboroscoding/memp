@@ -120,6 +120,7 @@ export default class Header extends React.Component {
 		this.signedIn = this.signedIn.bind(this);
 		this.signedOut = this.signedOut.bind(this);
 		this.signout = this.signout.bind(this);
+		this.timeout = this.timeout.bind(this);
 		this.visibilityChange = this.visibilityChange.bind(this);
 		this.wsMessage = this.wsMessage.bind(this);
 	}
@@ -131,7 +132,7 @@ export default class Header extends React.Component {
 		Events.add('signedOut', this.signedOut);
 		Events.add('claimedAdd', this.claimedAdd);
 		Events.add('claimedRemove', this.claimedRemove);
-		Events.add('activitySignout', this.signout);
+		Events.add('activitySignout', this.timeout);
 
 		// Track document visibility
 		PageVisibility.add(this.visibilityChange);
@@ -144,7 +145,7 @@ export default class Header extends React.Component {
 		Events.remove('signedOut', this.signedOut);
 		Events.remove('claimedAdd', this.claimedAdd);
 		Events.remove('claimedRemove', this.claimedRemove);
-		Events.remove('activitySignout', this.signout);
+		Events.remove('activitySignout', this.timeout);
 
 		// Track document visibility
 		PageVisibility.remove(this.visibilityChange);
@@ -599,6 +600,35 @@ export default class Header extends React.Component {
 			clearInterval(this.iUpdates);
 			this.iUpdates = null;
 		}
+	}
+
+	timeout() {
+
+		// Call the signout
+		Rest.create('providers', 'signout', {
+			timeout: 900
+		}).done(res => {
+
+			// If there's an error
+			if(res.error && !res._handled) {
+				Events.trigger('error', JSON.stringify(res.error));
+			}
+
+			// If there's a warning
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if(res.data) {
+
+				// Reset the session
+				Rest.session(null);
+
+				// Trigger the signedOut event
+				Events.trigger('signedOut');
+			}
+		});
 	}
 
 	update() {
