@@ -54,7 +54,7 @@ function _signoutTimeout() {
 	// Let the system know to signout
 	if('signout' in moCallbacks &&
 		typeof moCallbacks['signout'] === 'function') {
-		moCallbacks['signout']();
+		moCallbacks['signout'](miMinutes);
 	}
 }
 

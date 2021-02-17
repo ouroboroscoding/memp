@@ -56,7 +56,7 @@ import 'sass/site.scss';
 // Init the activity watch with a 15 minute timer
 ActivityWatch.init(15, {
 	warning: () => Events.trigger('activityWarning'),
-	signout: () => Events.trigger('activitySignout')
+	signout: minutes => Events.trigger('activitySignout', minutes)
 });
 
 // Init the rest services

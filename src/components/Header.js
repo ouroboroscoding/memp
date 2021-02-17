@@ -602,11 +602,11 @@ export default class Header extends React.Component {
 		}
 	}
 
-	timeout() {
+	timeout(minutes) {
 
 		// Call the signout
 		Rest.create('providers', 'signout', {
-			timeout: 900
+			timeout: minutes * 60
 		}).done(res => {
 
 			// If there's an error
