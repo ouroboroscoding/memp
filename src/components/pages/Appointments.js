@@ -69,10 +69,16 @@ function Order(props) {
 		<React.Fragment>
 			<Grid item xs={1}>&nbsp;</Grid>
 			<Grid item xs={2}>
-				{props.claimedUser !== null ?
-					<Typography>Order already claimed by {sClaimedBy}</Typography>
+				{props.type === 'ed' ?
+					<React.Fragment>
+						{props.claimedUser !== null ?
+							<Typography>Order already claimed by {sClaimedBy}</Typography>
+						:
+							<Button variant="contained" color="primary" size="large" onClick={claim}>Claim</Button>
+						}
+					</React.Fragment>
 				:
-					<Button variant="contained" color="primary" size="large" onClick={claim}>Claim</Button>
+					<Typography>Can't claim {props.type.toUpperCase()} orders yet.</Typography>
 				}
 			</Grid>
 			<Grid item xs={9}>
