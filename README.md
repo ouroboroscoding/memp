@@ -9,6 +9,10 @@ If you have not already, clone this repository to your computer. The --recursive
 If you already cloned the repo and didn't add the --recursive command, you can run the following to get the submodules.
 > git submodule update --init --recursive
 
+## Add Hostname
+In order to be able to access the micro services and websocket host, the app will need to be on a specific domain, so you will need to add the hostname to your hosts file. This location of this file is different depending on your OS, I suggest [the following article](https://www.howtogeek.com/howto/27350/beginner-geek-how-to-edit-your-hosts-file/) for finding and editting your hosts file. Once you've found it, add the following line to it
+> 127.0.0.1 mp.mems.local
+
 ## nodejs
 
 13.11
