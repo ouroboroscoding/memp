@@ -38,7 +38,7 @@ export default function BadOrder(props) {
 
 	// Unclaim the customer
 	function unclaim() {
-		Claimed.remove(props.customerId, 'x').then(res => {
+		Claimed.remove(props.customerId, 'closed').then(res => {
 			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));

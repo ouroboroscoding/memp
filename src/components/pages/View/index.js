@@ -169,7 +169,7 @@ export default function View(props) {
 
 	// Unclaim the customer
 	function unclaim() {
-		Claimed.remove(customerId, 'x').then(res => {
+		Claimed.remove(customerId, 'closed').then(res => {
 			Events.trigger('claimedRemove', parseInt(customerId, 10), true);
 		}, error => {
 			Events.trigger('error', JSON.stringify(error));
