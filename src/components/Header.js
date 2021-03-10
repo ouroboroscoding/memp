@@ -710,17 +710,13 @@ export default class Header extends React.Component {
 						claimed: lClaimed
 					});
 
-					// If we're on a customer
+					// If we're on the customer
 					let lPath = Utils.parsePath(this.state.path);
-					if(lPath[0] === 'order') {
+					if(parseInt(lPath[1]) === data.customerId) {
 
-						// If it's the one removed
-						if(parseInt(lPath[1]) === data.customerId) {
-
-							// Switch page
-							this.props.history.push('/');
-							Events.trigger('error', 'This customer is not claimed, switching to home.');
-						}
+						// Switch page
+						this.props.history.push('/');
+						Events.trigger('error', 'This customer is no longer claimed, switching to home.');
 					}
 				}
 				break
