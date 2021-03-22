@@ -22,9 +22,6 @@ import MIPs from 'components/composites/MIPs';
 import PreviousMeds from 'components/composites/PreviousMeds';
 import Transfer from 'components/composites/Transfer';
 
-// Data modules
-import Claimed from 'data/claimed';
-
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
@@ -81,12 +78,7 @@ export default function MIP(props) {
 	// Remove the claim
 	function customerTransfer() {
 		transferSet(false);
-
-		Claimed.remove(props.customerId, 'transferred').then(res => {
-			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
-		}, error => {
-			Events.trigger('error', JSON.stringify(error));
-		});
+		Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 	}
 
 	// If we don't have the MIP yet

@@ -130,10 +130,56 @@ export function remove(customer_id, reason) {
 	});
 }
 
+/**
+ * Transfer
+ *
+ * Transfers an order to an agent then removes the claim
+ *
+ * @name transfer
+ * @param String customer_id The ID of the customer
+ * @param Integer agent The memo ID of the agent
+ * @param String note The note to add to the transfer
+ * @return Promise
+ */
+export function transfer(customer_id, agent, note) {
+
+	// Return promise
+	return new Promise((resolve, reject) => {
+
+		// Send the message to the server
+		Rest.update('monolith', 'order/transfer', {
+			agent: agent,
+			customerId: customer_id,
+			note: note
+		}).done(res => {
+
+			// If there's an error or a warning
+			if(res.error && !res._handled) {
+				reject(res.error);
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If we're ok
+			if(res.data) {
+
+				// Remove the claim
+				remove(customer_id, 'transferred').then(res => {
+					resolve();
+				}, error => {
+					reject(error);
+				});
+			}
+		});
+	});
+}
+
 // Default export
 const Claimed = {
 	add: add,
 	fetch: fetch,
-	remove: remove
+	remove: remove,
+	transfer: transfer
 };
 export default Claimed;

@@ -23,6 +23,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
+// Data modules
+import Claimed from 'data/claimed';
+
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
@@ -77,25 +80,11 @@ export default function Transfer(props) {
 			return;
 		}
 
-		// Send the message to the server
-		Rest.update('monolith', 'order/transfer', {
-			agent: agent,
-			customerId: props.customerId,
-			note: content
-		}).done(res => {
-
-			// If there's an error or a warning
-			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
-			}
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If we're ok
-			if(res.data) {
-				props.onTransfer();
-			}
+		// Transfer the claim
+		Claimed.transfer(props.customerId, agent, content).then(res => {
+			props.onTransfer();
+		}, error => {
+			Events.trigger('error', JSON.stringify(error));
 		});
 	}
 
