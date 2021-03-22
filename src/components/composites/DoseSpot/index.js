@@ -70,12 +70,7 @@ export default function DoseSpot(props) {
 	// Remove the claim
 	function customerTransfer() {
 		transferSet(false);
-
-		Claimed.remove(props.customer.customerId, 'transferred').then(res => {
-			Events.trigger('claimedRemove', props.customer.customerId, true);
-		}, error => {
-			Events.trigger('error', JSON.stringify(error));
-		});
+		Events.trigger('claimedRemove', parseInt(props.customer.customerId, 10), true);
 	}
 
 	function prescriptionsCreated() {

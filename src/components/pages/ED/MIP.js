@@ -98,7 +98,15 @@ export default function MIP(props) {
 			// If there's an error or warning
 			if(res.error && !res._handled) {
 				if(res.error.code === 1103) {
-					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
+
+					// Auto transfer the order to an agent
+					Claimed.transfer(props.customerId, 0, res.error.msg).then(res => {
+						Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
+						Events.trigger('error', 'Failed to update order status, order was transferred to an Agent');
+					}, error => {
+						Events.trigger('error', JSON.stringify(error));
+					});
+
 				} else {
 					Events.trigger('error', JSON.stringify(res.error));
 				}
@@ -154,11 +162,8 @@ export default function MIP(props) {
 
 	// Remove the claim
 	function orderTransfer() {
-		Claimed.remove(props.customerId, 'transferred').then(res => {
-			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
-		}, error => {
-			Events.trigger('error', JSON.stringify(error));
-		});
+		transferSet(false);
+		Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 	}
 
 	// If we don't have the MIP yet

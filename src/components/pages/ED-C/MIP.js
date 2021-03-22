@@ -153,11 +153,8 @@ export default function MIP(props) {
 
 	// Remove the claim
 	function orderTransfer() {
-		Claimed.remove(props.customerId, 'transferred').then(res => {
-			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
-		}, error => {
-			Events.trigger('error', JSON.stringify(error));
-		});
+		transferSet(false);
+		Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 	}
 
 	// If we don't have the MIP yet
