@@ -11,9 +11,6 @@
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
-// Shared generic modules
-import Events from 'shared/generic/events';
-
 /**
  * Add
  *
