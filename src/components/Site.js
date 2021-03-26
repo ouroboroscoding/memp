@@ -78,7 +78,7 @@ Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xh
 }, (method, url, data, opts) => {
 
 	// Track the request (if it's not itself a request track)
-	if(url.slice(url.length - 18) !== '/providers/request') {
+	if(opts.session && url.slice(url.length - 18) !== '/providers/request') {
 		request(method, url, data, opts);
 	}
 
