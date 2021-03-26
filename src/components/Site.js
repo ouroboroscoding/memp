@@ -13,6 +13,9 @@ import React, { useState } from 'react';
 import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 
+// Date modules
+import { add as request } from 'data/requests';
+
 // Shared data modules
 import DS from 'shared/data/dosespot';
 
@@ -73,10 +76,15 @@ Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xh
 			' (' + xhr.status + ')');
 	}
 }, (method, url, data, opts) => {
+
+	// Track the request (if it's not itself a request track)
+	if(opts.session && url.slice(url.length - 18) !== '/providers/request') {
+		request(method, url, data, opts);
+	}
+
+	// If the request is not a background one
 	if(!opts.background) {
-		if(process.env.REACT_APP_DISABLE_TIMEOUT !== 'true') {
-			ActivityWatch.reset();
-		}
+		ActivityWatch.reset();
 		LoaderShow();
 	}
 }, (method, url, data, opts) => {
@@ -124,17 +132,13 @@ export default function Site(props) {
 	// Event hooks
 	useEvent('signedIn', user => {
 		userSet(user);
-		if(process.env.REACT_APP_DISABLE_TIMEOUT !== 'true') {
-			ActivityWatch.start();
-		}
+		ActivityWatch.start();
 		DS.init(user.dsClinicianId);
 	});
 	useEvent('signedOut', () => {
 		userSet(false);
 		signoutWarningSet(false);
-		if(process.env.REACT_APP_DISABLE_TIMEOUT !== 'true') {
-			ActivityWatch.stop();
-		}
+		ActivityWatch.stop();
 		DS.init(0);
 	});
 	useEvent('activityWarning', () => signoutWarningSet(true));
