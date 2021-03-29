@@ -666,8 +666,6 @@ export default class Header extends React.Component {
 	// WebSocket message
 	wsMessage(data) {
 
-		console.log('ws:', data);
-
 		// Move forward based on the type
 		switch(data.type) {
 

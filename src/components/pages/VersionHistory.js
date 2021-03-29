@@ -68,6 +68,7 @@ export default function VersionHistory(props) {
 					{VERSION.map(v =>
 						<ListItem key={v[0]}>
 							<ListItemText
+								disableTypography={true}
 								primary={"Version " + v[0] + ' - ' + v[1]}
 								secondary={
 									<ul>{v[2].map((s,i) => <li key={i}>{s}</li>)}</ul>

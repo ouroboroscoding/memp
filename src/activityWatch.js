@@ -18,6 +18,9 @@ let moCallbacks = null;
 let mrActivity = null;
 let mrSignout = null;
 
+// Debugging
+const DEBUG = false;
+
 /**
  * Activity Timeout
  *
@@ -71,6 +74,8 @@ function _signoutTimeout() {
  */
 function init(minutes, callbacks) {
 
+	if(DEBUG) console.log('ActivityWatch: init(' + minutes + ')');
+
 	// Verify params
 	if(!isInteger(minutes) || minutes < 1) {
 		throw new Error('ActivityWatch minutes must be an unsigned integer');
@@ -97,6 +102,8 @@ function init(minutes, callbacks) {
  * @return void
  */
 function reset(force=false) {
+
+	if(DEBUG) console.log('ActivityWatch: reset(' + force + ')');
 
 	// Keep track of any existing timers (unless we want to force it)
 	let bSetNew = force;
@@ -137,6 +144,8 @@ function reset(force=false) {
  */
 function start() {
 
+	if(DEBUG) console.log('ActivityWatch: start()');
+
 	// If we already have a timer
 	if(mrActivity || mrSignout) {
 		console.error('ActivityWatch timer already started');
@@ -161,11 +170,14 @@ function start() {
  */
 function stop() {
 
+	if(DEBUG) console.log('ActivityWatch: stop()');
+
 	// If we have a signout timer
 	if(mrSignout) {
 
 		// Clear it
 		clearTimeout(mrSignout);
+		mrSignout = null;
 	}
 
 	// If we have an activity timer
@@ -173,6 +185,7 @@ function stop() {
 
 		// Clear it
 		clearTimeout(mrActivity);
+		mrActivity = null;
 	}
 }
 
