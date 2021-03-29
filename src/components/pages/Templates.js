@@ -30,8 +30,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 // Format Components
-import ResultsComponent from 'shared/components/format/Results';
-import FormComponent from 'shared/components/format/Form';
+import { Form, Results } from 'shared/components/Format';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
@@ -118,19 +117,51 @@ export default function Templates(props) {
 		// Use the current templates to set the new templates
 		templatesSet(templates => {
 
-			// Clone the templates
-			let ret = clone(templates);
-
 			// Find the index
-			let iIndex = afindi(ret, '_id', _id);
+			let iIndex = afindi(templates, '_id', _id);
 
-			// If one is found, remove it
+			// If one is found
 			if(iIndex > -1) {
-				ret.splice(iIndex, 1);
+
+				// Clone the templates
+				let lTemplates = clone(templates);
+
+				// Remove it
+				lTemplates.splice(iIndex, 1);
+
+				// Return the new list
+				return lTemplates;
 			}
 
-			// Return the new templates
-			return ret;
+			// Return the existing templates
+			return templates;
+		});
+	}
+
+	// Called when a template is updated
+	function updateTemplate(template) {
+
+		// Use the current templates to set the new templates
+		templatesSet(templates => {
+
+			// Find the index
+			let iIndex = afindi(templates, '_id', template._id);
+
+			// If one is found
+			if(iIndex > -1) {
+
+				// Clone the templates
+				let lTemplates = clone(templates);
+
+				// Update it
+				lTemplates[iIndex] = template;
+
+				// Return the new list
+				return lTemplates;
+			}
+
+			// Return the existing templates
+			return templates;
 		});
 	}
 
@@ -150,7 +181,7 @@ export default function Templates(props) {
 				</Box>
 				{create &&
 					<Paper className="padded">
-						<FormComponent
+						<Form
 							cancel={createToggle}
 							noun="template"
 							service="providers"
@@ -164,14 +195,14 @@ export default function Templates(props) {
 				{templates === null ?
 					<Box>Loading...</Box>
 				:
-					<ResultsComponent
+					<Results
 						data={templates}
 						noun="template"
 						orderBy="title"
 						remove={Rights.has('prov_templates', 'delete') ? removeTemplate : false}
 						service="providers"
 						tree={TemplateTree}
-						update={Rights.has('prov_templates', 'update')}
+						update={Rights.has('prov_templates', 'update') ? updateTemplate : false}
 					/>
 				}
 			</Box>
