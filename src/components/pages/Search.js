@@ -21,7 +21,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 // Format components
-import SearchComponent from 'shared/components/format/Search';
+import { Search as FormatSearch } from 'shared/components/Format';
 
 // Data modules
 import Claimed from 'data/claimed';
@@ -218,7 +218,7 @@ export default function Search(props) {
 	// Render
 	return (
 		<Box id="search" className="page">
-			<SearchComponent
+			<FormatSearch
 				hash="search"
 				name="search"
 				noun="customer/search"

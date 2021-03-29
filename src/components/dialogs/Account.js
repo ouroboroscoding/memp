@@ -19,7 +19,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Divider from '@material-ui/core/Divider';
 
 // Format Components
-import FormComponent from 'shared/components/format/Form';
+import { Form } from 'shared/components/Format';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
@@ -74,7 +74,7 @@ export default function Account(props) {
 		>
 			<DialogTitle id="confirmation-dialog-title">Account Details</DialogTitle>
 			<DialogContent dividers>
-				<FormComponent
+				<Form
 					noun={"user"}
 					sendPrimary={false}
 					service="monolith"
@@ -85,7 +85,7 @@ export default function Account(props) {
 				/>
 				<Divider />
 				<br />
-				<FormComponent
+				<Form
 					beforeSubmit={passwordCheck}
 					errors={{1204: "Password not strong enough"}}
 					noun={"user/passwd"}

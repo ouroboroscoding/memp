@@ -209,16 +209,10 @@ export default function Verify(props) {
 	// Called when the list of prescriptions changes
 	function selectsUpdate() {
 
-		console.log('Items:', props.customer.items);
-		console.log('ItemsToRx:', itemToRx);
-		console.log('Rx:', rx);
-
 		// Clone the current hash of select values
 		let oSelects = clone(selects);
 
 		for(let oItem of props.customer.items) {
-
-			console.log('oItem:', oItem);
 
 			// Does item exist in the existing items to rx?
 			let i = afindi(itemToRx, 'product_id', parseInt(oItem.productId, 10));
@@ -232,8 +226,6 @@ export default function Verify(props) {
 				}
 			}
 		}
-
-		console.log(oSelects);
 
 		// Set the state
 		selectsSet(oSelects);
