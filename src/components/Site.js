@@ -40,6 +40,7 @@ import SignOutWarning from './dialogs/SignOutWarning';
 
 // Page component modules
 import Appointments from './pages/Appointments';
+import DoseSpot from './pages/DoseSpot';
 import ED from './pages/ED';
 import ED_C from './pages/ED-C';
 import Queue from './pages/Queue';
@@ -178,6 +179,9 @@ export default function Site(props) {
 						</Route>
 						<Route exact path="/appointments">
 							<Appointments user={user} />
+						</Route>
+						<Route exact path="/dosespot">
+							<DoseSpot user={user} />
 						</Route>
 						<Route exact path="/queue/ed">
 							<Queue

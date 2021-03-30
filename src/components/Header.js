@@ -33,6 +33,7 @@ import EventIcon from '@material-ui/icons/Event';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MenuIcon from '@material-ui/icons/Menu';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
+import NotificationImportantIcon from '@material-ui/icons/NotificationImportant';
 import PermIdentityIcon from '@material-ui/icons/PermIdentity';
 import PersonIcon from '@material-ui/icons/Person';
 import SearchIcon from '@material-ui/icons/Search';
@@ -41,7 +42,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import Account from './dialogs/Account';
 
 // Data modules
-import Claimed from '../data/claimed';
+import DsNotifications from 'data/ds_notifications';
+import Claimed from 'data/claimed';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
@@ -99,6 +101,7 @@ export default class Header extends React.Component {
 		this.state = {
 			account: false,
 			claimed: [],
+			ds_notifications: 0,
 			menu: false,
 			newNotes: safeLocalStorageJSON('newNotes', {}),
 			overwrite: Rights.has('prov_overwrite', 'create'),
@@ -113,6 +116,7 @@ export default class Header extends React.Component {
 		this.accountToggle = this.accountToggle.bind(this);
 		this.claimedAdd = this.claimedAdd.bind(this);
 		this.claimedRemove = this.claimedRemove.bind(this);
+		this.dsNotifications = this.dsNotifications.bind(this);
 		this.menuClose = this.menuClose.bind(this);
 		this.menuClick = this.menuClick.bind(this);
 		this.menuItem = this.menuItem.bind(this);
@@ -136,6 +140,9 @@ export default class Header extends React.Component {
 
 		// Track document visibility
 		PageVisibility.add(this.visibilityChange);
+
+		// Track DS notifications count
+		DsNotifications.subscribe(this.dsNotifications);
 	}
 
 	componentWillUnmount() {
@@ -149,6 +156,9 @@ export default class Header extends React.Component {
 
 		// Track document visibility
 		PageVisibility.remove(this.visibilityChange);
+
+		// Stop tracking DS notifications count
+		DsNotifications.unsubscribe(this.dsNotifications);
 
 		// Stop checking for new messages and unclaimed counts
 		if(this.iUpdates) {
@@ -254,6 +264,10 @@ export default class Header extends React.Component {
 			// Set the new state
 			this.setState(oState);
 		}
+	}
+
+	dsNotifications(count) {
+		this.setState({ds_notifications: count});
 	}
 
 	menuClose() {
@@ -434,6 +448,17 @@ export default class Header extends React.Component {
 						<Divider />
 					</React.Fragment>
 				}
+				{this.state.user.dsClinicianId &&
+					<React.Fragment>
+						<Link to="/dosespot" onClick={this.menuClick}>
+							<ListItem button selected={this.state.path === "/dosespot"}>
+								<ListItemIcon><NotificationImportantIcon /></ListItemIcon>
+								<ListItemText primary={'DoseSpot' + (this.state.ds_notifications ? ' (' + this.state.ds_notifications + ')' : '')} />
+							</ListItem>
+						</Link>
+						<Divider />
+					</React.Fragment>
+				}
 				{this.state.user.eDFlag === 'Y' &&
 					<React.Fragment>
 						<Link to="/queue/ed" onClick={this.menuClick}>
@@ -443,10 +468,6 @@ export default class Header extends React.Component {
 							</ListItem>
 						</Link>
 						<Divider />
-					</React.Fragment>
-				}
-				{this.state.user.eDFlag === 'Y' &&
-					<React.Fragment>
 						<Link to="/queue/ed/cont" onClick={this.menuClick}>
 							<ListItem button selected={this.state.path === "/queue/ed/cont"}>
 								<ListItemIcon><AllInboxIcon /></ListItemIcon>
