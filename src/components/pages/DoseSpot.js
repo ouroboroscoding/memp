@@ -42,6 +42,8 @@ export default function DoseSpot(props) {
 			}, error => {
 				Events.trigger('error', JSON.stringify(error));
 			});
+		} else {
+			ssoSet(false);
 		}
 	}, [props.user]);
 
