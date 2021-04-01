@@ -59,7 +59,8 @@ export default function MIP(props) {
 
 		// Request the order info from the server
 		Rest.read('monolith', 'customer/mips', {
-			customerId: props.customerId
+			customerId: props.customerId,
+			form: ['MIP-A1', 'MIP-A2', 'MIP-CED']
 		}).done(res => {
 
 			// If there's an error or warning
