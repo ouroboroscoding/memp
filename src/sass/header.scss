@@ -35,6 +35,12 @@
 		background-color: #dff0ff;
 	}
 
+	.customerDetails {
+		p {
+			margin: 0;
+		}
+	}
+
 	.customerActions {
 		display: flex;
 		flex-direction: row;
