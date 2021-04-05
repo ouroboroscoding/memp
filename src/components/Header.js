@@ -80,7 +80,12 @@ function CustomerItem(props) {
 					<ListItemText
 						primary={props.customerName}
 						secondary={
-							<span>ID: {props.customerId}</span>
+							<span className="customerDetails">
+								<p>ID: {props.customerId}</p>
+								{props.transferredBy &&
+									<p>Transferrer: {props.transferredByName}</p>
+								}
+							</span>
 						}
 					/>
 				</ListItem>
@@ -692,6 +697,8 @@ export default class Header extends React.Component {
 
 			// If someone transferred a claim to us
 			case 'claim_transfered':
+
+				console.log('Claim transferred:', data.claim);
 
 				// Clone the claims
 				let lClaimed = clone(this.state.claimed);
