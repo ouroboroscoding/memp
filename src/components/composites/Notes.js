@@ -62,7 +62,7 @@ function Note(props) {
 			</Box>
 			<Box className="footer">
 				<span className="name">{props.createdBy} at </span>
-				<span className="date">{props.createdAt}</span>
+				<span className="date">{datetime(props.createdAt)}</span>
 			</Box>
 		</Box>
 	);
@@ -98,7 +98,7 @@ function Message(props) {
 				{type === 'Outgoing' &&
 					<span>{props.createdBy} at </span>
 				}
-				<span>{props.createdAt}</span>
+				<span>{datetime(props.createdAt)}</span>
 			</Box>
 		</Box>
 	);
@@ -294,7 +294,7 @@ export default function Notes(props) {
 					action: oData.action,
 					note: oData.action === 'Send Communication' ? '[Content] ' + oData.content : oData.content,
 					createdBy: 'You',
-					createdAt: datetime(new Date(), '-'),
+					createdAt: Date.now()/1000,
 					userRole: 'Doctor'
 				});
 
@@ -365,7 +365,7 @@ export default function Notes(props) {
 					action: 'Send Communication',
 					note: '[Content] ' + oData.content,
 					createdBy: 'You',
-					createdAt: datetime(new Date(), '-'),
+					createdAt: Date.now()/1000,
 					userRole: 'Doctor'
 				});
 

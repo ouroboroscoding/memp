@@ -162,7 +162,7 @@ export default function ED(props) {
 	else if(order.status === 'COMPLETE') {
 		Child = <DoseSpot
 			customer={order}
-			initialMode="sso"
+			initialMode={process.env.REACT_APP_DS_INITIAL_MODE}
 			mobile={props.mobile}
 			patientId={patientId}
 			user={props.user}
