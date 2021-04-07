@@ -163,9 +163,11 @@ export default function Prescriptions(props) {
 									value={items[o.productId].product._id}
 								>
 									<option value="0">Manual Prescription</option>
-									{products.map(o =>
-										<option key={o._id} value={o._id}>{o.title}</option>
-									)}
+									<optgroup label="Favourites">
+										{products.map(o =>
+											<option key={o._id} value={o._id}>{o.title}</option>
+										)}
+									</optgroup>
 								</Select>
 							</Grid>
 							{items[o.productId].product._id === '0' ?
