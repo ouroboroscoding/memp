@@ -13,14 +13,8 @@ import React, { useState } from 'react';
 import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 
-// Date modules
-import { add as request } from 'data/requests';
-
 // Shared data modules
 import DS from 'shared/data/dosespot';
-
-// Shared communication modules
-import Rest from 'shared/communication/rest';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
@@ -52,7 +46,9 @@ import View from './pages/View';
 
 // Local modules
 import ActivityWatch from '../activityWatch';
-import { LoaderHide, LoaderShow } from './Loader';
+
+// Rest
+import 'rest_init';
 
 // SASS CSS
 import 'sass/site.scss';
@@ -62,58 +58,6 @@ ActivityWatch.init(15, {
 	warning: () => Events.trigger('activityWarning'),
 	signout: minutes => Events.trigger('activitySignout', minutes)
 });
-
-// Init the rest services
-Rest.init(process.env.REACT_APP_MEMS_DOMAIN, process.env.REACT_APP_WS_DOMAIN, xhr => {
-
-	// If we got a 401, let everyone know we signed out
-	if(xhr.status === 401) {
-		Events.trigger('error', 'You have been signed out!');
-		Events.trigger('signedOut');
-	} else {
-		Events.trigger('error',
-			'Unable to connect to ' + process.env.REACT_APP_MEMS_DOMAIN +
-			': ' + xhr.statusText +
-			' (' + xhr.status + ')');
-	}
-}, (method, url, data, opts) => {
-
-	// Track the request (if it's not itself a request track)
-	if(opts.session && url.slice(url.length - 18) !== '/providers/request') {
-		request(method, url, data, opts);
-	}
-
-	// If the request is not a background one
-	if(!opts.background) {
-		ActivityWatch.reset();
-		LoaderShow();
-	}
-}, (method, url, data, opts) => {
-	if(!opts.background) {
-		LoaderHide();
-	}
-});
-
-// If we have a session, fetch the user
-if(Rest.session()) {
-	Rest.read('providers', 'session', {}).done(res => {
-		if(res.error) {
-			Rest.session(null);
-		} else {
-			let iAgent = res.data.user.agent;
-			Rest.read('monolith', 'user', {}).done(res => {
-				res.data.agent = iAgent;
-				Events.trigger('signedIn', res.data);
-			});
-		}
-	});
-}
-
-// Make Events available from console
-window.Events = Events;
-
-// Hide the loader
-LoaderHide();
 
 // Init the Hash module
 Hash.init();
