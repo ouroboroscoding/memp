@@ -18,9 +18,9 @@ import Dialog from '@material-ui/core/Dialog';
 import Hash from 'shared/generic/hash';
 
 // Child components
-import Change from './nouser/Change';
-import Forgot from './nouser/Forgot';
-import SignIn from './nouser/SignIn';
+import Change from './Change';
+import Forgot from './Forgot';
+import SignIn from './SignIn';
 
 // Shared hooks
 import useLocationHash from 'shared/hooks/hash.js';

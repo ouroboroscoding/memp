@@ -21,6 +21,9 @@ import TextField from '@material-ui/core/TextField';
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
+// Shared data modules
+import Tickets from 'shared/data/tickets';
+
 // Shared generic modules
 import Events from 'shared/generic/events';
 import { afindi, clone, datetime } from 'shared/generic/tools';
@@ -282,6 +285,11 @@ export default function Notes(props) {
 			// If we're ok
 			if(res.data) {
 
+				// Add the note to the current ticket if there is one
+				if(Tickets.current()) {
+					Tickets.item('note', res.data);
+				}
+
 				// Clear the note content
 				refInput.current.value = '';
 
@@ -352,6 +360,11 @@ export default function Notes(props) {
 
 			// If we're ok
 			if(res.data) {
+
+				// Add the note to the current ticket if there is one
+				if(Tickets.current()) {
+					Tickets.item('note', res.data);
+				}
 
 				// Clear the note content
 				refInput.current.value = '';

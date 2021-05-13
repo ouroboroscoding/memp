@@ -18,8 +18,8 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-// Compisite components
-import Transfer from 'components/composites/Transfer';
+// Dialog components
+import Transfer from 'components/dialogs/Transfer';
 
 // Local components
 import CreatePatient from './CreatePatient';
@@ -31,6 +31,7 @@ import Claimed from 'data/claimed';
 
 // Shared data modules
 import DS from 'shared/data/dosespot';
+import Tickets from 'shared/data/tickets';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
@@ -67,12 +68,6 @@ export default function DoseSpot(props) {
 	// eslint-disable-next-line
 	}, [props.patientId, mode]);
 
-	// Remove the claim
-	function customerTransfer() {
-		transferSet(false);
-		Events.trigger('claimedRemove', parseInt(props.customer.customerId, 10), true);
-	}
-
 	function prescriptionsCreated() {
 		modeSet('sso');
 	}
@@ -100,6 +95,13 @@ export default function DoseSpot(props) {
 
 		// Convert the customer ID to an int
 		let iCustID = parseInt(props.customer.customerId, 10);
+
+		// If we have a ticket
+		if(Tickets.current()) {
+
+			// Resolve the ticket
+			Tickets.resolve('Resolved', 'Provider Confirmed Prescription');
+		}
 
 		// We can successfully close this claim
 		Claimed.remove(iCustID, 'approved').then(res => {
@@ -184,8 +186,9 @@ export default function DoseSpot(props) {
 				<Transfer
 					agent={props.user.agent}
 					customerId={props.customer.customerId}
+					customerPhone={props.customer.phone}
 					onClose={() => transferSet(false)}
-					onTransfer={customerTransfer}
+					onTransfer={() => transferSet(false)}
 				/>
 			}
 		</Box>

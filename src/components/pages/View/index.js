@@ -38,6 +38,7 @@ import Rest from 'shared/communication/rest';
 
 // Shared data modules
 import DS from 'shared/data/dosespot';
+import Tickets from 'shared/data/tickets';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
@@ -222,7 +223,7 @@ export default function View(props) {
 					customer={customer}
 					initialMode="verify"
 					mobile={props.mobile}
-					onRemove={unclaim}
+					onRemove={Tickets.current() ? false : unclaim}
 					patientId={patientId}
 					user={props.user}
 				/>
@@ -230,6 +231,7 @@ export default function View(props) {
 			<Box className="tabSection" style={{display: tab === 1 ? 'block' : 'none'}}>
 				<MIP
 					customerId={customerId}
+					customerPhone={customer.phone}
 					mobile={props.mobile}
 					onRemove={unclaim}
 					patientId={patientId}

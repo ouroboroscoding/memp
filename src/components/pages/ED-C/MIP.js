@@ -21,7 +21,9 @@ import Grid from '@material-ui/core/Grid';
 import MIPs from 'components/composites/MIPs';
 import PreviousMeds from 'components/composites/PreviousMeds';
 import SOAP from 'components/composites/ED-SOAP';
-import Transfer from 'components/composites/Transfer';
+
+// Dialog components
+import Transfer from 'components/dialogs/Transfer';
 
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
@@ -151,12 +153,6 @@ export default function MIP(props) {
 		});
 	}
 
-	// Remove the claim
-	function orderTransfer() {
-		transferSet(false);
-		Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
-	}
-
 	// If we don't have the MIP yet
 	if(mips === null) {
 		return <p style={{padding: '10px'}}>Loading...</p>
@@ -211,8 +207,9 @@ export default function MIP(props) {
 				<Transfer
 					agent={props.user.agent}
 					customerId={props.customerId}
+					customerPhone={props.order.phone}
 					onClose={() => transferSet(false)}
-					onTransfer={orderTransfer}
+					onTransfer={() => transferSet(false)}
 				/>
 			}
 		</Box>
@@ -222,6 +219,7 @@ export default function MIP(props) {
 // Valid props
 MIP.propTypes = {
 	customerId: PropTypes.string.isRequired,
+	customerPhone: PropTypes.string.isRequired,
 	mobile: PropTypes.bool.isRequired,
 	onApprove: PropTypes.func.isRequired,
 	onReload: PropTypes.func.isRequired,

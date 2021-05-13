@@ -50,6 +50,9 @@ import Rest from 'shared/communication/rest';
 import Rights from 'shared/communication/rights';
 import TwoWay from 'shared/communication/twoway';
 
+// Shared data modules
+import Tickets from 'shared/data/tickets';
+
 // Shared generic modules
 import Events from 'shared/generic/events';
 import PageVisibility from 'shared/generic/pageVisibility';
@@ -63,7 +66,12 @@ function CustomerItem(props) {
 
 	// Click event
 	function click(ev) {
-		props.onClick(ev.currentTarget.pathname, props);
+
+		// Set the current ticket, even if it's null
+		Tickets.current(props.ticket);
+
+		// Let the parent know
+		props.onClick(props);
 	}
 
 	// Render
@@ -110,7 +118,6 @@ export default class Header extends React.Component {
 			menu: false,
 			newNotes: safeLocalStorageJSON('newNotes', {}),
 			overwrite: Rights.has('prov_overwrite', 'create'),
-			path: window.location.pathname,
 			user: props.user || false,
 		}
 
@@ -189,10 +196,7 @@ export default class Header extends React.Component {
 		let sPath = Utils.path(order);
 
 		// Create the new state
-		let oState = {
-			claimed: lClaimed,
-			path: sPath
-		}
+		let oState = {claimed: lClaimed}
 
 		// Set the new state
 		this.setState(oState);
@@ -209,16 +213,27 @@ export default class Header extends React.Component {
 			let oState = {claimed: data};
 
 			// If we're on a customer
-			let lPath = Utils.parsePath(this.state.path);
-			if(lPath[0] === 'customer') {
+			let lPath = Utils.parsePath(this.props.history.location.pathname);
 
-				// If we can't find the customer we're on
-				if(afindi(data, 'customerId', parseInt(lPath[1])) === -1) {
+			// Look for the index of the claim
+			let i = afindi(data, 'customerId', parseInt(lPath[1]))
 
-					// Switch page
-					this.props.history.push('/')
-					Events.trigger('error', 'This customer is not claimed, switching to home.');
-				}
+			// If we can't find the customer we're on
+			if(i === -1) {
+
+				console.log('claim not found');
+
+				// Switch page
+				this.props.history.push('/')
+				Events.trigger('error', 'This customer is not claimed, switching to home.');
+			}
+
+			// Else, set the ticket
+			else {
+
+				console.log('claim found', data[i]);
+
+				Tickets.current(data[i].ticket);
 			}
 
 			// Set the new path
@@ -245,17 +260,14 @@ export default class Header extends React.Component {
 			let lClaimed = clone(this.state.claimed);
 
 			// Remove the element
-			let oClaim = lClaimed.splice(iClaimed, 1)[0];
+			lClaimed.splice(iClaimed, 1);
 
 			// Create new instance of state
 			let oState = {claimed: lClaimed}
 
 			// If the path has switch
 			if(switch_path) {
-				oState.path = (oClaim.type === 'view') ?
-								'/search' :
-								'/queue/' + oClaim.type;
-				this.props.history.push(oState.path);
+				this.props.history.push('/');
 			}
 
 			// If it's in the new notes
@@ -280,17 +292,13 @@ export default class Header extends React.Component {
 	}
 
 	menuClick(ev) {
-		this.menuItem(
-			ev.currentTarget.pathname
-		);
+		this.menuItem();
 	}
 
-	menuItem(path, customer=null) {
+	menuItem(customer=null) {
 
 		// New state
-		let state = {
-			path: path
-		};
+		let state = {};
 
 		// If we're in mobile, hide the menu
 		if(this.props.mobile) {
@@ -398,7 +406,7 @@ export default class Header extends React.Component {
 					for(let sCustomerId in res.data) {
 
 						// If we're on the customer's page
-						if(this.state.path.indexOf('/'+sCustomerId+'/') > -1) {
+						if(this.props.history.location.pathname.indexOf('/'+sCustomerId+'/') > -1) {
 							Events.trigger('newNotes');
 						}
 
@@ -434,7 +442,7 @@ export default class Header extends React.Component {
 				{Rights.has('prov_templates', 'read') &&
 					<React.Fragment>
 						<Link to="/templates" onClick={this.menuClick}>
-							<ListItem button selected={this.state.path === "/templates"}>
+							<ListItem button selected={this.props.history.location.pathname === "/templates"}>
 								<ListItemIcon><CommentIcon /></ListItemIcon>
 								<ListItemText primary="Templates" />
 							</ListItem>
@@ -445,7 +453,7 @@ export default class Header extends React.Component {
 				{Rights.has('calendly', 'read') &&
 					<React.Fragment>
 						<Link to="/appointments" onClick={this.menuClick}>
-							<ListItem button selected={this.state.path === "/appointments"}>
+							<ListItem button selected={this.props.history.location.pathname === "/appointments"}>
 								<ListItemIcon><EventIcon /></ListItemIcon>
 								<ListItemText primary="Appointments" />
 							</ListItem>
@@ -456,7 +464,7 @@ export default class Header extends React.Component {
 				{this.state.user.dsClinicianId &&
 					<React.Fragment>
 						<Link to="/dosespot" onClick={this.menuClick}>
-							<ListItem button selected={this.state.path === "/dosespot"}>
+							<ListItem button selected={this.props.history.location.pathname === "/dosespot"}>
 								<ListItemIcon><NotificationImportantIcon /></ListItemIcon>
 								<ListItemText primary={'DoseSpot' + (this.state.ds_notifications ? ' (' + this.state.ds_notifications + ')' : '')} />
 							</ListItem>
@@ -467,14 +475,14 @@ export default class Header extends React.Component {
 				{this.state.user.eDFlag === 'Y' &&
 					<React.Fragment>
 						<Link to="/queue/ed" onClick={this.menuClick}>
-							<ListItem button selected={this.state.path === "/queue/ed"}>
+							<ListItem button selected={this.props.history.location.pathname === "/queue/ed"}>
 								<ListItemIcon><AllInboxIcon /></ListItemIcon>
 								<ListItemText primary="ED New Orders" />
 							</ListItem>
 						</Link>
 						<Divider />
 						<Link to="/queue/ed/cont" onClick={this.menuClick}>
-							<ListItem button selected={this.state.path === "/queue/ed/cont"}>
+							<ListItem button selected={this.props.history.location.pathname === "/queue/ed/cont"}>
 								<ListItemIcon><AllInboxIcon /></ListItemIcon>
 								<ListItemText primary="ED Expiring" />
 							</ListItem>
@@ -483,26 +491,22 @@ export default class Header extends React.Component {
 					</React.Fragment>
 				}
 				<Link to="/search" onClick={this.menuClick}>
-					<ListItem button selected={this.state.path === "/search"}>
+					<ListItem button selected={this.props.history.location.pathname === "/search"}>
 						<ListItemIcon><SearchIcon /></ListItemIcon>
 						<ListItemText primary="Search" />
 					</ListItem>
 				</Link>
 				<Divider />
-				{this.state.claimed.length > 0 &&
-					<React.Fragment>
-						{this.state.claimed.map((o,i) =>
-							<CustomerItem
-								key={i}
-								newNotes={o.customerId in this.state.newNotes}
-								onClick={this.menuItem}
-								selected={this.state.path === Utils.path(o)}
-								user={this.state.user}
-								{...o}
-							/>
-						)}
-					</React.Fragment>
-				}
+				{this.state.claimed.length > 0 && this.state.claimed.map((o,i) =>
+					<CustomerItem
+						key={i}
+						newNotes={o.customerId in this.state.newNotes}
+						onClick={this.menuItem}
+						selected={this.props.history.location.pathname === Utils.path(o)}
+						user={this.state.user}
+						{...o}
+					/>
+				)}
 			</List>
 		);
 
@@ -737,7 +741,7 @@ export default class Header extends React.Component {
 					});
 
 					// If we're on the customer
-					let lPath = Utils.parsePath(this.state.path);
+					let lPath = Utils.parsePath(this.props.history.location.pathname);
 					if(parseInt(lPath[1]) === data.customerId) {
 
 						// Switch page
