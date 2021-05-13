@@ -30,15 +30,11 @@ import Claimed from 'data/claimed';
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
-// Shared components
-import RadioButtons from 'shared/components/RadioButtons';
-
 // Shared data modules
 import Tickets from 'shared/data/tickets';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
-import { omap } from 'shared/generic/tools';
 
 /**
  * Transfer
