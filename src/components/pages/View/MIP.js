@@ -27,6 +27,9 @@ import Transfer from 'components/dialogs/Transfer';
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
+// Shared data modules
+import Tickets from 'shared/data/tickets';
+
 // Shared generic modules
 import Events from 'shared/generic/events';
 
@@ -97,16 +100,24 @@ export default function MIP(props) {
 				pharmacyId={56387}
 			/>
 			<Grid container spacing={1} className="rta">
-				<Grid item xs={6}>
-					<Button
-						color="secondary"
-						onClick={props.onRemove}
-						variant="contained"
-					>Remove Claim</Button>
-				</Grid>
-				<Grid item xs={6}>
-					<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
-				</Grid>
+				{Tickets.current() ?
+					<Grid item xs={12}>
+						<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
+					</Grid>
+				:
+					<React.Fragment>
+						<Grid item xs={6}>
+							<Button
+								color="secondary"
+								onClick={props.onRemove}
+								variant="contained"
+							>Remove Claim</Button>
+						</Grid>
+						<Grid item xs={6}>
+							<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
+						</Grid>
+					</React.Fragment>
+				}
 			</Grid>
 			{transfer &&
 				<Transfer

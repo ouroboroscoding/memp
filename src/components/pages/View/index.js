@@ -168,8 +168,41 @@ export default function View(props) {
 		});
 	}
 
+	// Close the ticket
+	function ticketClose() {
+
+		// If we a ticket
+		if(Tickets.current()) {
+
+			// Add a note about the issue
+			Rest.create('monolith', 'customer/note', {
+				action: 'Save Notes',
+				content: 'No purchase info for the customer',
+				customerId: customerId
+			}).done(res => {
+
+				// If we're ok
+				if(res.data) {
+
+					// Add the note to the current ticket if there is one
+					Tickets.item('note', res.data);
+				}
+
+				// Close the ticket
+				Tickets.resolve('Invalid Transfer: No Purchase Information').then(data => {
+
+					// Unclaim the ticket
+					unclaim();
+				})
+			});
+		} else {
+			unclaim();
+		}
+	}
+
 	// Unclaim the customer
 	function unclaim() {
+
 		Claimed.remove(customerId, 'closed').then(res => {
 			Events.trigger('claimedRemove', parseInt(customerId, 10), true);
 		}, error => {
@@ -188,7 +221,7 @@ export default function View(props) {
 			<Box id="view" className="page">
 				<Typography style={{padding: '10px'}}>No purchase infomation found for this customer.</Typography>
 				<Box style={{padding: '0 10px'}}>
-					<Button color="secondary" onClick={unclaim} variant="contained">Remove Claim</Button>
+					<Button color="secondary" onClick={ticketClose} variant="contained">Remove Claim</Button>
 				</Box>
 			</Box>
 		);
