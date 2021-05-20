@@ -161,7 +161,7 @@ function Customer(props) {
 						{...o}
 					/>
 				)}
-				{props.continuous !== false && props.continuous.map(o =>
+				{props.continuous !== 0 && props.continuous.map(o =>
 					<Order
 						continuous={true}
 						key={o.orderId}
