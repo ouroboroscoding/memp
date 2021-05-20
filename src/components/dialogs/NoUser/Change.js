@@ -92,7 +92,7 @@ export default function Change(props) {
 						errorsSet({"key": 'Must contain at least one uppercase, lowercase, and numeric character'});
 						break;
 					default:
-						Events.trigger('error', JSON.stringify(res.error));
+						Events.trigger('error', Rest.errorMessage(res.error));
 						break;
 				}
 			}

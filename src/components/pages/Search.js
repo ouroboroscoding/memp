@@ -27,6 +27,9 @@ import { Search as FormatSearch } from 'shared/components/Format';
 import Claimed from 'data/claimed';
 import Encounters from 'data/encounters';
 
+// Shared communications modules
+import Rest from 'shared/communication/rest';
+
 // Shared generic modules
 import Events from 'shared/generic/events';
 import { clone } from 'shared/generic/tools';
@@ -210,7 +213,7 @@ export default function Search(props) {
 			if(error.code === 1101) {
 				Events.trigger('error', 'Patient has already been claimed.');
 			} else {
-				Events.trigger('error', JSON.stringify(error));
+				Events.trigger('error', Rest.errorMessage(error));
 			}
 		});
 	}

@@ -21,6 +21,9 @@ import Typography from '@material-ui/core/Typography';
 // Data modules
 import Claimed from 'data/claimed';
 
+// Shared communications modules
+import Rest from 'shared/communication/rest';
+
 // Shared generic modules
 import Events from 'shared/generic/events';
 
@@ -41,7 +44,7 @@ export default function BadOrder(props) {
 		Claimed.remove(props.customerId, 'closed').then(res => {
 			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			Events.trigger('error', Rest.errorMessage(error));
 		});
 	}
 

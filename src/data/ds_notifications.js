@@ -8,6 +8,9 @@
  * @created 2020-07-30
  */
 
+// Shared communications modules
+import Rest from 'shared/communication/rest';
+
 // Shared data modules
 import DS from 'shared/data/dosespot';
 
@@ -76,7 +79,7 @@ function fetchCount() {
 		notify();
 
 	}, error => {
-		Events.trigger('error', JSON.stringify(error));
+		Events.trigger('error', Rest.errorMessage(error));
 	});
 }
 

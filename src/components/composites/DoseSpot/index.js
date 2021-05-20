@@ -29,6 +29,9 @@ import Verify from './Verify';
 // Data modules
 import Claimed from 'data/claimed';
 
+// Shared communications modules
+import Rest from 'shared/communication/rest';
+
 // Shared data modules
 import DS from 'shared/data/dosespot';
 import Tickets from 'shared/data/tickets';
@@ -86,7 +89,7 @@ export default function DoseSpot(props) {
 			if(error.code === 1602) {
 				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
 			} else {
-				Events.trigger('error', JSON.stringify(error));
+				Events.trigger('error', Rest.errorMessage(error));
 			}
 		});
 	}
@@ -108,7 +111,7 @@ export default function DoseSpot(props) {
 			Events.trigger('claimedRemove', iCustID, true);
 			Events.trigger('success', 'Prescriptions verified and confirmed. Thank you!');
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			Events.trigger('error', Rest.errorMessage(error));
 		});
 	}
 

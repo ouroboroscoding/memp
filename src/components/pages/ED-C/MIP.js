@@ -77,7 +77,7 @@ export default function MIP(props) {
 
 			// If there's an error or warning
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
@@ -102,7 +102,7 @@ export default function MIP(props) {
 					Events.trigger('error', 'Order no longer PENDING');
 					props.onReload()
 				} else {
-					Events.trigger('error', JSON.stringify(res.error));
+					Events.trigger('error', Rest.errorMessage(res.error));
 				}
 			}
 			if(res.warning) {
@@ -132,7 +132,7 @@ export default function MIP(props) {
 					Events.trigger('error', 'Order no longer PENDING');
 					props.onReload()
 				} else {
-					Events.trigger('error', JSON.stringify(res.error));
+					Events.trigger('error', Rest.errorMessage(res.error));
 				}
 			}
 			if(res.warning) {
@@ -147,7 +147,7 @@ export default function MIP(props) {
 					Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 					Events.trigger('success', 'Order Declined!');
 				}, error => {
-					Events.trigger('error', JSON.stringify(error));
+					Events.trigger('error', Rest.errorMessage(error));
 				});
 			}
 		});

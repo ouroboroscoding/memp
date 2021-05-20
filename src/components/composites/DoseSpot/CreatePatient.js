@@ -21,6 +21,9 @@ import Typography from '@material-ui/core/Typography';
 // Composites components
 import Pharmacies from 'components/elements/Pharmacies';
 
+// Shared communications modules
+import Rest from 'shared/communication/rest';
+
 // Shared data modules
 import DS from 'shared/data/dosespot';
 
@@ -61,7 +64,7 @@ export default function Create(props) {
 			if(error.code === 1602) {
 				Events.trigger('error', 'DoseSpot error: "' + error.msg + '"')
 			} else {
-				Events.trigger('error', JSON.stringify(error));
+				Events.trigger('error', Rest.errorMessage(error));
 			}
 		});
 	}

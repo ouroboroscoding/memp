@@ -40,7 +40,7 @@ export default function DoseSpot(props) {
 			DS.providerSso().then(res => {
 				ssoSet(res);
 			}, error => {
-				Events.trigger('error', JSON.stringify(error));
+				Events.trigger('error', Rest.errorMessage(error));
 			});
 		} else {
 			ssoSet(false);

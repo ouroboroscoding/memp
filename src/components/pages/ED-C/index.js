@@ -107,7 +107,7 @@ export default function ED(props) {
 
 			// If there's an error or warning
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
@@ -121,7 +121,7 @@ export default function ED(props) {
 				Encounters.fetch(res.data.shipping.state).then(encounter => {
 					encounterSet(encounter);
 				}, error => {
-					Events.trigger('error', JSON.stringify(error));
+					Events.trigger('error', Rest.errorMessage(error));
 				});
 			}
 		});
@@ -132,7 +132,7 @@ export default function ED(props) {
 		DS.fetch(customerId).then(res => {
 			patientSet(res);
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			Events.trigger('error', Rest.errorMessage(error));
 		});
 	}
 

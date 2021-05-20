@@ -60,7 +60,7 @@ export default function Signin(props) {
 
 			// If there's an error
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 
 			// If there's a warning
@@ -113,7 +113,7 @@ export default function Signin(props) {
 						Events.trigger('error', 'User marked as inactive');
 						break;
 					default:
-						Events.trigger('error', JSON.stringify(res.error));
+						Events.trigger('error', Rest.errorMessage(res.error));
 						break;
 				}
 			}

@@ -52,7 +52,7 @@ export default class Pharmacies extends React.Component {
 		DS.pharmacies().then(data => {
 			this.setState({list: data});
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			Events.trigger('error', Rest.errorMessage(error));
 		});
 	}
 

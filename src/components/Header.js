@@ -244,7 +244,7 @@ export default class Header extends React.Component {
 			});
 
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			Events.trigger('error', Rest.errorMessage(error));
 		});
 	}
 
@@ -345,7 +345,7 @@ export default class Header extends React.Component {
 				}).done(res => {
 					// If there's an error or warning
 					if(res.error && !res._handled) {
-						Events.trigger('error', JSON.stringify(res.error));
+						Events.trigger('error', Rest.errorMessage(res.error));
 					}
 					if(res.warning) {
 						Events.trigger('warning', JSON.stringify(res.warning));
@@ -384,7 +384,7 @@ export default class Header extends React.Component {
 
 			// If there's an error or warning
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
@@ -592,7 +592,7 @@ export default class Header extends React.Component {
 
 			// If there's an error
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 
 			// If there's a warning
@@ -641,7 +641,7 @@ export default class Header extends React.Component {
 
 			// If there's an error
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 
 			// If there's a warning

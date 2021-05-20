@@ -78,7 +78,7 @@ export default function MIP(props) {
 
 			// If there's an error or warning
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
@@ -106,11 +106,11 @@ export default function MIP(props) {
 						Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 						Events.trigger('error', 'Failed to update order status, order was transferred to an Agent');
 					}, error => {
-						Events.trigger('error', JSON.stringify(error));
+						Events.trigger('error', Rest.errorMessage(error));
 					});
 
 				} else {
-					Events.trigger('error', JSON.stringify(res.error));
+					Events.trigger('error', Rest.errorMessage(res.error));
 				}
 			}
 			if(res.warning) {
@@ -141,7 +141,7 @@ export default function MIP(props) {
 				if(res.error.code === 1103) {
 					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
 				} else {
-					Events.trigger('error', JSON.stringify(res.error));
+					Events.trigger('error', Rest.errorMessage(res.error));
 				}
 			}
 			if(res.warning) {
@@ -156,7 +156,7 @@ export default function MIP(props) {
 					Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 					Events.trigger('success', 'Order Declined!');
 				}, error => {
-					Events.trigger('error', JSON.stringify(error));
+					Events.trigger('error', Rest.errorMessage(error));
 				});
 			}
 		});

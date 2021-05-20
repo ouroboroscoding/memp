@@ -81,7 +81,7 @@ export default function Forgot(props) {
 						errorsSet(errors);
 						break;
 					default:
-						Events.trigger('error', JSON.stringify(res.error));
+						Events.trigger('error', Rest.errorMessage(res.error));
 						break;
 				}
 			}
