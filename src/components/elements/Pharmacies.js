@@ -16,6 +16,9 @@ import React from 'react';
 // Material-UI
 import Select from '@material-ui/core/Select';
 
+// Shared communications modules
+import Rest from 'shared/communication/rest';
+
 // Shared data modules
 import DS from 'shared/data/dosespot';
 
