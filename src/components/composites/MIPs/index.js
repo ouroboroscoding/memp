@@ -20,6 +20,8 @@ import Typography from '@material-ui/core/Typography';
 import A1 from './A1';
 import A2 from './A2';
 import CED from './CED';
+import H1 from './H1';
+import H2 from './H2';
 
 // Shared generic modules
 import { clone } from 'shared/generic/tools';
@@ -72,6 +74,8 @@ export default function MIPs(props) {
 						case 'MIP-A1': Child = A1; break;
 						case 'MIP-A2': Child = A2; break;
 						case 'MIP-CED': Child = CED; break;
+						case 'MIP-H1': Child = H1; break;
+						case 'MIP-H2': Child = H2; break;
 						default: throw new Error('Invalid MIP form type');
 					}
 					return <Child
