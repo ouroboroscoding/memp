@@ -1,7 +1,7 @@
 /**
- * MIP A1
+ * MIP H1
  *
- * A1 ED MIP
+ * H1 ED MIP
  *
  * @author Chris Nasr <bast@maleexcel.com>
  * @copyright MaleExcelMedical
@@ -23,16 +23,16 @@ import { GreyButton } from 'components/elements/Buttons';
 import Utils from 'utils';
 
 /**
- * A1
+ * H1
  *
- * Old MIP type for ED customers
+ * Old MIP type for HRT customers
  *
- * @name A1
+ * @name H1
  * @access public
  * @param Object props Attributes sent to the component
  * @return Array
  */
-export default function A1(props) {
+export default function H1(props) {
 
 	return (
 		<Box className="mip">
@@ -53,7 +53,7 @@ export default function A1(props) {
 }
 
 // Valid props
-A1.propTypes = {
+H1.propTypes = {
 	date: PropTypes.string.isRequired,
 	display: PropTypes.bool.isRequired,
 	form: PropTypes.string.isRequired,
