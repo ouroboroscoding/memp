@@ -21,7 +21,9 @@ import Grid from '@material-ui/core/Grid';
 import MIPs from 'components/composites/MIPs';
 import PreviousMeds from 'components/composites/PreviousMeds';
 import SOAP from 'components/composites/ED-SOAP';
-import Transfer from 'components/composites/Transfer';
+
+// Dialog components
+import Transfer from 'components/dialogs/Transfer';
 
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
@@ -76,7 +78,7 @@ export default function MIP(props) {
 
 			// If there's an error or warning
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
@@ -104,11 +106,11 @@ export default function MIP(props) {
 						Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 						Events.trigger('error', 'Failed to update order status, order was transferred to an Agent');
 					}, error => {
-						Events.trigger('error', JSON.stringify(error));
+						Events.trigger('error', Rest.errorMessage(error));
 					});
 
 				} else {
-					Events.trigger('error', JSON.stringify(res.error));
+					Events.trigger('error', Rest.errorMessage(res.error));
 				}
 			}
 			if(res.warning) {
@@ -139,7 +141,7 @@ export default function MIP(props) {
 				if(res.error.code === 1103) {
 					Events.trigger('error', 'Failed to update order status in Konnektive, please try again or contact support');
 				} else {
-					Events.trigger('error', JSON.stringify(res.error));
+					Events.trigger('error', Rest.errorMessage(res.error));
 				}
 			}
 			if(res.warning) {
@@ -154,16 +156,10 @@ export default function MIP(props) {
 					Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 					Events.trigger('success', 'Order Declined!');
 				}, error => {
-					Events.trigger('error', JSON.stringify(error));
+					Events.trigger('error', Rest.errorMessage(error));
 				});
 			}
 		});
-	}
-
-	// Remove the claim
-	function orderTransfer() {
-		transferSet(false);
-		Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 	}
 
 	// If we don't have the MIP yet
@@ -230,8 +226,9 @@ export default function MIP(props) {
 				<Transfer
 					agent={props.user.agent}
 					customerId={props.customerId}
+					customerPhone={props.order.phone}
 					onClose={() => transferSet(false)}
-					onTransfer={orderTransfer}
+					onTransfer={() => transferSet(false)}
 				/>
 			}
 		</Box>

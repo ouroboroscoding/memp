@@ -20,10 +20,15 @@ import Grid from '@material-ui/core/Grid';
 // Composite components
 import MIPs from 'components/composites/MIPs';
 import PreviousMeds from 'components/composites/PreviousMeds';
-import Transfer from 'components/composites/Transfer';
+
+// Dialog components
+import Transfer from 'components/dialogs/Transfer';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
+
+// Shared data modules
+import Tickets from 'shared/data/tickets';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
@@ -65,7 +70,7 @@ export default function MIP(props) {
 
 			// If there's an error or warning
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
@@ -74,12 +79,6 @@ export default function MIP(props) {
 			// Set the MIPs
 			mipsSet(res.data || 0);
 		});
-	}
-
-	// Remove the claim
-	function customerTransfer() {
-		transferSet(false);
-		Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 	}
 
 	// If we don't have the MIP yet
@@ -101,23 +100,32 @@ export default function MIP(props) {
 				pharmacyId={56387}
 			/>
 			<Grid container spacing={1} className="rta">
-				<Grid item xs={6}>
-					<Button
-						color="secondary"
-						onClick={props.onRemove}
-						variant="contained"
-					>Remove Claim</Button>
-				</Grid>
-				<Grid item xs={6}>
-					<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
-				</Grid>
+				{Tickets.current() ?
+					<Grid item xs={12}>
+						<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
+					</Grid>
+				:
+					<React.Fragment>
+						<Grid item xs={6}>
+							<Button
+								color="secondary"
+								onClick={props.onRemove}
+								variant="contained"
+							>Remove Claim</Button>
+						</Grid>
+						<Grid item xs={6}>
+							<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
+						</Grid>
+					</React.Fragment>
+				}
 			</Grid>
 			{transfer &&
 				<Transfer
 					agent={props.user.agent}
 					customerId={props.customerId}
+					customerPhone={props.customerPhone}
 					onClose={() => transferSet(false)}
-					onTransfer={customerTransfer}
+					onTransfer={() => transferSet(false)}
 				/>
 			}
 		</Box>
@@ -127,6 +135,7 @@ export default function MIP(props) {
 // Valid props
 MIP.propTypes = {
 	customerId: PropTypes.string.isRequired,
+	customerPhone: PropTypes.string.isRequired,
 	mobile: PropTypes.bool.isRequired,
 	patientId: PropTypes.number.isRequired,
 	user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]).isRequired

@@ -136,18 +136,20 @@ export function remove(customer_id, reason) {
  * Transfers an order to an agent then removes the claim
  *
  * @name transfer
+ * @param String ticket The ID of the associated ticket
  * @param String customer_id The ID of the customer
  * @param Integer agent The memo ID of the agent
  * @param String note The note to add to the transfer
  * @return Promise
  */
-export function transfer(customer_id, agent, note) {
+export function transfer(ticket, customer_id, agent, note) {
 
 	// Return promise
 	return new Promise((resolve, reject) => {
 
 		// Send the message to the server
 		Rest.update('monolith', 'order/transfer', {
+			ticket: ticket,
 			agent: agent,
 			customerId: customer_id,
 			note: note
@@ -161,12 +163,15 @@ export function transfer(customer_id, agent, note) {
 				Events.trigger('warning', JSON.stringify(res.warning));
 			}
 
+			// Store the note ID
+			let iNoteID = res.data;
+
 			// If we're ok
 			if(res.data) {
 
 				// Remove the claim
 				remove(customer_id, 'transferred').then(res => {
-					resolve();
+					resolve(iNoteID);
 				}, error => {
 					reject(error);
 				});

@@ -16,6 +16,7 @@ import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
 
 const VERSION = [
 	['1.6.0', 'January 27th, 2021', [
@@ -71,7 +72,7 @@ export default function VersionHistory(props) {
 								disableTypography={true}
 								primary={"Version " + v[0] + ' - ' + v[1]}
 								secondary={
-									<ul>{v[2].map((s,i) => <li key={i}>{s}</li>)}</ul>
+									<ul className="MuiTypography-colorTextSecondary">{v[2].map((s,i) => <li key={i}><Typography>{s}</Typography></li>)}</ul>
 								}
 							>
 							</ListItemText>

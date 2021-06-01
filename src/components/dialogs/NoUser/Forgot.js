@@ -1,7 +1,7 @@
 /**
- * Change
+ * Forgot
  *
- * Handles changing a forgotten password
+ * Allows the user to request a password change
  *
  * @author Chris Nasr <bast@maleexcel.com>
  * @copyright MaleExcelMedical
@@ -16,6 +16,7 @@ import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
+import Link from '@material-ui/core/Link';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -28,6 +29,10 @@ import Hash from 'shared/generic/hash';
 
 // Theme
 const useStyles = makeStyles((theme) => ({
+	forgot: {
+		flexGrow: 1,
+		textAlign: 'center',
+	},
 	dialog: {
 		"& .MuiFormControl-root": {
 			marginTop: '10px',
@@ -37,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // Sign In
-export default function Change(props) {
+export default function Forgot(props) {
 
 	// Styles
 	const classes = useStyles();
@@ -46,30 +51,22 @@ export default function Change(props) {
 	let [errors, errorsSet] = useState({})
 
 	// Refs
-	let passRef = useRef();
-	let confirmRef = useRef();
+	let emailRef = useRef();
 
 	function keyPressed(ev) {
 		if(ev.key === 'Enter') {
-			change();
+			forgot();
 		} else {
 			errorsSet({});
 		}
 	}
 
-	function change() {
-
-		// Verify the two passwords match
-		if(passRef.current.value !== confirmRef.current.value) {
-			Events.trigger('error', 'Passwords do not match');
-			errorsSet({"confirm": "Passwords do not match"});
-			return;
-		}
+	function forgot() {
 
 		// Call the signin
-		Rest.update('patient', 'account/forgot', {
-			"key": props.keyVal,
-			"passwd": passRef.current.value
+		Rest.create('patient', 'account/forgot', {
+			"email": emailRef.current.value,
+			"url": 'https://' + process.env.REACT_APP_SELF_DOMAIN + '/#key=c'
 		}, {"session": false}).done(res => {
 
 			// If there's an error
@@ -83,16 +80,8 @@ export default function Change(props) {
 						}
 						errorsSet(errors);
 						break;
-					case 1903:
-						Events.trigger('error', 'Key or account no longer valid');
-						Hash.set('key', null);
-						break;
-					case 1904:
-						Events.trigger('error', 'New password not strong enough');
-						errorsSet({"key": 'Must contain at least one uppercase, lowercase, and numeric character'});
-						break;
 					default:
-						Events.trigger('error', JSON.stringify(res.error));
+						Events.trigger('error', Rest.errorMessage(res.error));
 						break;
 				}
 			}
@@ -103,10 +92,10 @@ export default function Change(props) {
 			}
 
 			// If there's data
-			if(res.data) {
+			if('data' in res) {
 
 				// Notify success
-				Events.trigger('success', 'Password successfully changed');
+				Events.trigger('success', 'Thank you, if the e-mail is valid in our system, you will received a link to change your password.');
 
 				// Remove the has key so we go to sign in
 				Hash.set('key', null);
@@ -116,28 +105,28 @@ export default function Change(props) {
 
 	return (
 		<React.Fragment>
-			<DialogTitle id="confirmation-dialog-title">Set New Password</DialogTitle>
+			<DialogTitle id="confirmation-dialog-title">Forgot Password</DialogTitle>
 			<DialogContent className={classes.dialog} dividers>
-				<div><TextField
-					error={errors.passwd ? true : false}
-					helperText={errors.passwd || ''}
-					inputRef={passRef}
-					label="New Password"
+				<p>
+					Please enter the email associated with your
+					account and we will send you a link to reset
+					your password.
+				</p>
+				<TextField
+					error={errors.email ? true : false}
+					helperText={errors.email || ''}
+					inputRef={emailRef}
+					label="E-mail Address"
 					onKeyPress={keyPressed}
-					type="password"
-				/></div>
-				<div><TextField
-					error={errors.confirm ? true : false}
-					helperText={errors.confirm || ''}
-					inputRef={confirmRef}
-					label="Confirm Password"
-					onKeyPress={keyPressed}
-					type="password"
-				/></div>
+					type="text"
+				/>
 			</DialogContent>
 			<DialogActions>
-				<Button variant="contained" color="primary" onClick={change}>
-					Change Password
+				<div className={classes.forgot}>
+					<Link color="secondary" href="#">Return to Sign In</Link>
+				</div>
+				<Button variant="contained" color="primary" onClick={forgot}>
+					Request Password Change
 				</Button>
 			</DialogActions>
 		</React.Fragment>

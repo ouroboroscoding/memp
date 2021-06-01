@@ -1,7 +1,7 @@
 /**
- * Forgot
+ * Signin
  *
- * Allows the user to request a password change
+ * Handles signing in
  *
  * @author Chris Nasr <bast@maleexcel.com>
  * @copyright MaleExcelMedical
@@ -25,7 +25,6 @@ import Rest from 'shared/communication/rest';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
-import Hash from 'shared/generic/hash';
 
 // Theme
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // Sign In
-export default function Forgot(props) {
+export default function Signin(props) {
 
 	// Styles
 	const classes = useStyles();
@@ -51,22 +50,49 @@ export default function Forgot(props) {
 	let [errors, errorsSet] = useState({})
 
 	// Refs
-	let emailRef = useRef();
+	let userRef = useRef();
+	let passRef = useRef();
+
+	function fetchUser(agent) {
+
+		// Fetch the account data
+		Rest.read('monolith', 'user', {}).done(res => {
+
+			// If there's an error
+			if(res.error && !res._handled) {
+				Events.trigger('error', Rest.errorMessage(res.error));
+			}
+
+			// If there's a warning
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// If there's data
+			if(res.data) {
+
+				// Welcome user
+				Events.trigger('success', 'Welcome!');
+
+				// Trigger the signedIn event
+				res.data.agent = agent;
+				Events.trigger('signedIn', res.data);
+			}
+		});
+	}
 
 	function keyPressed(ev) {
 		if(ev.key === 'Enter') {
-			forgot();
-		} else {
-			errorsSet({});
+			signin();
 		}
 	}
 
-	function forgot() {
+	function signin() {
 
 		// Call the signin
-		Rest.create('patient', 'account/forgot', {
-			"email": emailRef.current.value,
-			"url": 'https://' + process.env.REACT_APP_SELF_DOMAIN + '/#key=c'
+		Rest.create('providers', 'signin', {
+			"userName": userRef.current.value,
+			"passwd": passRef.current.value
 		}, {"session": false}).done(res => {
 
 			// If there's an error
@@ -80,8 +106,14 @@ export default function Forgot(props) {
 						}
 						errorsSet(errors);
 						break;
+					case 1201:
+						Events.trigger('error', 'User or password invalid');
+						break;
+					case 1503:
+						Events.trigger('error', 'User marked as inactive');
+						break;
 					default:
-						Events.trigger('error', JSON.stringify(res.error));
+						Events.trigger('error', Rest.errorMessage(res.error));
 						break;
 				}
 			}
@@ -92,41 +124,44 @@ export default function Forgot(props) {
 			}
 
 			// If there's data
-			if('data' in res) {
+			if(res.data) {
 
-				// Notify success
-				Events.trigger('success', 'Thank you, if the e-mail is valid in our system, you will received a link to change your password.');
+				// Set the session with the service
+				Rest.session(res.data.session);
 
-				// Remove the has key so we go to sign in
-				Hash.set('key', null);
+				// Fetch the user info
+				fetchUser(res.data.user.agent);
 			}
 		});
 	}
 
 	return (
 		<React.Fragment>
-			<DialogTitle id="confirmation-dialog-title">Forgot Password</DialogTitle>
+			<DialogTitle id="confirmation-dialog-title">Sign In</DialogTitle>
 			<DialogContent className={classes.dialog} dividers>
-				<p>
-					Please enter the email associated with your
-					account and we will send you a link to reset
-					your password.
-				</p>
 				<TextField
-					error={errors.email ? true : false}
-					helperText={errors.email || ''}
-					inputRef={emailRef}
-					label="E-mail Address"
+					error={errors.userName ? true : false}
+					helperText={errors.userName || ''}
+					inputRef={userRef}
+					label="User"
 					onKeyPress={keyPressed}
 					type="text"
+				/>
+				<TextField
+					error={errors.passwd ? true : false}
+					helperText={errors.passwd || ''}
+					inputRef={passRef}
+					label="Password"
+					onKeyPress={keyPressed}
+					type="password"
 				/>
 			</DialogContent>
 			<DialogActions>
 				<div className={classes.forgot}>
-					<Link color="secondary" href="#">Return to Sign In</Link>
+					<Link color="secondary" href="#key=f">Forgot Password</Link>
 				</div>
-				<Button variant="contained" color="primary" onClick={forgot}>
-					Request Password Change
+				<Button variant="contained" color="primary" onClick={signin}>
+					Sign In
 				</Button>
 			</DialogActions>
 		</React.Fragment>

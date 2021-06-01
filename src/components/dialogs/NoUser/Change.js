@@ -1,7 +1,7 @@
 /**
- * Signin
+ * Change
  *
- * Handles signing in
+ * Handles changing a forgotten password
  *
  * @author Chris Nasr <bast@maleexcel.com>
  * @copyright MaleExcelMedical
@@ -16,7 +16,6 @@ import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
-import Link from '@material-ui/core/Link';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -25,13 +24,10 @@ import Rest from 'shared/communication/rest';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
+import Hash from 'shared/generic/hash';
 
 // Theme
 const useStyles = makeStyles((theme) => ({
-	forgot: {
-		flexGrow: 1,
-		textAlign: 'center',
-	},
 	dialog: {
 		"& .MuiFormControl-root": {
 			marginTop: '10px',
@@ -41,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // Sign In
-export default function Signin(props) {
+export default function Change(props) {
 
 	// Styles
 	const classes = useStyles();
@@ -50,48 +46,29 @@ export default function Signin(props) {
 	let [errors, errorsSet] = useState({})
 
 	// Refs
-	let userRef = useRef();
 	let passRef = useRef();
-
-	function fetchUser(agent) {
-
-		// Fetch the account data
-		Rest.read('monolith', 'user', {}).done(res => {
-
-			// If there's an error
-			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
-			}
-
-			// If there's a warning
-			if(res.warning) {
-				Events.trigger('warning', JSON.stringify(res.warning));
-			}
-
-			// If there's data
-			if(res.data) {
-
-				// Welcome user
-				Events.trigger('success', 'Welcome!');
-
-				// Trigger the signedIn event
-				res.data.agent = agent;
-				Events.trigger('signedIn', res.data);
-			}
-		});
-	}
+	let confirmRef = useRef();
 
 	function keyPressed(ev) {
 		if(ev.key === 'Enter') {
-			signin();
+			change();
+		} else {
+			errorsSet({});
 		}
 	}
 
-	function signin() {
+	function change() {
+
+		// Verify the two passwords match
+		if(passRef.current.value !== confirmRef.current.value) {
+			Events.trigger('error', 'Passwords do not match');
+			errorsSet({"confirm": "Passwords do not match"});
+			return;
+		}
 
 		// Call the signin
-		Rest.create('providers', 'signin', {
-			"userName": userRef.current.value,
+		Rest.update('patient', 'account/forgot', {
+			"key": props.keyVal,
 			"passwd": passRef.current.value
 		}, {"session": false}).done(res => {
 
@@ -106,14 +83,16 @@ export default function Signin(props) {
 						}
 						errorsSet(errors);
 						break;
-					case 1201:
-						Events.trigger('error', 'User or password invalid');
+					case 1903:
+						Events.trigger('error', 'Key or account no longer valid');
+						Hash.set('key', null);
 						break;
-					case 1503:
-						Events.trigger('error', 'User marked as inactive');
+					case 1904:
+						Events.trigger('error', 'New password not strong enough');
+						errorsSet({"key": 'Must contain at least one uppercase, lowercase, and numeric character'});
 						break;
 					default:
-						Events.trigger('error', JSON.stringify(res.error));
+						Events.trigger('error', Rest.errorMessage(res.error));
 						break;
 				}
 			}
@@ -126,42 +105,39 @@ export default function Signin(props) {
 			// If there's data
 			if(res.data) {
 
-				// Set the session with the service
-				Rest.session(res.data.session);
+				// Notify success
+				Events.trigger('success', 'Password successfully changed');
 
-				// Fetch the user info
-				fetchUser(res.data.user.agent);
+				// Remove the has key so we go to sign in
+				Hash.set('key', null);
 			}
 		});
 	}
 
 	return (
 		<React.Fragment>
-			<DialogTitle id="confirmation-dialog-title">Sign In</DialogTitle>
+			<DialogTitle id="confirmation-dialog-title">Set New Password</DialogTitle>
 			<DialogContent className={classes.dialog} dividers>
-				<TextField
-					error={errors.userName ? true : false}
-					helperText={errors.userName || ''}
-					inputRef={userRef}
-					label="User"
-					onKeyPress={keyPressed}
-					type="text"
-				/>
-				<TextField
+				<div><TextField
 					error={errors.passwd ? true : false}
 					helperText={errors.passwd || ''}
 					inputRef={passRef}
-					label="Password"
+					label="New Password"
 					onKeyPress={keyPressed}
 					type="password"
-				/>
+				/></div>
+				<div><TextField
+					error={errors.confirm ? true : false}
+					helperText={errors.confirm || ''}
+					inputRef={confirmRef}
+					label="Confirm Password"
+					onKeyPress={keyPressed}
+					type="password"
+				/></div>
 			</DialogContent>
 			<DialogActions>
-				<div className={classes.forgot}>
-					<Link color="secondary" href="#key=f">Forgot Password</Link>
-				</div>
-				<Button variant="contained" color="primary" onClick={signin}>
-					Sign In
+				<Button variant="contained" color="primary" onClick={change}>
+					Change Password
 				</Button>
 			</DialogActions>
 		</React.Fragment>

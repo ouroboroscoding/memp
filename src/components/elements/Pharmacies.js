@@ -16,6 +16,9 @@ import React from 'react';
 // Material-UI
 import Select from '@material-ui/core/Select';
 
+// Shared communications modules
+import Rest from 'shared/communication/rest';
+
 // Shared data modules
 import DS from 'shared/data/dosespot';
 
@@ -52,7 +55,7 @@ export default class Pharmacies extends React.Component {
 		DS.pharmacies().then(data => {
 			this.setState({list: data});
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			Events.trigger('error', Rest.errorMessage(error));
 		});
 	}
 

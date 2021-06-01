@@ -38,6 +38,7 @@ import Rest from 'shared/communication/rest';
 
 // Shared data modules
 import DS from 'shared/data/dosespot';
+import Tickets from 'shared/data/tickets';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
@@ -100,7 +101,7 @@ export default function View(props) {
 
 			// If there's an error or warning
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));
@@ -146,7 +147,7 @@ export default function View(props) {
 					Encounters.fetch(oCustomer.shipping.state).then(encounter => {
 						encounterSet(encounter);
 					}, error => {
-						Events.trigger('error', JSON.stringify(error));
+						Events.trigger('error', Rest.errorMessage(error));
 					});
 				}
 			}
@@ -163,16 +164,49 @@ export default function View(props) {
 		DS.fetch(customerId).then(res => {
 			patientSet(res);
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			Events.trigger('error', Rest.errorMessage(error));
 		});
+	}
+
+	// Close the ticket
+	function ticketClose() {
+
+		// If we a ticket
+		if(Tickets.current()) {
+
+			// Add a note about the issue
+			Rest.create('monolith', 'customer/note', {
+				action: 'Save Notes',
+				content: 'No purchase info for the customer',
+				customerId: customerId
+			}).done(res => {
+
+				// If we're ok
+				if(res.data) {
+
+					// Add the note to the current ticket if there is one
+					Tickets.item('note', res.data);
+				}
+
+				// Close the ticket
+				Tickets.resolve('Invalid Transfer: No Purchase Information').then(data => {
+
+					// Unclaim the ticket
+					unclaim();
+				})
+			});
+		} else {
+			unclaim();
+		}
 	}
 
 	// Unclaim the customer
 	function unclaim() {
+
 		Claimed.remove(customerId, 'closed').then(res => {
 			Events.trigger('claimedRemove', parseInt(customerId, 10), true);
 		}, error => {
-			Events.trigger('error', JSON.stringify(error));
+			Events.trigger('error', Rest.errorMessage(error));
 		});
 	}
 
@@ -187,7 +221,7 @@ export default function View(props) {
 			<Box id="view" className="page">
 				<Typography style={{padding: '10px'}}>No purchase infomation found for this customer.</Typography>
 				<Box style={{padding: '0 10px'}}>
-					<Button color="secondary" onClick={unclaim} variant="contained">Remove Claim</Button>
+					<Button color="secondary" onClick={ticketClose} variant="contained">Remove Claim</Button>
 				</Box>
 			</Box>
 		);
@@ -222,7 +256,7 @@ export default function View(props) {
 					customer={customer}
 					initialMode="verify"
 					mobile={props.mobile}
-					onRemove={unclaim}
+					onRemove={Tickets.current() ? false : unclaim}
 					patientId={patientId}
 					user={props.user}
 				/>
@@ -230,6 +264,7 @@ export default function View(props) {
 			<Box className="tabSection" style={{display: tab === 1 ? 'block' : 'none'}}>
 				<MIP
 					customerId={customerId}
+					customerPhone={customer.phone}
 					mobile={props.mobile}
 					onRemove={unclaim}
 					patientId={patientId}

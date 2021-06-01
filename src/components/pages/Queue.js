@@ -64,7 +64,7 @@ export default function Queue(props) {
 				Events.trigger('error', 'Patient has already been claimed. Refreshing queue.');
 				this.fetch();
 			} else {
-				Events.trigger('error', JSON.stringify(error));
+				Events.trigger('error', Rest.errorMessage(error));
 			}
 		});
 	}
@@ -76,7 +76,7 @@ export default function Queue(props) {
 
 			// If there's an error or warning
 			if(res.error && !res._handled) {
-				Events.trigger('error', JSON.stringify(res.error));
+				Events.trigger('error', Rest.errorMessage(res.error));
 			}
 			if(res.warning) {
 				Events.trigger('warning', JSON.stringify(res.warning));

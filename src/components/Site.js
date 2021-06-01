@@ -15,6 +15,7 @@ import { SnackbarProvider } from 'notistack';
 
 // Shared data modules
 import DS from 'shared/data/dosespot';
+import Tickets from 'shared/data/tickets';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
@@ -25,27 +26,27 @@ import { useEvent } from 'shared/hooks/event';
 import { useResize } from 'shared/hooks/resize';
 
 // Composite component modules
-import Alerts from './Alerts';
-import Header from './Header';
+import Alerts from 'components/Alerts';
+import Header from 'components/Header';
 
 // Dialogs
-import NoUser from './dialogs/NoUser';
-import SignOutWarning from './dialogs/SignOutWarning';
+import NoUser from 'components/dialogs/NoUser';
+import SignOutWarning from 'components/dialogs/SignOutWarning';
 
 // Page component modules
-import Appointments from './pages/Appointments';
-import DoseSpot from './pages/DoseSpot';
-import ED from './pages/ED';
-import ED_C from './pages/ED-C';
-import Queue from './pages/Queue';
-import QueueCont from './pages/QueueCont';
-import Search from './pages/Search';
-import Templates from './pages/Templates';
-import VersionHistory from './pages/VersionHistory';
-import View from './pages/View';
+import Appointments from 'components/pages/Appointments';
+import DoseSpot from 'components/pages/DoseSpot';
+import ED from 'components/pages/ED';
+import ED_C from 'components/pages/ED-C';
+import Queue from 'components/pages/Queue';
+import QueueCont from 'components/pages/QueueCont';
+import Search from 'components/pages/Search';
+import Templates from 'components/pages/Templates';
+import VersionHistory from 'components/pages/VersionHistory';
+import View from 'components/pages/View';
 
 // Local modules
-import ActivityWatch from '../activityWatch';
+import ActivityWatch from 'activityWatch';
 
 // Rest
 import 'rest_init';
@@ -61,6 +62,9 @@ ActivityWatch.init(15, {
 
 // Init the Hash module
 Hash.init();
+
+// Init tickets module
+Tickets.init();
 
 // Site
 export default function Site(props) {

@@ -1,6 +1,9 @@
 /* html5doctor reset */
 @import '3rd/reset';
 
+/* shared */
+@import 'shared/sass/RadioButtons';
+
 /* variables */
 $menu-width: 250px;
 
@@ -63,6 +66,10 @@ span.title {
 	font-size: 110%;
 	margin: 10px 10px 10px 0;
 	vertical-align: middle;
+}
+
+div.field {
+	margin-bottom: 10px;
 }
 
 div.title {

@@ -15,6 +15,9 @@ import React, { useEffect, useState } from 'react';
 // Material UI
 import Box from '@material-ui/core/Box';
 
+// Shared communications modules
+import Rest from 'shared/communication/rest';
+
 // Shared data modules
 import DS from 'shared/data/dosespot';
 
@@ -40,7 +43,7 @@ export default function DoseSpot(props) {
 			DS.providerSso().then(res => {
 				ssoSet(res);
 			}, error => {
-				Events.trigger('error', JSON.stringify(error));
+				Events.trigger('error', Rest.errorMessage(error));
 			});
 		} else {
 			ssoSet(false);
