@@ -214,26 +214,23 @@ export default class Header extends React.Component {
 
 			// If we're on a customer
 			let lPath = Utils.parsePath(this.props.history.location.pathname);
+			if(['ed', 'ed-c', 'view'].includes(lPath[0])) {
 
-			// Look for the index of the claim
-			let i = afindi(data, 'customerId', parseInt(lPath[1]))
+				// Look for the index of the claim
+				let i = afindi(data, 'customerId', parseInt(lPath[1]))
 
-			// If we can't find the customer we're on
-			if(i === -1) {
+				// If we can't find the customer we're on
+				if(i === -1) {
 
-				console.log('claim not found');
+					// Switch page
+					this.props.history.push('/')
+					Events.trigger('error', 'This customer is not claimed, switching to home.');
+				}
 
-				// Switch page
-				this.props.history.push('/')
-				Events.trigger('error', 'This customer is not claimed, switching to home.');
-			}
-
-			// Else, set the ticket
-			else {
-
-				console.log('claim found', data[i]);
-
-				Tickets.current(data[i].ticket);
+				// Else, set the ticket
+				else {
+					Tickets.current(data[i].ticket);
+				}
 			}
 
 			// Set the new path
