@@ -185,7 +185,7 @@ export default function View(props) {
 				if(res.data) {
 
 					// Add the note to the current ticket if there is one
-					Tickets.item('note', res.data);
+					Tickets.item('note', 'outgoing', res.data, props.user.id);
 				}
 
 				// Close the ticket
@@ -276,6 +276,7 @@ export default function View(props) {
 					mobile={props.mobile}
 					customer={customer}
 					type={_NOTES[tab]}
+					user={props.user}
 				/>
 			</Box>
 		</Box>

@@ -121,7 +121,7 @@ export default function Transfer(props) {
 			Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 
 			// Add the item to the ticket
-			Tickets.item('note', data, ticket_id);
+			Tickets.item('note', 'outgoing', data, props.user.id, ticket_id);
 
 			// Notify the parent
 			props.onTransfer();
@@ -195,5 +195,6 @@ Transfer.propTypes = {
 	customerId: PropTypes.number.isRequired,
 	customerPhone: PropTypes.string.isRequired,
 	onClose: PropTypes.func.isRequired,
-	onTransfer: PropTypes.func.isRequired
+	onTransfer: PropTypes.func.isRequired,
+	user: PropTypes.object.isRequired
 }

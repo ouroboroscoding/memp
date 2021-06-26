@@ -287,7 +287,7 @@ export default function Notes(props) {
 
 				// Add the note to the current ticket if there is one
 				if(Tickets.current()) {
-					Tickets.item('note', res.data);
+					Tickets.item('note', 'outgoing', res.data, props.user.id);
 				}
 
 				// Clear the note content
@@ -363,7 +363,7 @@ export default function Notes(props) {
 
 				// Add the note to the current ticket if there is one
 				if(Tickets.current()) {
-					Tickets.item('note', res.data);
+					Tickets.item('note', 'outgoing', res.data, props.user.id);
 				}
 
 				// Clear the note content
@@ -525,5 +525,6 @@ export default function Notes(props) {
 // Valid props
 Notes.propTypes = {
 	customer: PropTypes.object.isRequired,
-	type: PropTypes.oneOf(['', 'notes', 'sms']).isRequired
+	type: PropTypes.oneOf(['', 'notes', 'sms']).isRequired,
+	user: PropTypes.object.isRequired
 }

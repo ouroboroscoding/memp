@@ -210,6 +210,7 @@ export default function MIP(props) {
 					customerPhone={props.order.phone}
 					onClose={() => transferSet(false)}
 					onTransfer={() => transferSet(false)}
+					user={props.user}
 				/>
 			}
 		</Box>
