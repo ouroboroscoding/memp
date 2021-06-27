@@ -192,6 +192,7 @@ export default function DoseSpot(props) {
 					customerPhone={props.customer.phone}
 					onClose={() => transferSet(false)}
 					onTransfer={() => transferSet(false)}
+					user={props.user}
 				/>
 			}
 		</Box>

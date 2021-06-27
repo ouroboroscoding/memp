@@ -126,6 +126,7 @@ export default function MIP(props) {
 					customerPhone={props.customerPhone}
 					onClose={() => transferSet(false)}
 					onTransfer={() => transferSet(false)}
+					user={props.user}
 				/>
 			}
 		</Box>

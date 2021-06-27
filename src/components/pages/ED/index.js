@@ -206,6 +206,7 @@ export default function ED(props) {
 					mobile={props.mobile}
 					customer={order}
 					type={_NOTES[tab]}
+					user={props.user}
 				/>
 			</Box>
 		</Box>
