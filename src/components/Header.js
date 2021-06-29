@@ -96,7 +96,7 @@ function CustomerItem(props) {
 								<p>{props.type === 'view' ?
 									'VIEW ONLY'
 								:
-									(props.continuous ? 'C-' : '') + props.type.toUpperCase()
+									(props.continuous ? 'C-' : '') + props.type.toUpperCase() + ' ORDER'
 								}</p>
 							</span>
 						}
