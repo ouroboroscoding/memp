@@ -93,6 +93,11 @@ function CustomerItem(props) {
 								{props.transferredBy &&
 									<p>Transferrer: {props.transferredByName}</p>
 								}
+								<p>{props.type === 'view' ?
+									'VIEW ONLY'
+								:
+									(props.continuous ? 'C-' : '') + props.type.toUpperCase()
+								}</p>
 							</span>
 						}
 					/>
