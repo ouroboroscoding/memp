@@ -34,6 +34,9 @@ import Claimed from 'data/claimed';
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
+// Shared data modules
+import Tickets from 'shared/data/tickets';
+
 // Shared generic modules
 import Events from 'shared/generic/events';
 import { afindo } from 'shared/generic/tools';
@@ -101,10 +104,17 @@ export default function MIP(props) {
 			if(res.error && !res._handled) {
 				if(res.error.code === 1103) {
 
-					// Auto transfer the order to an agent
-					Claimed.transfer(props.customerId, 0, res.error.msg).then(res => {
-						Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
-						Events.trigger('error', 'Failed to update order status, order was transferred to an Agent');
+					// Create a ticket
+					Tickets.create(props.order.phone, props.customerId, 'Provider').then(ticket_id => {
+
+						// Auto transfer the order to an agent
+						Claimed.transfer(ticket_id, props.customerId, 0, res.error.msg).then(res => {
+							Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
+							Events.trigger('error', 'Failed to update order status, order was transferred to an Agent');
+						}, error => {
+							Events.trigger('error', Rest.errorMessage(error));
+						});
+
 					}, error => {
 						Events.trigger('error', Rest.errorMessage(error));
 					});
