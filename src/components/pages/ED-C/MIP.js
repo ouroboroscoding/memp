@@ -101,6 +101,8 @@ export default function MIP(props) {
 				if(res.error.code === 1515) {
 					Events.trigger('error', 'Order no longer PENDING');
 					props.onReload()
+				} else if(res.error.code === 1519) {
+					Events.trigger('error', 'Order is already refunded or cancelled, can not approve');
 				} else {
 					Events.trigger('error', Rest.errorMessage(res.error));
 				}
