@@ -31,6 +31,7 @@ import AllInboxIcon from '@material-ui/icons/AllInbox';
 import CommentIcon from '@material-ui/icons/Comment';
 import EventIcon from '@material-ui/icons/Event';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import MenuIcon from '@material-ui/icons/Menu';
 import NewReleasesIcon from '@material-ui/icons/NewReleases';
 import NotificationImportantIcon from '@material-ui/icons/NotificationImportant';
@@ -441,6 +442,17 @@ export default class Header extends React.Component {
 		// Create the drawer items
 		let drawer = (
 			<List style={{padding: 0}}>
+				{this.state.user &&
+					<React.Fragment>
+						<Link to="/history" onClick={this.menuClick}>
+							<ListItem button selected={this.props.history.location.pathname === "/history"}>
+								<ListItemIcon><FormatListBulletedIcon /></ListItemIcon>
+								<ListItemText primary="History" />
+							</ListItem>
+						</Link>
+						<Divider />
+					</React.Fragment>
+				}
 				{Rights.has('prov_templates', 'read') &&
 					<React.Fragment>
 						<Link to="/templates" onClick={this.menuClick}>
