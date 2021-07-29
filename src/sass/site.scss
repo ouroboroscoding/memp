@@ -2,6 +2,7 @@
 @import '3rd/reset';
 
 /* shared */
+@import 'shared/sass/flex';
 @import 'shared/sass/RadioButtons';
 
 /* variables */
@@ -28,6 +29,7 @@ $menu-width: 250px;
 @import 'pages/appointments';
 @import 'pages/customer';
 @import 'pages/dosespot';
+@import 'pages/history';
 @import 'pages/queue';
 @import 'pages/search';
 @import 'pages/templates';

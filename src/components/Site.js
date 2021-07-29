@@ -38,6 +38,7 @@ import Appointments from 'components/pages/Appointments';
 import DoseSpot from 'components/pages/DoseSpot';
 import ED from 'components/pages/ED';
 import ED_C from 'components/pages/ED-C';
+import History from 'components/pages/History';
 import Queue from 'components/pages/Queue';
 import QueueCont from 'components/pages/QueueCont';
 import Search from 'components/pages/Search';
@@ -121,6 +122,9 @@ export default function Site(props) {
 						</Route>*/}
 						<Route exact path="/">
 							<VersionHistory />
+						</Route>
+						<Route exact path="/history">
+							<History user={user} />
 						</Route>
 						<Route exact path="/templates">
 							<Templates user={user} />
