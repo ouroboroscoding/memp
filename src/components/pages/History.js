@@ -31,6 +31,9 @@ import Rest from 'shared/communication/rest';
 import Events from 'shared/generic/events';
 import { clone, date, dateInc, datetime } from 'shared/generic/tools';
 
+// Data modules
+import Claimed from 'data/claimed';
+
 // Definitions
 import TrackingDef from 'definitions/providers/tracking';
 const ProviderTracking = clone(TrackingDef);
@@ -75,9 +78,29 @@ export default function History(props) {
 	// eslint-disable-next-line
 	}, [range, props.user]);
 
-	// Claim customer
-	function claim(crm_id) {
-		alert(crm_id);
+	// Claim
+	function claim(customer) {
+
+		// Claim
+		let oClaim = {
+			orderId: null,
+			customerId: parseInt(customer.claimed.customerId, 10),
+			customerName: customer.claimed.customerName,
+			continuous: false,
+			type: 'view'
+		};
+
+		// Get the claimed add promise
+		Claimed.add(oClaim.customerId, oClaim.orderId).then(res => {
+			Events.trigger('claimedAdd', oClaim);
+		}, error => {
+			// If we got a duplicate
+			if(error.code === 1101) {
+				Events.trigger('error', 'Patient has already been claimed.');
+			} else {
+				Events.trigger('error', Rest.errorMessage(error));
+			}
+		});
 	}
 
 	// Converts the start and end dates into timestamps
@@ -173,7 +196,7 @@ export default function History(props) {
 									let sClaimedBy = v.claimed.userId === props.user.id ? 'You' : v.claimed.claimedBy;
 									return `Customer claimed by ${sClaimedBy}`;
 								} else {
-									return <Button variant="contained" size="large" onClick={ev => claim(v.crm_id)}>View</Button>
+									return <Button variant="contained" size="large" onClick={ev => claim(v)}>View</Button>
 								}
 							}
 						}}
