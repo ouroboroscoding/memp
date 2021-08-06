@@ -11,13 +11,11 @@
 // NPM modules
 import PropTypes from 'prop-types';
 import React, { useRef, useState, useEffect } from 'react';
-import Parent from 'format-oc/Parent';
 import Tree from 'format-oc/Tree';
 
 // Material UI
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
@@ -29,7 +27,7 @@ import Rest from 'shared/communication/rest';
 
 // Shared generic modules
 import Events from 'shared/generic/events';
-import { clone, date, dateInc, datetime } from 'shared/generic/tools';
+import { clone, date, dateInc } from 'shared/generic/tools';
 
 // Data modules
 import Claimed from 'data/claimed';
