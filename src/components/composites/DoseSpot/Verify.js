@@ -22,6 +22,10 @@ import Typography from '@material-ui/core/Typography';
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
 
+// Local components
+import PatientPharmacyAdd from './PatientPharmacyAdd';
+import PatientUpdate from './PatientUpdate';
+
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
@@ -51,6 +55,7 @@ export default function Verify(props) {
 	let [itemToRx, itemToRxSet] = useState([]);
 	let [rx, rxSet] = useState([]);
 	let [selects, selectsSet] = useState({});
+	let [patient, patientSet] = useState(false);
 
 	// Refs
 	let refItems = useRef(props.customer.items.reduce((r,o) => ({...r, [o.productId]: React.createRef()}), {}));
@@ -247,6 +252,34 @@ export default function Verify(props) {
 	// Render
 	return (
 		<Box className="verify">
+			{process.env.REACT_APP_DS_HYBRID === 'true' &&
+				<React.Fragment>
+					{patient === 'update' &&
+						<PatientUpdate
+							customerId={props.customer.customerId}
+							onCancel={() => patientSet(false)}
+							onUpdated={() => patientSet(false)}
+						/>
+					}
+					{patient === 'pharmacy' &&
+						<PatientPharmacyAdd
+							patientId={props.patientId}
+							onCancel={() => patientSet(false)}
+							onAdded={() => patientSet(false)}
+						/>
+					}
+					{patient === false &&
+						<Grid container spacing={2}>
+							<Grid item xs={12} md={6}>
+								<Button variant="contained" onClick={() => patientSet('update')} style={{width: '100%'}}>Update Patient Data</Button>
+							</Grid>
+							<Grid item xs={12} md={6}>
+								<Button variant="contained" onClick={() => patientSet('pharmacy')} style={{width: '100%'}}>Add Pharmacy to Patient</Button>
+							</Grid>
+						</Grid>
+					}
+				</React.Fragment>
+			}
 			{props.customer.items.map(o =>
 				<Box key={o.productId} className="section">
 					<Grid container spacing={1}>
@@ -286,9 +319,9 @@ export default function Verify(props) {
 				}
 				<Grid item xs={iGrid}>
 					<Button
-						onClick={props.onTransfer}
+						onClick={() => props.onTransfer('agent')}
 						variant="contained"
-					>Transfer</Button>
+					>To Support</Button>
 				</Grid>
 				<Grid item xs={iGrid}>
 					<GreenButton

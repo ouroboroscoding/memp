@@ -24,6 +24,10 @@ import Typography from '@material-ui/core/Typography';
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
 
+// Local components
+import PatientPharmacyAdd from './PatientPharmacyAdd';
+import PatientUpdate from './PatientUpdate';
+
 // Shared communication modules
 import Rest from 'shared/communication/rest';
 
@@ -53,6 +57,7 @@ export default function Prescriptions(props) {
 		refills: 11
 	}}), {}));
 	let [products, productsSet] = useState([]);
+	let [patient, patientSet] = useState(false);
 
 	// Component mounted effect
 	useEffect(() => {
@@ -71,8 +76,9 @@ export default function Prescriptions(props) {
 		for(let productId in items) {
 			if(items[productId].product._id !== '0') {
 				lProducts.push({
-					item_id: productId,
+					directions: items[productId].directions,
 					effective: items[productId].effective,
+					item_id: productId,
 					product_id: items[productId].product._id,
 					refills: items[productId].refills
 				});
@@ -130,6 +136,8 @@ export default function Prescriptions(props) {
 		// Find the product
 		let o = afindo(products, '_id', ev.currentTarget.value);
 
+		console.log(o);
+
 		// If it's not found
 		if(!o) {
 			o = {_id: '0'};
@@ -137,15 +145,44 @@ export default function Prescriptions(props) {
 
 		// Update the list and set the state
 		oItems[item_id].product = o;
+		oItems[item_id].directions = o.directions;
 		itemsSet(oItems);
 	}
 
 	// If we can remove
-	let iGrid = props.onRemove ? 4 : 6;
+	let iGrid = props.onRemove ? 3 : 4;
 
 	// Render
 	return (
 		<Box className="prescriptions">
+			{process.env.REACT_APP_DS_HYBRID === 'true' &&
+				<React.Fragment>
+					{patient === 'update' &&
+						<PatientUpdate
+							customerId={props.customer.customerId}
+							onCancel={() => patientSet(false)}
+							onUpdated={() => patientSet(false)}
+						/>
+					}
+					{patient === 'pharmacy' &&
+						<PatientPharmacyAdd
+							patientId={props.patientId}
+							onCancel={() => patientSet(false)}
+							onAdded={() => patientSet(false)}
+						/>
+					}
+					{patient === false &&
+						<Grid container spacing={2}>
+							<Grid item xs={12} md={6}>
+								<Button variant="contained" onClick={() => patientSet('update')} style={{width: '100%'}}>Update Patient Data</Button>
+							</Grid>
+							<Grid item xs={12} md={6}>
+								<Button variant="contained" onClick={() => patientSet('pharmacy')} style={{width: '100%'}}>Add Pharmacy to Patient</Button>
+							</Grid>
+						</Grid>
+					}
+				</React.Fragment>
+			}
 			<Box className="section">
 				<Typography className="title">Prescription</Typography>
 				<Grid container spacing={2}>
@@ -177,15 +214,23 @@ export default function Prescriptions(props) {
 							:
 								<React.Fragment>
 									<Grid item xs={4} md={2} lg={1}><Typography><strong>Display</strong></Typography></Grid>
-									<Grid item xs={8} md={4} lg={2}><Typography>{items[o.productId].product.display}</Typography></Grid>
-									<Grid item xs={4} md={2} lg={2}><Typography><strong>Quanity</strong></Typography></Grid>
-									<Grid item xs={8} md={4} lg={1}><Typography>{items[o.productId].product.quantity}</Typography></Grid>
-									<Grid item xs={4} md={2} lg={2}><Typography><strong>Days Supply</strong></Typography></Grid>
-									<Grid item xs={8} md={4} lg={1}><Typography>{items[o.productId].product.supply}</Typography></Grid>
+									<Grid item xs={8} md={4} lg={3}><Typography>{items[o.productId].product.display}</Typography></Grid>
+									<Grid item xs={4} md={2} lg={1}><Typography><strong>Quanity</strong></Typography></Grid>
+									<Grid item xs={8} md={4} lg={3}><Typography>{items[o.productId].product.quantity}</Typography></Grid>
+									<Grid item xs={4} md={2} lg={1}><Typography><strong>Days Supply</strong></Typography></Grid>
+									<Grid item xs={8} md={4} lg={3}><Typography>{items[o.productId].product.supply}</Typography></Grid>
 									<Grid item xs={4} md={2} lg={1}><Typography><strong>Directions</strong></Typography></Grid>
-									<Grid item xs={8} md={4} lg={2}><Typography>{items[o.productId].product.directions}</Typography></Grid>
+									<Grid item xs={8} md={4} lg={3}>
+										<TextField
+											multiline
+											onChange={ev => itemChanged(o.productId, 'directions', ev)}
+											type="string"
+											variant="outlined"
+											value={items[o.productId].directions}
+										/>
+									</Grid>
 									<Grid item xs={12} sm={4} md={2} lg={1}><Typography><strong>Refills</strong></Typography></Grid>
-									<Grid item xs={12} sm={8} md={4} lg={2}>
+									<Grid item xs={12} sm={8} md={4} lg={3}>
 										<Select
 											className="select"
 											native
@@ -200,7 +245,7 @@ export default function Prescriptions(props) {
 										</Select>
 									</Grid>
 									<Grid item xs={12} sm={4} md={2} lg={1}><Typography><strong>Effective</strong></Typography></Grid>
-									<Grid item xs={12} sm={8} md={4} lg={2}>
+									<Grid item xs={12} sm={8} md={4} lg={3}>
 										<TextField
 											onChange={ev => itemChanged(o.productId, 'effective', ev)}
 											type="date"
@@ -226,9 +271,15 @@ export default function Prescriptions(props) {
 				}
 				<Grid item xs={iGrid}>
 					<Button
-						onClick={props.onTransfer}
+						onClick={() => props.onTransfer('agent')}
 						variant="contained"
-					>Transfer</Button>
+					>To Support</Button>
+				</Grid>
+				<Grid item xs={iGrid}>
+					<Button
+						onClick={() => props.onTransfer('provider')}
+						variant="contained"
+					>To Provider</Button>
 				</Grid>
 				<Grid item xs={iGrid}>
 					<GreenButton

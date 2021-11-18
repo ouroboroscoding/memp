@@ -19,11 +19,11 @@ import Grid from '@material-ui/core/Grid';
 
 // Composite components
 import MIPs from 'components/composites/MIPs';
-import PreviousMeds from 'components/composites/PreviousMeds';
 import SOAP from 'components/composites/ED-SOAP';
 
 // Dialog components
-import Transfer from 'components/dialogs/Transfer';
+import TransferAgent from 'components/dialogs/TransferAgent';
+import TransferProvider from 'components/dialogs/TransferProvider';
 
 // Element components
 import { GreenButton } from 'components/elements/Buttons';
@@ -108,7 +108,7 @@ export default function MIP(props) {
 					Tickets.create(props.order.phone, props.customerId, 'Provider').then(ticket_id => {
 
 						// Auto transfer the order to an agent
-						Claimed.transfer(ticket_id, props.customerId, 0, res.error.msg).then(res => {
+						Claimed.transferToAgent(ticket_id, props.customerId, 0, res.error.msg).then(res => {
 							Events.trigger('claimedRemove', parseInt(props.customerId, 10), true);
 							Events.trigger('error', 'Failed to update order status, order was transferred to an Agent');
 						}, error => {
@@ -208,11 +208,6 @@ export default function MIP(props) {
 					mobile={props.mobile}
 					oxytocin={bOxytocin}
 				/>
-				<PreviousMeds
-					customerId={props.customerId}
-					patientId={props.patientId}
-					pharmacyId={56387}
-				/>
 				<SOAP
 					order={props.order}
 					ref={refSOAP}
@@ -221,22 +216,33 @@ export default function MIP(props) {
 			</Box>
 			<Box className="rta">
 				<Grid container spacing={1}>
-					<Grid item xs={4}>
+					<Grid item xs={3}>
 						<Button color="secondary" onClick={orderDecline} variant="contained">Decline</Button>
 					</Grid>
-					<Grid item xs={4}>
-						<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
+					<Grid item xs={3}>
+						<Button onClick={() => transferSet('agent')} variant="contained">To Support</Button>
 					</Grid>
-					<Grid item xs={4}>
+					<Grid item xs={3}>
+						<Button onClick={() => transferSet('provider')} variant="contained">To Provider</Button>
+					</Grid>
+					<Grid item xs={3}>
 						<GreenButton onClick={orderApprove} variant="contained">Approve</GreenButton>
 					</Grid>
 				</Grid>
 			</Box>
-			{transfer &&
-				<Transfer
+			{transfer === 'agent' &&
+				<TransferAgent
 					agent={props.user.agent}
 					customerId={props.customerId}
 					customerPhone={props.order.phone}
+					onClose={() => transferSet(false)}
+					onTransfer={() => transferSet(false)}
+					user={props.user}
+				/>
+			}
+			{transfer === 'provider' &&
+				<TransferProvider
+					customerId={props.customer.customerId}
 					onClose={() => transferSet(false)}
 					onTransfer={() => transferSet(false)}
 					user={props.user}

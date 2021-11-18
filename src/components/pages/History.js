@@ -214,6 +214,5 @@ export default function History(props) {
 
 // Valid props
 History.propTypes = {
-	mobile: PropTypes.bool.isRequired,
-	user: PropTypes.object.isRequired
+	user: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]).isRequired
 }

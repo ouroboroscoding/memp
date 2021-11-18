@@ -18,8 +18,8 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-// Element components
-import Pharmacies from 'components/elements/Pharmacies';
+// Shared components
+import Pharmacies from 'shared/components/DoseSpot/Pharmacies';
 
 // Shared communications modules
 import Rest from 'shared/communication/rest';
@@ -81,8 +81,9 @@ export default function PreviousMeds(props) {
 
 		// If it's 0
 		if(iPharmacy === 0) {
-			Events.trigger('error', 'Please select a default pharmacy for the patient');
-			return;
+			iPharmacy = null;
+//			Events.trigger('error', 'Please select a default pharmacy for the patient');
+//			return;
 		}
 
 		// Create the patient

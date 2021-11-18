@@ -19,10 +19,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 // Dialog components
-import Transfer from 'components/dialogs/Transfer';
+import TransferAgent from 'components/dialogs/TransferAgent';
+import TransferProvider from 'components/dialogs/TransferProvider';
 
 // Local components
-import CreatePatient from './CreatePatient';
+import PatientCreate from './PatientCreate';
 import Prescriptions from './Prescriptions';
 import Verify from './Verify';
 
@@ -126,11 +127,11 @@ export default function DoseSpot(props) {
 	// Else, if the customer has no DoseSpot patient ID yet
 	else if(props.patientId === 0) {
 		Content = (
-			<CreatePatient
+			<PatientCreate
 				customerId={props.customer.customerId}
 				onCreated={id => Events.trigger('patientCreate', id)}
 				onRemove={props.onRemove}
-				onTransfer={() => transferSet(true)}
+				onTransfer={type => transferSet(type)}
 			/>
 		);
 	}
@@ -163,7 +164,7 @@ export default function DoseSpot(props) {
 				existing={props.existing}
 				onSSO={() => modeSet('sso')}
 				onRemove={props.onRemove}
-				onTransfer={() => transferSet(true)}
+				onTransfer={type => transferSet(type)}
 				onVerified={verified}
 				patientId={props.patientId}
 			/>
@@ -175,7 +176,7 @@ export default function DoseSpot(props) {
 				customer={props.customer}
 				patientId={props.patientId}
 				onRemove={props.onRemove}
-				onTransfer={() => transferSet(true)}
+				onTransfer={type => transferSet(type)}
 				onCreated={prescriptionsCreated}
 			/>
 		}
@@ -185,11 +186,19 @@ export default function DoseSpot(props) {
 	return (
 		<Box id="DoseSpot">
 			{Content}
-			{transfer &&
-				<Transfer
+			{transfer === 'agent' &&
+				<TransferAgent
 					agent={props.user.agent}
 					customerId={props.customer.customerId}
 					customerPhone={props.customer.phone}
+					onClose={() => transferSet(false)}
+					onTransfer={() => transferSet(false)}
+					user={props.user}
+				/>
+			}
+			{transfer === 'provider' &&
+				<TransferProvider
+					customerId={props.customer.customerId}
 					onClose={() => transferSet(false)}
 					onTransfer={() => transferSet(false)}
 					user={props.user}

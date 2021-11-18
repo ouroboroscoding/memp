@@ -19,6 +19,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
 const VERSION = [
+	['1.11.0', 'September 9th, 2021', [
+		'Added ability to transfer a patient to another provider.',
+		'Removed "Medication History" due to DoseSpot removing our access to it.'
+	]],
+	['1.8.0', 'May 31st, 2021', [
+		'Changes to go in line with new Agent/PA ticketing system.'
+	]],
 	['1.6.0', 'January 27th, 2021', [
 		'Pending New Orders and Expiring are visible from both the appointments and search pages for easier claiming.'
 	]],
