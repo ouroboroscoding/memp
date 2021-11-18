@@ -68,7 +68,7 @@ export function add(customer_id, order_id, continuous=false) {
  * @public
  * @return Promise
  */
-export function fetch(customer_id) {
+export function fetch() {
 
 	// Return promise
 	return new Promise((resolve, reject) => {
@@ -133,16 +133,60 @@ export function remove(customer_id, reason) {
 /**
  * Transfer
  *
- * Transfers an order to an agent then removes the claim
+ * Transfers a claim to another provider
  *
  * @name transfer
+ * @public
+ * @param String customer_id The ID of the customer
+ * @param Integer provider The memo ID of the provider
+ * @param String note The note to add to the transfer
+ * @return Promise
+ */
+export function transfer(customer_id, provider, note) {
+
+	// Return promise
+	return new Promise((resolve, reject) => {
+
+		// Send the message to the server
+		Rest.update('monolith', 'order/claim', {
+			customerId: customer_id,
+			user_id: provider,
+			note: note
+		}).done(res => {
+
+			// If there's an error or a warning
+			if(res.error && !res._handled) {
+				reject(res.error);
+			}
+			if(res.warning) {
+				Events.trigger('warning', JSON.stringify(res.warning));
+			}
+
+			// Store the note ID
+			let iNoteID = res.data;
+
+			// If we're ok
+			if(res.data) {
+				resolve(iNoteID);
+			}
+		});
+	});
+}
+
+/**
+ * Transfer To Agent
+ *
+ * Transfers an order to an agent then removes the claim
+ *
+ * @name transferToAgent
+ * @public
  * @param String ticket The ID of the associated ticket
  * @param String customer_id The ID of the customer
  * @param Integer agent The memo ID of the agent
  * @param String note The note to add to the transfer
  * @return Promise
  */
-export function transfer(ticket, customer_id, agent, note) {
+export function transferToAgent(ticket, customer_id, agent, note) {
 
 	// Return promise
 	return new Promise((resolve, reject) => {
@@ -185,6 +229,7 @@ const Claimed = {
 	add: add,
 	fetch: fetch,
 	remove: remove,
-	transfer: transfer
+	transfer: transfer,
+	transferToAgent: transferToAgent
 };
 export default Claimed;

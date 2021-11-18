@@ -19,10 +19,10 @@ import Grid from '@material-ui/core/Grid';
 
 // Composite components
 import MIPs from 'components/composites/MIPs';
-import PreviousMeds from 'components/composites/PreviousMeds';
 
 // Dialog components
-import Transfer from 'components/dialogs/Transfer';
+import TransferAgent from 'components/dialogs/TransferAgent';
+import TransferProvider from 'components/dialogs/TransferProvider';
 
 // Shared communication modules
 import Rest from 'shared/communication/rest';
@@ -94,36 +94,47 @@ export default function MIP(props) {
 				mobile={props.mobile}
 				oxytocin={true}
 			/>
-			<PreviousMeds
-				customerId={props.customerId}
-				patientId={props.patientId}
-				pharmacyId={56387}
-			/>
 			<Grid container spacing={1} className="rta">
 				{Tickets.current() ?
-					<Grid item xs={12}>
-						<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
-					</Grid>
-				:
 					<React.Fragment>
 						<Grid item xs={6}>
+							<Button onClick={() => transferSet('agent')} variant="contained">To Support</Button>
+						</Grid>
+						<Grid item xs={6}>
+							<Button onClick={() => transferSet('provider')} variant="contained">To Provider</Button>
+						</Grid>
+					</React.Fragment>
+				:
+					<React.Fragment>
+						<Grid item xs={4}>
 							<Button
 								color="secondary"
 								onClick={props.onRemove}
 								variant="contained"
 							>Remove Claim</Button>
 						</Grid>
-						<Grid item xs={6}>
-							<Button onClick={() => transferSet(true)} variant="contained">Transfer</Button>
+						<Grid item xs={4}>
+							<Button onClick={() => transferSet('agent')} variant="contained">To Support</Button>
+						</Grid>
+						<Grid item xs={4}>
+							<Button onClick={() => transferSet('provider')} variant="contained">To Provider</Button>
 						</Grid>
 					</React.Fragment>
 				}
 			</Grid>
-			{transfer &&
-				<Transfer
+			{transfer === 'agent' &&
+				<TransferAgent
 					agent={props.user.agent}
 					customerId={props.customerId}
 					customerPhone={props.customerPhone}
+					onClose={() => transferSet(false)}
+					onTransfer={() => transferSet(false)}
+					user={props.user}
+				/>
+			}
+			{transfer === 'provider' &&
+				<TransferProvider
+					customerId={props.customer.customerId}
 					onClose={() => transferSet(false)}
 					onTransfer={() => transferSet(false)}
 					user={props.user}

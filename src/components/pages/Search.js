@@ -206,7 +206,7 @@ export default function Search(props) {
 	function claim(customer) {
 
 		// Get the claimed add promise
-		Claimed.add(customer.customerId, customer.orderId).then(res => {
+		Claimed.add(customer.customerId, customer.orderId, customer.continuous).then(res => {
 			Events.trigger('claimedAdd', customer);
 		}, error => {
 			// If we got a duplicate

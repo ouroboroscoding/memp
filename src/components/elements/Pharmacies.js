@@ -72,7 +72,7 @@ export default class Pharmacies extends React.Component {
 				value={this.state.id}
 				variant="outlined"
 			>
-				<option value="0">Select default pharmacy...</option>
+				<option value="0">Select pharmacy...</option>
 				{this.state.list.map(o =>
 					<option key={o._id} value={o.pharmacyId}>{o.name}</option>
 				)}
