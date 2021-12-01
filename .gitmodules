@@ -1,6 +1,6 @@
 [submodule "src/definitions"]
 	path = src/definitions
-	url = git@github.com:bastmaleexcel/medefs
+	url = ../medefs
 [submodule "src/shared"]
 	path = src/shared
-	url = git@github.com:bastmaleexcel/me-ui-shared
+	url = ../me-ui-shared
